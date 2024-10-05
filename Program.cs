@@ -15,6 +15,7 @@ namespace TurtlesBeach
         const int windowHeight = 720;
 
         const float stepSize = 1; // Distancia en píxels que recorre la tortuga por cada unidad que avanza
+        const float stepEpsilon = 0.001f;
 
         const int infoMessagesCount = 50;
         const float infoMessageDuration = 0.5f;
@@ -36,8 +37,8 @@ namespace TurtlesBeach
         static bool stepBackward;
 
         static Font font;
-        static Text text;
-        static StringBuilder textBuilder;
+        static Text infoText;
+        static StringBuilder infoTextBuilder;
         static int infoPosX;
         static int infoPosY;
         static int infoAngle;
@@ -80,12 +81,12 @@ namespace TurtlesBeach
             music = new Music("Assets/Music.wav");
             music.Loop = true;
 
-            text = new Text();
-            text.Position = new Vector2f(20, 670);
-            text.FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB);
+            infoText = new Text();
+            infoText.Position = new Vector2f(20, 670);
+            infoText.FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB);
             font = new Font("Assets/Font.ttf");
-            textBuilder = new StringBuilder("", 200);
-            text.DisplayedString = textBuilder.ToString();
+            infoTextBuilder = new StringBuilder("", 200);
+            infoText.DisplayedString = infoTextBuilder.ToString();
             infoPosX = 0;
             infoPosY = 0;
             infoAngle = 0;
@@ -98,12 +99,7 @@ namespace TurtlesBeach
             orderIdToString[Turtle.OrderId.teleport] = "teleport";
 
             InitInfoMessages();
-
-            gridTexture = new Texture("Assets/Grid.png");
-            gridSprite = new Sprite();
-            gridSprite.Texture = gridTexture;
-            gridSprite.Position = new Vector2f(0, 0);
-            gridSprite.Color = new Color((byte)gridR, (byte)gridG, (byte)gridB, (byte)gridOpacity);
+            InitGrid();
 
             if (playMusic)
             {
@@ -124,7 +120,7 @@ namespace TurtlesBeach
             playing = true;
             turtleVisible = true;
 
-            text.Font = font;
+            infoText.Font = font;
 
 
             while (window.IsOpen)
@@ -182,40 +178,33 @@ namespace TurtlesBeach
 
                 }
 
-                turtleSprite.Position = new Vector2f(windowWidth / 2, windowHeight / 2) + new Vector2f(turtle.posX, -turtle.posY) * stepSize;
-                turtleSprite.Rotation = -turtle.angle - 90;
+                Vector2f turtleScreenPosition = TurtlePositionToScreen(turtle.posX, turtle.posY);
+                float turtleScreenRotation = TurtleAngleToScreenRotation(turtle.angle);
 
                 for (int i = 0; i < stepIndex; i++)
                 {
                     Turtle.Step p1 = trace[i];
                     Turtle.Step p2 = trace[i + 1];
-                    p1.x *= stepSize;
-                    p1.y *= stepSize;
-                    p2.x *= stepSize;
-                    p2.y *= stepSize;
                     float aX = p2.x - p1.x;
                     float aY = -p2.y - (-p1.y);
-                    lineSprite.Position = new Vector2f(windowWidth/2, windowHeight/2) + new Vector2f(p1.x, -p1.y);
 
-                    if(aX != 0.0f || aY != 0.0f)
+                    bool hasMoved = MathF.Abs(aX) >= stepEpsilon || MathF.Abs(aY) >= stepEpsilon;
+
+                    if (hasMoved && p2.draw)
                     {
                         float rotation = MathF.Atan2(aY, aX) * 180 / MathF.PI - 90;
-                        float length = MathF.Sqrt(aX * aX + aY * aY);
+                        float length = MathF.Sqrt(aX * aX + aY * aY) * stepSize;
+                        lineSprite.Position = TurtlePositionToScreen(p1.x, p1.y);
                         lineSprite.Rotation = rotation;
                         lineSprite.Scale = new Vector2f(lineWidth / 50.0f, length / 600.0f);
                         lineSprite.Color = new Color(p2.color.R, p2.color.G, p2.color.B, (byte)p2.opacity);
-                    }
-
-                    turtleSprite.Position = TurtlePositionToScreen(p2.x, p2.y);
-                    turtleSprite.Rotation = TurtleAngleToScreenRotation(p2.angle);
-
-
-                    if(p2.draw && (aX != 0.0f || aY != 0.0f))
-                    {
                         window.Draw(lineSprite);
                     }
 
-                    if(i == stepIndex - 1)
+                    turtleScreenPosition = TurtlePositionToScreen(p2.x, p2.y);
+                    turtleScreenRotation = TurtleAngleToScreenRotation(p2.angle);
+
+                    if (i == stepIndex - 1)
                     {
                         infoPosX = (int)p2.x;
                         infoPosY = (int)p2.y;
@@ -223,29 +212,8 @@ namespace TurtlesBeach
 
                         if(stepChanged)
                         {
-                            string text;
-                            textBuilder.Clear();
-                            textBuilder.AppendFormat("{0}", orderIdToString[p2.order.id]);
-
-                            Turtle.OrderId id = p2.order.id;
-                            if (id == Turtle.OrderId.walk)
-                            {
-                                textBuilder.AppendFormat(" {0,-4}", (int)p2.order.param1);
-                            }
-                            else if (id == Turtle.OrderId.turn)
-                            {
-                                textBuilder.AppendFormat(" {0,-4}", (int)p2.order.param1);
-                            }
-                            else if (id == Turtle.OrderId.randTurn)
-                            {
-                                textBuilder.AppendFormat(" {0,-4} {1,-4}", (int)p2.order.param1, (int)p2.order.param2);
-                            }
-                            else if(id == Turtle.OrderId.teleport)
-                            {
-                                textBuilder.AppendFormat(" {0,-4} {1,-4} {2,-3}", (int)p2.order.param1, (int)p2.order.param2, (int)p2.order.param3);
-                            }
-                            text = textBuilder.ToString();
-                            AddInfoMessage(text, TurtlePositionToScreen(p2.x, p2.y));
+                            string info = FormatOrderInfo(p2.order);
+                            AddInfoMessage(info, TurtlePositionToScreen(p2.x, p2.y));
 
                         }
 
@@ -253,13 +221,12 @@ namespace TurtlesBeach
                     }
                 }
 
-                if (showGrid)
-                {
-                    window.Draw(gridSprite);
-                }
+                DrawGrid(window);
 
                 if (turtleVisible)
                 {
+                    turtleSprite.Position = turtleScreenPosition;
+                    turtleSprite.Rotation = turtleScreenRotation;
                     window.Draw(turtleSprite);
                 }
 
@@ -268,12 +235,12 @@ namespace TurtlesBeach
 
                 if (showInfo)
                 {
-                    textBuilder.Clear();
-                    textBuilder.AppendFormat("Play {0,1} Steps {1,4} X {2,3} Y {3,3} Angle {4,3}",
+                    infoTextBuilder.Clear();
+                    infoTextBuilder.AppendFormat("Play {0,1} Steps {1,4} X {2,3} Y {3,3} Angle {4,3}",
                                              playIndex + 1, stepIndex, infoPosX, infoPosY, infoAngle);
 
-                    text.DisplayedString = textBuilder.ToString();
-                    window.Draw(text);
+                    infoText.DisplayedString = infoTextBuilder.ToString();
+                    window.Draw(infoText);
 
                     DrawInfoMessages(window);
 
@@ -291,12 +258,30 @@ namespace TurtlesBeach
 
         static Vector2f TurtlePositionToScreen(float x, float y)
         {
-            return new Vector2f(windowWidth / 2, windowHeight / 2) + new Vector2f(x, -y);
+            return new Vector2f(windowWidth / 2, windowHeight / 2) + new Vector2f(x, -y) * stepSize;
         }
 
         static float TurtleAngleToScreenRotation(float a)
         {
             return -a - 90;
+        }
+
+        static void InitGrid()
+        {
+            gridTexture = new Texture("Assets/Grid.png");
+            gridSprite = new Sprite();
+            gridSprite.Texture = gridTexture;
+            gridSprite.Position = new Vector2f(0, 0);
+            gridSprite.Color = new Color((byte)gridR, (byte)gridG, (byte)gridB, (byte)gridOpacity);
+
+        }
+
+        static void DrawGrid(RenderWindow window)
+        {
+            if (showGrid)
+            {
+                window.Draw(gridSprite);
+            }
         }
 
         static void InitInfoMessages()
@@ -317,7 +302,7 @@ namespace TurtlesBeach
 
         }
 
-        static void AddInfoMessage(string text, Vector2f position)
+        static void AddInfoMessage(string message, Vector2f position)
         {
             int? free = null;
             int oldest = 0;
@@ -341,11 +326,37 @@ namespace TurtlesBeach
             }
 
             int messageIndex = free ?? oldest;
-            infoMessages[messageIndex].DisplayedString = text;
+            infoMessages[messageIndex].DisplayedString = message;
             infoMessagesPosition[messageIndex] = position;
             infoMessagesLifetime[messageIndex] = 0;
             infoMessagesFree[messageIndex] = false;
 
+        }
+
+        static string FormatOrderInfo(Turtle.Order order)
+        {
+            infoTextBuilder.Clear();
+            infoTextBuilder.AppendFormat("{0}", orderIdToString[order.id]);
+
+            Turtle.OrderId id = order.id;
+            if (id == Turtle.OrderId.walk)
+            {
+                infoTextBuilder.AppendFormat(" {0,-4}", (int)order.param1);
+            }
+            else if (id == Turtle.OrderId.turn)
+            {
+                infoTextBuilder.AppendFormat(" {0,-4}", (int)order.param1);
+            }
+            else if (id == Turtle.OrderId.randTurn)
+            {
+                infoTextBuilder.AppendFormat(" {0,-4} {1,-4}", (int)order.param1, (int)order.param2);
+            }
+            else if (id == Turtle.OrderId.teleport)
+            {
+                infoTextBuilder.AppendFormat(" {0,-4} {1,-4} {2,-3}", (int)order.param1, (int)order.param2, (int)order.param3);
+            }
+
+            return infoTextBuilder.ToString();
         }
 
         static void UpdateInfoMessages(float elapsedTime)
@@ -355,7 +366,7 @@ namespace TurtlesBeach
                 if (!infoMessagesFree[i])
                 {
                     infoMessagesLifetime[i] += elapsedTime;
-                    if (infoMessagesLifetime[i] > infoMessageDuration) { infoMessagesFree[i] = true; }
+                    if (infoMessagesLifetime[i] >= infoMessageDuration) { infoMessagesFree[i] = true; }
                 }
             }
         }

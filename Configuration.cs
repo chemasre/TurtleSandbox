@@ -26,7 +26,7 @@ namespace TurtlesBeach
 
         // Si quieres ver texto informativo inicialmente o no
 
-        static bool showInfo = false;
+        static bool showInfo = true;
 
         // Tiempo de espera en segundos entre un paso de la tortuga y el siguiente (puede ser 0)
 
