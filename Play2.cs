@@ -15,7 +15,6 @@ namespace TurtlesBeach
 
         static void Play2()
         {
-
         }
 
     }

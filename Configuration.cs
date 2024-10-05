@@ -10,7 +10,7 @@ namespace TurtlesBeach
     {
         // Título de la ventana. Puedes poner tu nombre aquí
 
-        static string windowTitle = "Turtle Sandbox 1.02";
+        static string windowTitle = "Turtle Sandbox 1.01";
 
         // Qué "play" quieres reproducir al principio (1 al 9)
 
@@ -57,6 +57,5 @@ namespace TurtlesBeach
         // Opacidad de la rejilla
 
         static int gridOpacity = 96;
-
     }
 }
