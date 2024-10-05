@@ -4,6 +4,7 @@ using SFML.System;
 using SFML.Audio;
 using System;
 using System.Collections;
+using System.Net.NetworkInformation;
 
 namespace TurtlesBeach
 {
@@ -38,14 +39,14 @@ namespace TurtlesBeach
 
         Random random;
 
-        public Turtle(int colorR, int colorG, int colorB)
+        public Turtle()
         {
             trace = new List<Step>();
             Step p = new Step();
             p.angle = 90;
             _angle = 90;
             random = new Random(0);
-            color = new Color((byte)colorR, (byte)colorG, (byte)colorB);
+            color = new Color(255, 255, 255);
             p.color = color;
             p.draw = true;
             draw = true;
@@ -100,31 +101,37 @@ namespace TurtlesBeach
 
         public void Origin()
         {
+            Teleport(0, 0, 90);
+        }
+
+        public void Teleport(float posX, float posY, float angle)
+        {
             Step p = new Step();
-            p.x = 0;
-            p.y = 0;
-            p.angle = 90;
+            p.x = posX;
+            p.y = posY;
+            p.angle = angle;
             p.color = color;
             p.draw = false;
             trace.Add(p);
 
             _angle = 90;
-
         }
 
         public void Reset()
         {
+            Color c = color = new Color(255, 255, 255);
+
+            draw = true;
+            _angle = 90;
+            random = new Random(0);
+            color = c;
+
             trace.Clear();
 
             Step p = new Step();
             p.draw = true;
+            p.color = c;
             trace.Add(p);
-
-            draw = true;
-
-            _angle = 90;
-
-            random = new Random(0);
         }
 
         public List<Step> GetTrace()

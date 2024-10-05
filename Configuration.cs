@@ -8,23 +8,55 @@ namespace TurtlesBeach
 {
     internal partial class Program
     {
-        static string windowTitle = "Turtle Sandbox 1.0";
+        // Título de la ventana. Puedes poner tu nombre aquí
 
-        static int windowWidth = 1280;
-        static int windowHeight = 720;
+        static string windowTitle = "Turtle Sandbox 1.02";
+
+        // Qué "play" quieres reproducir al principio (1 al 9)
+
+        static int play = 1;
+
+        // Si quieres que inicialmente se reproduzca la música o no
+
+        static bool playMusic = true;
+
+        // Si quieres ver la rejilla inicialmente o no
+
+        static bool showGrid = false;
+
+        // Si quieres ver texto informativo inicialmente o no
+
+        static bool showInfo = false;
+
+        // Tiempo de espera en segundos entre un paso de la tortuga y el siguiente (puede ser 0)
+
+        static float stepWait = 0.2f;
+
+        // Color inicial de la arena
 
         static int sandR = 255;
         static int sandG = 193;
         static int sandB = 58;
 
-        static int lineR = 255;
-        static int lineG = 255;
-        static int lineB = 255;
-        static float lineWidth = 10.0f;
-        static float stepSize = 25;
+        // Ancho de la línea que deja la tortuga
 
-        static float stepWait = 0.2f;
+        static float lineWidth = 4.0f;
 
-        static bool playMusic = true;
+        // Color del texto informativo que aparece en pantalla
+
+        static int infoR = 255;
+        static int infoG = 255;
+        static int infoB = 255;
+
+        // Color de la rejilla
+
+        static int gridR = 255;
+        static int gridG = 255;
+        static int gridB = 255;
+
+        // Opacidad de la rejilla
+
+        static int gridOpacity = 96;
+
     }
 }
