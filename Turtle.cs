@@ -5,12 +5,13 @@ using SFML.Audio;
 using System;
 using System.Collections;
 using System.Net.NetworkInformation;
-using static TurtlesBeach.Turtle;
 
-namespace TurtlesBeach
+namespace TurtleSandbox
 {
     internal class Turtle
     {
+        public const int traceInitialCapacity = 1000;
+
         public int steps { get { return trace.Count; } }
         public bool draw;
         public float posX { get { return trace[trace.Count - 1].x; } }
@@ -77,7 +78,7 @@ namespace TurtlesBeach
 
         public Turtle()
         {
-            trace = new List<Step>();
+            trace = new List<Step>(traceInitialCapacity);
 
             Reset();
         }
@@ -236,6 +237,7 @@ namespace TurtlesBeach
             p.draw = true;
             p.color = c;
             p.opacity = 255;
+            p.angle = 90;
             trace.Add(p);
 
             savedLocation = new Location();

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TurtlesBeach
+namespace TurtleSandbox
 {
     internal partial class Program
     {
         // Título de la ventana. Puedes poner tu nombre aquí
 
-        static string windowTitle = "Turtle Sandbox 1.01";
+        static string windowTitle = "Turtle Sandbox 1.02";
 
         // Qué "play" quieres reproducir al principio (1 al 9)
 
