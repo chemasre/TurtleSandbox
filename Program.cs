@@ -15,6 +15,9 @@ namespace TurtleSandbox
 
         const int playsCount = 9;
 
+        const float timeBoostFast = 5.0f;
+        const float timeBoostSlow = 0.3f;
+
         static Music music;
 
 
@@ -53,6 +56,7 @@ namespace TurtleSandbox
             stepClock = new Clock();
             updateClock = new Clock();
             elapsedTime = 0;
+            timeBoost = 1;
 
             VideoMode mode = new VideoMode((uint)windowWidth, (uint)windowHeight);
             RenderWindow window = new RenderWindow(mode, windowTitle);
@@ -70,14 +74,11 @@ namespace TurtleSandbox
 
                 // Update
 
-                timeBoost = 1;
-                if (Keyboard.IsKeyPressed(Keyboard.Key.LShift)) { timeBoost = 5.0f; }
-                else if (Keyboard.IsKeyPressed(Keyboard.Key.RShift)) { timeBoost = 0.3f; }
 
-                UpdateTrace(elapsedTime * timeBoost);
-                UpdateUI(elapsedTime * timeBoost);
+                UpdateTrace(elapsedTime);
+                UpdateUI(window, elapsedTime);
 
-                elapsedTime = updateClock.ElapsedTime.AsSeconds();
+                elapsedTime = updateClock.ElapsedTime.AsSeconds() * timeBoost;
                 updateClock.Restart();
 
                 // Draw
@@ -200,141 +201,5 @@ namespace TurtleSandbox
 
         }
 
-        static void OnMouseButtonPressed(object sender, MouseButtonEventArgs e)
-        {
-            RenderWindow window = (RenderWindow)sender;
-
-            if(e.Button == Mouse.Button.Left)
-            {
-                if(buttonPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    playing = !playing;
-                }
-                else if(buttonRestartSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    stepIndex = 0;
-                }
-                else if (buttonForwardSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    stepForward = true;
-                    playing = false;
-                }
-                else if (buttonBackwardsSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    stepBackward = true;
-                    playing = false;
-                }
-                else if (buttonScreenshotSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    takeScreenshot = true;
-                }
-                else if (buttonTurtleSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    SwitchTurtle();
-                }
-                else if (buttonGridSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    SwitchGrid();
-                }
-                else if (buttonMusicSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    SwitchMusic();
-                }
-                else
-                {
-                    for(int i = 0; i < playsCount; i++)
-                    {
-                        if(buttonPlaySprites[i].GetGlobalBounds().Contains(e.X, e.Y))
-                        {
-                            nextPlayIndex = i;
-                        }
-                    }
-                }
-            }
-        }
-
-        static void OnKeyPressed(object sender, KeyEventArgs e)
-        {
-            RenderWindow window = (RenderWindow)sender;
-
-            if (e.Code == Keyboard.Key.Escape)
-            {
-                window.Close();
-            }
-            else if(e.Code == Keyboard.Key.Space)
-            {
-                stepIndex = 0;
-            }
-            else if (e.Code == Keyboard.Key.Right)
-            {
-                stepForward = true;
-                playing = false;
-            }
-            else if (e.Code == Keyboard.Key.Left)
-            {
-                stepBackward = true;
-                playing = false;
-            }
-            else if (e.Code == Keyboard.Key.Enter)
-            {
-                playing = !playing;
-            }
-            else if (e.Code == Keyboard.Key.M)
-            {
-                SwitchMusic();
-            }
-            else if (e.Code == Keyboard.Key.H)
-            {
-                SwitchTurtle();
-            }
-            else if (e.Code == Keyboard.Key.I)
-            {
-                showInfo = !showInfo;
-            }
-            else if (e.Code == Keyboard.Key.G)
-            {
-                SwitchGrid();
-            }
-            else if (e.Code == Keyboard.Key.Num1)
-            {
-                nextPlayIndex = 0;
-            }
-            else if (e.Code == Keyboard.Key.Num2)
-            {
-                nextPlayIndex = 1;
-            }
-            else if (e.Code == Keyboard.Key.Num3)
-            {
-                nextPlayIndex = 2;
-            }
-            else if (e.Code == Keyboard.Key.Num4)
-            {
-                nextPlayIndex = 3;
-            }
-            else if (e.Code == Keyboard.Key.Num5)
-            {
-                nextPlayIndex = 4;
-            }
-            else if (e.Code == Keyboard.Key.Num6)
-            {
-                nextPlayIndex = 5;
-            }
-            else if (e.Code == Keyboard.Key.Num7)
-            {
-                nextPlayIndex = 6;
-            }
-            else if (e.Code == Keyboard.Key.Num8)
-            {
-                nextPlayIndex = 7;
-            }
-            else if (e.Code == Keyboard.Key.Num9)
-            {
-                nextPlayIndex = 8;
-            }
-            else if(e.Code == Keyboard.Key.C)
-            {
-                takeScreenshot = true;
-            }
-        }
     }
 }

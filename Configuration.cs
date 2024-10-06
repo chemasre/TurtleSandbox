@@ -24,9 +24,9 @@ namespace TurtleSandbox
 
         static bool showGrid = false;
 
-        // Si quieres ver texto informativo inicialmente o no
+        // Si quieres ver los botones inicialmente o no
 
-        static bool showInfo = true;
+        static bool showButtons = true;
 
         // Tiempo de espera en segundos entre un paso de la tortuga y el siguiente (puede ser 0)
 

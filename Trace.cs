@@ -11,6 +11,14 @@ namespace TurtleSandbox
 {
     internal partial class Program
     {
+        enum PlayState
+        {
+            playing,
+            stopped,
+            fastForward,
+            fastBackwards
+        };
+
         const float stepSize = 1; // Distancia en píxels que recorre la tortuga por cada unidad que avanza
         const float stepEpsilon = 0.001f;
 
@@ -27,7 +35,7 @@ namespace TurtleSandbox
         static int stepIndex = 0;
         static int playIndex = 0;
         static int nextPlayIndex = 0;
-        static bool playing;
+        static PlayState playState;
         static bool stepForward;
         static bool stepBackward;
 
@@ -53,7 +61,7 @@ namespace TurtleSandbox
 
             playIndex = play - 1;
             nextPlayIndex = play - 1;
-            playing = true;
+            playState = PlayState.playing;
             turtleVisible = true;
         }
 
@@ -86,40 +94,51 @@ namespace TurtleSandbox
             // Update step
 
             stepChanged = false;
-            if (playing && stepClock.ElapsedTime.AsSeconds() > stepWait / timeBoost || stepForward || stepBackward)
+            
+            bool stepWaitOver = stepClock.ElapsedTime.AsSeconds() > stepWait / timeBoost;
+            bool isPlayingState = (playState == PlayState.playing);
+            bool isFastForwardState = (playState == PlayState.fastForward);
+            bool isFastBackwardsState = (playState == PlayState.fastBackwards);
+
+            if(isFastForwardState || isFastBackwardsState) { timeBoost = timeBoostFast; }
+            else { timeBoost = 1; }
+
+            if ((isPlayingState || isFastForwardState || isFastBackwardsState) && stepWaitOver ||
+                stepForward || stepBackward)
             {
-                if ((playing || stepForward) && stepIndex < trace.Count - 1)
+                if ((isPlayingState || isFastForwardState || stepForward) && stepIndex < trace.Count - 1)
                 {
                     stepChanged = true;
                     stepIndex++;
+
+                    if(stepIndex == trace.Count - 1) { playState = PlayState.stopped; }
                 }
-                else if (stepBackward && stepIndex > 0)
+                else if ((isFastBackwardsState || stepBackward) && stepIndex > 0)
                 {
                     stepChanged = true;
                     stepIndex--;
+
+                    if (stepIndex == 0) { playState = PlayState.stopped; }
                 }
 
-                if (playing)
+                if (isPlayingState || isFastForwardState || isFastBackwardsState)
                 {
                     stepClock.Restart();
                 }
+                
 
             }
 
-            if (stepIndex >= 0 && stepIndex < trace.Count)
+            Turtle.Step p = trace[stepIndex];
+
+            infoPosX = (int)p.x;
+            infoPosY = (int)p.y;
+            infoAngle = (int)p.angle;
+
+            if (stepChanged)
             {
-                Turtle.Step p = trace[stepIndex];
-
-                infoPosX = (int)p.x;
-                infoPosY = (int)p.y;
-                infoAngle = (int)p.angle;
-
-                if (stepChanged)
-                {
-                    string info = FormatOrderInfo(p.order);
-                    AddInfoMessage(info, TurtlePositionToScreen(p.x, p.y));
-
-                }
+                string info = FormatOrderInfo(p.order);
+                AddInfoMessage(info, TurtlePositionToScreen(p.x, p.y));
 
             }
 

@@ -10,8 +10,8 @@ namespace TurtleSandbox
     internal partial class Program
     {
         const float infoTextX = 20;
-        const float infoTextY = 666;
-        const float infoTextScale = 1.0f;
+        const float infoTextY = 670;
+        const float infoTextScale = 0.9f;
 
         const int infoMessagesCount = 50;
         const float infoMessageDuration = 2.0f;
@@ -20,7 +20,7 @@ namespace TurtleSandbox
         const float infoMessageScale = 0.8f;
 
         const float buttonBar1Scale = 1.0f;
-        const float buttonBar1X = 776;
+        const float buttonBar1X = 656;
         const float buttonBar1Y = 666;
         const float buttonBarSeparation1 = 6;
 
@@ -64,6 +64,8 @@ namespace TurtleSandbox
         static Texture buttonForwardTexture;
         static Texture buttonBackwardsTexture;
         static Texture buttonRestartTexture;
+        static Texture buttonFastForwardTexture;
+        static Texture buttonFastBackwardsTexture;
         static Texture buttonScreenshotTexture;
         static Texture buttonMusicOnTexture;
         static Texture buttonMusicOffTexture;
@@ -79,12 +81,16 @@ namespace TurtleSandbox
         static Sprite buttonForwardSprite;
         static Sprite buttonBackwardsSprite;
         static Sprite buttonRestartSprite;
+        static Sprite buttonFastForwardSprite;
+        static Sprite buttonFastBackwardsSprite;
         static Sprite buttonScreenshotSprite;
         static Sprite buttonMusicSprite;
         static Sprite buttonTurtleSprite;
         static Sprite buttonGridSprite;
         static Sprite[] buttonPlaySprites;
 
+        static bool stopOnFastForwardOrBackwardsRelease;
+        static bool playOnFastForwardOrBackwardsRelease;
 
 
         static void AddInfoMessage(string message, Vector2f position)
@@ -127,7 +133,7 @@ namespace TurtleSandbox
             texts[TextId.musicOn] = "Music on";
             texts[TextId.musicOff] = "Music off";
             texts[TextId.screenshotFilename] = "screenshot{0:000}.png";
-            texts[TextId.infoString] = "Step {0,4} X {1,3} Y {2,3} Angle {3,3}";
+            texts[TextId.infoString] = "Play {0,1} Step {1,4} X {2,3} Y {3,3} Angle {4,3}";
             texts[TextId.gridOn] = "Grid on";
             texts[TextId.gridOff] = "Grid off";
             texts[TextId.turtleOn] = "Turtle visible";
@@ -162,6 +168,8 @@ namespace TurtleSandbox
             buttonForwardTexture = new Texture("Assets/Buttons/Forward.png");
             buttonBackwardsTexture = new Texture("Assets/Buttons/Backward.png");
             buttonRestartTexture = new Texture("Assets/Buttons/Restart.png");
+            buttonFastForwardTexture = new Texture("Assets/Buttons/FastForward.png");
+            buttonFastBackwardsTexture = new Texture("Assets/Buttons/FastBackward.png");
             buttonScreenshotTexture = new Texture("Assets/Buttons/Screenshot.png");
             buttonMusicOnTexture = new Texture("Assets/Buttons/MusicOn.png");
             buttonMusicOffTexture = new Texture("Assets/Buttons/MusicOff.png");
@@ -194,6 +202,10 @@ namespace TurtleSandbox
             buttonBackwardsSprite.Texture = buttonBackwardsTexture;
             buttonRestartSprite = new Sprite();
             buttonRestartSprite.Texture = buttonRestartTexture;
+            buttonFastForwardSprite = new Sprite();
+            buttonFastForwardSprite.Texture = buttonFastForwardTexture;
+            buttonFastBackwardsSprite = new Sprite();
+            buttonFastBackwardsSprite.Texture = buttonFastBackwardsTexture;
             buttonScreenshotSprite = new Sprite();
             buttonScreenshotSprite.Texture = buttonScreenshotTexture;
             buttonMusicSprite = new Sprite();
@@ -212,22 +224,26 @@ namespace TurtleSandbox
             }
 
             float buttonWidth = buttonPlayTexture.Size.X;
-            buttonRestartSprite.Position = new Vector2f(buttonBar1X + 0 * buttonWidth + 0 * buttonBarSeparation1, buttonBar1Y);
-            buttonBackwardsSprite.Position = new Vector2f(buttonBar1X + 1 * buttonWidth + 1 * buttonBarSeparation1, buttonBar1Y);
-            buttonPlaySprite.Position = new Vector2f(buttonBar1X + 2 * buttonWidth + 2 * buttonBarSeparation1, buttonBar1Y);
-            buttonPauseSprite.Position = new Vector2f(buttonBar1X + 2 * buttonWidth + 2 * buttonBarSeparation1, buttonBar1Y);
-            buttonForwardSprite.Position = new Vector2f(buttonBar1X + 3 * buttonWidth + 3 * buttonBarSeparation1, buttonBar1Y);
-            buttonTurtleSprite.Position = new Vector2f(buttonBar1X + 5 * buttonWidth + 5 * buttonBarSeparation1, buttonBar1Y);
-            buttonGridSprite.Position = new Vector2f(buttonBar1X + 6 * buttonWidth + 6 * buttonBarSeparation1, buttonBar1Y);
-            buttonMusicSprite.Position = new Vector2f(buttonBar1X + 7 * buttonWidth + 7 * buttonBarSeparation1, buttonBar1Y);
-            buttonScreenshotSprite.Position = new Vector2f(buttonBar1X + 8 * buttonWidth + 8 * buttonBarSeparation1, buttonBar1Y);
+            buttonRestartSprite.Position        = new Vector2f(buttonBar1X + 0 * buttonWidth + 0 * buttonBarSeparation1, buttonBar1Y);
+            buttonFastBackwardsSprite.Position  = new Vector2f(buttonBar1X + 1 * buttonWidth + 1 * buttonBarSeparation1, buttonBar1Y);
+            buttonBackwardsSprite.Position      = new Vector2f(buttonBar1X + 2 * buttonWidth + 2 * buttonBarSeparation1, buttonBar1Y);
+            buttonPlaySprite.Position           = new Vector2f(buttonBar1X + 3 * buttonWidth + 3 * buttonBarSeparation1, buttonBar1Y);
+            buttonPauseSprite.Position          = new Vector2f(buttonBar1X + 3 * buttonWidth + 3 * buttonBarSeparation1, buttonBar1Y);
+            buttonForwardSprite.Position        = new Vector2f(buttonBar1X + 4 * buttonWidth + 4 * buttonBarSeparation1, buttonBar1Y);
+            buttonFastForwardSprite.Position    = new Vector2f(buttonBar1X + 5 * buttonWidth + 5 * buttonBarSeparation1, buttonBar1Y);
+            buttonTurtleSprite.Position         = new Vector2f(buttonBar1X + 7 * buttonWidth + 7 * buttonBarSeparation1, buttonBar1Y);
+            buttonGridSprite.Position           = new Vector2f(buttonBar1X + 8 * buttonWidth + 8 * buttonBarSeparation1, buttonBar1Y);
+            buttonMusicSprite.Position          = new Vector2f(buttonBar1X + 9 * buttonWidth + 9 * buttonBarSeparation1, buttonBar1Y);
+            buttonScreenshotSprite.Position     = new Vector2f(buttonBar1X + 10 * buttonWidth + 10 * buttonBarSeparation1, buttonBar1Y);
 
             Vector2f bar1Scale = new Vector2f(buttonBar1Scale, buttonBar1Scale);
             buttonRestartSprite.Scale = bar1Scale;
+            buttonFastBackwardsSprite.Scale = bar1Scale;
             buttonBackwardsSprite.Scale = bar1Scale;
             buttonPlaySprite.Scale = bar1Scale;
             buttonPauseSprite.Scale = bar1Scale;
             buttonForwardSprite.Scale = bar1Scale;
+            buttonFastForwardSprite.Scale = bar1Scale;
             buttonTurtleSprite.Scale = bar1Scale;
             buttonGridSprite.Scale = bar1Scale;
             buttonScreenshotSprite.Scale = bar1Scale;
@@ -256,7 +272,7 @@ namespace TurtleSandbox
             }
         }
 
-        static void UpdateUI(float elapsedTime)
+        static void UpdateUI(RenderWindow window, float elapsedTime)
         {
             for (int i = 0; i < infoMessages.Length; i++)
             {
@@ -266,26 +282,64 @@ namespace TurtleSandbox
                     if (infoMessagesLifetime[i] >= infoMessageDuration) { infoMessagesFree[i] = true; }
                 }
             }
+
+            // Check input
+
+            bool fastForwardKey = Keyboard.IsKeyPressed(Keyboard.Key.RShift);
+            bool fastBackwardsKey = Keyboard.IsKeyPressed(Keyboard.Key.LShift);
+            bool fastForwardMouse = false;
+            bool fastBackwardsMouse = false;
+
+            if (Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                Vector2i p = Mouse.GetPosition(window);
+                fastForwardMouse = buttonFastForwardSprite.GetGlobalBounds().Contains(p.X, p.Y);
+                fastBackwardsMouse = buttonFastBackwardsSprite.GetGlobalBounds().Contains(p.X, p.Y);
+            }
+
+            bool fastForward = (fastForwardKey || fastForwardMouse);
+            bool fastBackwards = (fastBackwardsKey || fastBackwardsMouse);
+
+            if (fastForward || fastBackwards)
+            {
+                if(playState == PlayState.playing) { playOnFastForwardOrBackwardsRelease = true; }
+                else if(playState == PlayState.stopped) { stopOnFastForwardOrBackwardsRelease = true; }
+
+                playState = fastForward ? PlayState.fastForward : PlayState.fastBackwards;
+            }
+            else
+            {
+                if(stopOnFastForwardOrBackwardsRelease) { playState = PlayState.stopped; }
+                else if(playOnFastForwardOrBackwardsRelease) { playState = PlayState.playing; }
+
+                playOnFastForwardOrBackwardsRelease = false;
+                stopOnFastForwardOrBackwardsRelease = false;
+                
+            }
         }
 
         static void DrawUI(RenderWindow window)
         {
-            if(!showInfo) { return; }
+            if(!showButtons) { return; }
 
             // Draw info text
 
             textBuilder.Clear();
-            textBuilder.AppendFormat(texts[TextId.infoString], stepIndex, infoPosX, infoPosY, infoAngle);
+            textBuilder.AppendFormat(texts[TextId.infoString], playIndex, stepIndex, infoPosX, infoPosY, infoAngle);
 
             infoText.DisplayedString = textBuilder.ToString();
             window.Draw(infoText);
 
             // Draw button bars
 
-            window.Draw(buttonBackwardsSprite);
-            window.Draw(playing ? buttonPlaySprite : buttonPauseSprite);
-            window.Draw(buttonForwardSprite);
+            bool isPlayingState = (playState == PlayState.playing || playState == PlayState.fastBackwards || playState == PlayState.fastForward);
+
             window.Draw(buttonRestartSprite);
+            window.Draw(buttonFastBackwardsSprite);
+            window.Draw(buttonBackwardsSprite);
+            window.Draw(isPlayingState ? buttonPlaySprite : buttonPauseSprite);
+            window.Draw(buttonForwardSprite);
+            window.Draw(buttonFastForwardSprite);
 
             buttonTurtleSprite.Texture = (turtleVisible ? buttonTurtleOnTexture: buttonTurtleOffTexture);
             window.Draw(buttonTurtleSprite);
@@ -322,6 +376,145 @@ namespace TurtleSandbox
                     infoMessages[i].FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB, (byte)(255 * opacityFactor));
                     window.Draw(infoMessages[i]);
 
+                }
+            }
+        }
+
+        static void OnKeyPressed(object sender, KeyEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Code == Keyboard.Key.Escape)
+            {
+                window.Close();
+            }
+            else if (e.Code == Keyboard.Key.Space)
+            {
+                stepIndex = 0;
+            }
+            else if (e.Code == Keyboard.Key.Right)
+            {
+                stepForward = true;
+                playState = PlayState.stopped;
+            }
+            else if (e.Code == Keyboard.Key.Left)
+            {
+                stepBackward = true;
+                playState = PlayState.stopped;
+            }
+            else if (e.Code == Keyboard.Key.Enter)
+            {
+                if (playState == PlayState.playing) { playState = PlayState.stopped; }
+                else if (playState == PlayState.stopped) { playState = PlayState.playing; }
+            }
+            else if (e.Code == Keyboard.Key.M)
+            {
+                SwitchMusic();
+            }
+            else if (e.Code == Keyboard.Key.H)
+            {
+                SwitchTurtle();
+            }
+            else if (e.Code == Keyboard.Key.I || e.Code == Keyboard.Key.Tab)
+            {
+                showButtons = !showButtons;
+            }
+            else if (e.Code == Keyboard.Key.G)
+            {
+                SwitchGrid();
+            }
+            else if (e.Code == Keyboard.Key.Num1)
+            {
+                nextPlayIndex = 0;
+            }
+            else if (e.Code == Keyboard.Key.Num2)
+            {
+                nextPlayIndex = 1;
+            }
+            else if (e.Code == Keyboard.Key.Num3)
+            {
+                nextPlayIndex = 2;
+            }
+            else if (e.Code == Keyboard.Key.Num4)
+            {
+                nextPlayIndex = 3;
+            }
+            else if (e.Code == Keyboard.Key.Num5)
+            {
+                nextPlayIndex = 4;
+            }
+            else if (e.Code == Keyboard.Key.Num6)
+            {
+                nextPlayIndex = 5;
+            }
+            else if (e.Code == Keyboard.Key.Num7)
+            {
+                nextPlayIndex = 6;
+            }
+            else if (e.Code == Keyboard.Key.Num8)
+            {
+                nextPlayIndex = 7;
+            }
+            else if (e.Code == Keyboard.Key.Num9)
+            {
+                nextPlayIndex = 8;
+            }
+            else if (e.Code == Keyboard.Key.C)
+            {
+                takeScreenshot = true;
+            }
+        }
+
+        static void OnMouseButtonPressed(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (e.Button == Mouse.Button.Left)
+            {
+                if (buttonPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    if(playState == PlayState.playing) { playState = PlayState.stopped; }
+                    else if(playState == PlayState.stopped) { playState = PlayState.playing; }
+                }
+                else if (buttonRestartSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    stepIndex = 0;
+                }
+                else if (buttonForwardSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    stepForward = true;
+                    playState = PlayState.stopped;
+                }
+                else if (buttonBackwardsSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    stepBackward = true;
+                    playState = PlayState.stopped;
+                }
+                else if (buttonScreenshotSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    takeScreenshot = true;
+                }
+                else if (buttonTurtleSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    SwitchTurtle();
+                }
+                else if (buttonGridSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    SwitchGrid();
+                }
+                else if (buttonMusicSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    SwitchMusic();
+                }
+                else
+                {
+                    for (int i = 0; i < playsCount; i++)
+                    {
+                        if (buttonPlaySprites[i].GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            nextPlayIndex = i;
+                        }
+                    }
                 }
             }
         }
