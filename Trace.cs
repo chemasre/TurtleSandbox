@@ -164,7 +164,7 @@ namespace TurtleSandbox
                     lineSprite.Position = TurtlePositionToScreen(p1.x, p1.y);
                     lineSprite.Rotation = rotation;
                     lineSprite.Scale = new Vector2f(lineWidth / 50.0f, length / 600.0f);
-                    lineSprite.Color = new Color(p2.color.R, p2.color.G, p2.color.B, (byte)p2.opacity);
+                    lineSprite.Color = new Color((byte)p2.colorR, (byte)p2.colorG, (byte)p2.colorB, (byte)p2.opacity);
                     window.Draw(lineSprite);
                 }
 

@@ -5,6 +5,7 @@ using SFML.Audio;
 using System;
 using System.Collections;
 using System.Net.NetworkInformation;
+using System.Drawing;
 
 namespace TurtleSandbox
 {
@@ -63,16 +64,20 @@ namespace TurtleSandbox
             public float x;
             public float y;
             public float angle;
-            public Color color;
-            public int opacity;
+            public float colorR;
+            public float colorG;
+            public float colorB;
+            public float opacity;
             public bool draw;
         }
 
         List<Step> trace;
 
         float _angle;
-        Color color;
-        int opacity;
+        float colorR;
+        float colorG;
+        float colorB;
+        float opacity;
 
         Random random;       
 
@@ -104,7 +109,9 @@ namespace TurtleSandbox
             p.x = trace[trace.Count - 1].x;
             p.y = trace[trace.Count - 1].y;
             p.angle = NormalizeAngle(_angle);
-            p.color = color;
+            p.colorR = colorR;
+            p.colorG = colorG;
+            p.colorB = colorB;
             p.opacity = opacity;
             p.draw = false;
 
@@ -113,9 +120,11 @@ namespace TurtleSandbox
             overrideOrder = false;
         }
 
-        public void Color(int r, int g, int b)
+        public void Color(float r, float g, float b)
         {
-            color = new Color((byte)r, (byte)g, (byte)b);
+            colorR = r;
+            colorG = g;
+            colorB = b;
         }
 
         public void Opacity(int o)
@@ -136,7 +145,9 @@ namespace TurtleSandbox
 
         public void RandColor()
         {
-            color = new Color((byte)(random.Next()%255), (byte)(random.Next() % 255), (byte)(random.Next() % 255));
+            colorR = random.NextSingle() * 255;
+            colorG = random.NextSingle() * 255;
+            colorB = random.NextSingle() * 255;
         }
 
         public void Walk(float d)
@@ -151,7 +162,9 @@ namespace TurtleSandbox
             p2.x = p1.x + MathF.Cos(angle * MathF.PI / 180) * d;
             p2.y = p1.y + MathF.Sin(angle * MathF.PI / 180) * d;
             p2.angle = NormalizeAngle(_angle);
-            p2.color = color;
+            p2.colorR = colorR;
+            p2.colorG = colorG;
+            p2.colorB = colorB;
             p2.opacity = opacity;
             p2.draw = draw;
 
@@ -206,7 +219,9 @@ namespace TurtleSandbox
             p.x = posX;
             p.y = posY;
             p.angle = angle;
-            p.color = color;
+            p.colorR = colorR;
+            p.colorG = colorG;
+            p.colorB = colorB;
             p.opacity = opacity;
             p.draw = false;
             trace.Add(p);
@@ -218,13 +233,13 @@ namespace TurtleSandbox
 
         public void Reset()
         {
-            Color c = color = new Color(255, 255, 255);
-
             draw = true;
 
             _angle = 90;
             random = new Random(0);
-            color = c;
+            colorR = 255;
+            colorG = 255;
+            colorB = 255;
             opacity = 255;
 
             trace.Clear();
@@ -235,7 +250,9 @@ namespace TurtleSandbox
             Step p = new Step();
             p.order = order;
             p.draw = true;
-            p.color = c;
+            p.colorR = 255;
+            p.colorG = 255;
+            p.colorB = 255;
             p.opacity = 255;
             p.angle = 90;
             trace.Add(p);
