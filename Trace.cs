@@ -72,6 +72,7 @@ namespace TurtleSandbox
                 stepIndex = 0;
                 stepClock.Restart();
                 playIndex = nextPlayIndex;
+                playState = PlayState.playing;
             }
 
             // Generate trace

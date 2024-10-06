@@ -391,6 +391,7 @@ namespace TurtleSandbox
             else if (e.Code == Keyboard.Key.Space)
             {
                 stepIndex = 0;
+                playState = PlayState.playing;
             }
             else if (e.Code == Keyboard.Key.Right)
             {
@@ -479,6 +480,8 @@ namespace TurtleSandbox
                 else if (buttonRestartSprite.GetGlobalBounds().Contains(e.X, e.Y))
                 {
                     stepIndex = 0;
+                    playState = PlayState.playing;
+
                 }
                 else if (buttonForwardSprite.GetGlobalBounds().Contains(e.X, e.Y))
                 {
