@@ -132,9 +132,9 @@ namespace TurtleSandbox
 
             Turtle.Step p = trace[stepIndex];
 
-            infoPosX = (int)p.x;
-            infoPosY = (int)p.y;
-            infoAngle = (int)p.angle;
+            statusPosX = (int)p.x;
+            statusPosY = (int)p.y;
+            statusAngle = (int)p.angle;
 
             if (stepChanged)
             {
@@ -191,7 +191,7 @@ namespace TurtleSandbox
         {
             turtleVisible = !turtleVisible;
 
-            AddInfoMessage(texts[turtleVisible ? TextId.turtleOn : TextId.turtleOff], new Vector2f(buttonTurtleSprite.Position.X, buttonBar1Y));
+            AddInfoMessage(texts[turtleVisible ? TextId.turtleOn : TextId.turtleOff], new Vector2f(buttonTurtleSprite.Position.X, buttonBar2Y));
 
         }
 

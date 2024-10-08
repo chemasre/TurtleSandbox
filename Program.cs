@@ -137,12 +137,12 @@ namespace TurtleSandbox
         {
             if (music.Status == SoundStatus.Playing)
             {
-                AddInfoMessage(texts[TextId.musicOff], new Vector2f(buttonTurtleSprite.Position.X, buttonBar1Y));
+                AddInfoMessage(texts[TextId.musicOff], new Vector2f(buttonTurtleSprite.Position.X, buttonBar2Y));
                 music.Stop();
             }
             else
             {
-                AddInfoMessage(texts[TextId.musicOn], new Vector2f(buttonTurtleSprite.Position.X, buttonBar1Y));
+                AddInfoMessage(texts[TextId.musicOn], new Vector2f(buttonTurtleSprite.Position.X, buttonBar2Y));
                 music.Play();
             }
 
@@ -152,7 +152,7 @@ namespace TurtleSandbox
         {
             showGrid = !showGrid;
 
-            AddInfoMessage(texts[showGrid ? TextId.gridOn : TextId.gridOff], new Vector2f(buttonTurtleSprite.Position.X, buttonBar1Y));
+            AddInfoMessage(texts[showGrid ? TextId.gridOn : TextId.gridOff], new Vector2f(buttonTurtleSprite.Position.X, buttonBar2Y));
 
         }
 
@@ -190,7 +190,7 @@ namespace TurtleSandbox
 
                 if (!File.Exists(fileName))
                 {
-                    AddInfoMessage(texts[TextId.screenshotSaved], new Vector2f(buttonTurtleSprite.Position.X, buttonBar1Y));
+                    AddInfoMessage(texts[TextId.screenshotSaved], new Vector2f(buttonTurtleSprite.Position.X, buttonBar2Y));
                     image.SaveToFile(fileName);
                     done = true;
                 }
