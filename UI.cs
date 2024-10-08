@@ -13,6 +13,10 @@ namespace TurtleSandbox
         const float playTextY = 669;
         const float playTextScale = 1.0f;
 
+        const float splashX = 530;
+        const float splashY = 255;
+        const float splashDuration = 5.0f;
+
         const int infoMessagesCount = 50;
         const float infoMessageDuration = 2.0f;
         const float infoMessageDistance = 150;
@@ -46,6 +50,8 @@ namespace TurtleSandbox
         const float buttonBar3Y = 666;
         const float buttonBarSeparation3 = 2;
 
+        // Texts
+
         enum TextId
         {
             screenshotSaved,
@@ -62,7 +68,7 @@ namespace TurtleSandbox
             gridOff
 
         };
-
+        
         static Dictionary<TextId, string> texts;
 
         static Font font;
@@ -73,6 +79,16 @@ namespace TurtleSandbox
         static int statusPosX;
         static int statusPosY;
         static int statusAngle;
+
+        // Splash
+
+        static Sprite splashSprite;
+        static Texture splashTexture;
+
+        static float splashTimer;
+        static bool splashVisible;
+
+        // Messages
 
         static Text[] infoMessages;
         static bool[] infoMessagesFree;
@@ -227,6 +243,12 @@ namespace TurtleSandbox
             orderIdToString[Turtle.OrderId.randWalk] = "randWalk";
             orderIdToString[Turtle.OrderId.teleport] = "teleport";
 
+            // Init splash
+
+            splashTexture = new Texture("Assets/Splash.png");
+            splashSprite = new Sprite();
+            splashSprite.Texture = splashTexture;
+
 
             // Init button bar 1
 
@@ -286,6 +308,9 @@ namespace TurtleSandbox
             buttonGridSprite = new Sprite();
             buttonGridSprite.Texture = showGrid ? buttonGridOnTexture : buttonGridOffTexture;
 
+            // Splash
+
+            splashSprite.Position = new Vector2f(splashX, splashY);
 
             float buttonWidth = buttonPlayTexture.Size.X;
 
@@ -471,6 +496,11 @@ namespace TurtleSandbox
 
                 }
             }
+        }
+
+        public static void DrawSplash(RenderWindow window)
+        {
+            window.Draw(splashSprite);
         }
 
         static void OnKeyPressed(object sender, KeyEventArgs e)

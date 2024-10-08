@@ -65,6 +65,9 @@ namespace TurtleSandbox
             window.KeyPressed += OnKeyPressed;
             window.MouseButtonPressed += OnMouseButtonPressed;
 
+            splashVisible = true;
+            splashTimer = 0;
+
             InitTrace();
 
 
@@ -74,6 +77,12 @@ namespace TurtleSandbox
 
                 // Update
 
+                if(splashVisible)
+                {
+                    splashTimer += elapsedTime;
+                    if(splashTimer > splashDuration) { splashVisible = false; }
+                }
+                
 
                 UpdateTrace(elapsedTime);
                 UpdateUI(window, elapsedTime);
@@ -84,12 +93,16 @@ namespace TurtleSandbox
                 // Draw
 
                 DrawBackground(window);
+
+
                 DrawGrid(window);
                 DrawTrace(window);
 
                 if (takeScreenshot) { TakeScreenshot(window); }
 
                 DrawUI(window);
+
+                if (splashVisible) { DrawSplash(window); }
 
                 window.Display();
 
