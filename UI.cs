@@ -3,6 +3,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Audio;
 using System.Text;
+using System.Numerics;
 
 
 namespace TurtleSandbox
@@ -33,6 +34,13 @@ namespace TurtleSandbox
         const float statusPosYY = 669;
 
         const float statusTextScale = 1.0f;
+
+        const float gridCoordinatesTextScale = 0.5f;
+        const float gridCoordinatesTextOffsetX = 4.0f;
+        const float gridCoordinatesTextOffsetY = 4.0f;
+        const float gridSeparation = 50.0f;
+        const float gridCoordinatesCursorOffsetX = 30;
+        const float gridCoordinatesCursorOffsetY = 0;
 
 
         const float buttonBar1Scale = 1.0f;
@@ -65,7 +73,9 @@ namespace TurtleSandbox
             turtleOn,
             turtleOff,
             gridOn,
-            gridOff
+            gridOff,
+            gridCoordinates,
+            gridCursorCoordinates
 
         };
         
@@ -79,6 +89,13 @@ namespace TurtleSandbox
         static int statusPosX;
         static int statusPosY;
         static int statusAngle;
+        static Text gridText;
+
+        // Cursor
+
+        static Sprite cursorSprite;
+        static Texture cursorTexture;
+
 
         // Splash
 
@@ -86,6 +103,11 @@ namespace TurtleSandbox
         static Texture splashTexture;
 
         static bool showSplash;
+
+        // Grid
+
+        static Sprite gridLineSprite;
+        static Texture gridLineTexture;
 
         // Messages
 
@@ -144,7 +166,6 @@ namespace TurtleSandbox
         static bool stopOnFastForwardOrBackwardsRelease;
         static bool playOnFastForwardOrBackwardsRelease;
 
-
         static void AddInfoMessage(string message, Vector2f position)
         {
             int? free = null;
@@ -193,6 +214,8 @@ namespace TurtleSandbox
             texts[TextId.gridOff] = "Grid off";
             texts[TextId.turtleOn] = "Turtle visible";
             texts[TextId.turtleOff] = "Turtle hidden";
+            texts[TextId.gridCoordinates] = "{0}";
+            texts[TextId.gridCursorCoordinates] = "({0,3},{1,3})";
 
             // Init texts
 
@@ -200,7 +223,7 @@ namespace TurtleSandbox
 
             playText = new Text();
             playText.Position = new Vector2f(playTextX, playTextY);
-            playText.FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB);
+            playText.FillColor = new Color((byte)toolbarR, (byte)toolbarG, (byte)toolbarB);
             playText.Scale = new Vector2f(playTextScale, playTextScale);
             playText.Font = font;
             textBuilder.Clear();
@@ -212,7 +235,7 @@ namespace TurtleSandbox
 
             statusAngleText = new Text();
             statusAngleText.Position = new Vector2f(statusAngleX, statusAngleY);
-            statusAngleText.FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB);
+            statusAngleText.FillColor = new Color((byte)toolbarR, (byte)toolbarG, (byte)toolbarB);
             statusAngleText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusAngleText.Font = font;
             textBuilder.Clear();
@@ -220,7 +243,7 @@ namespace TurtleSandbox
 
             statusPosXText = new Text();
             statusPosXText.Position = new Vector2f(statusPosXX, statusPosXY);
-            statusPosXText.FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB);
+            statusPosXText.FillColor = new Color((byte)toolbarR, (byte)toolbarG, (byte)toolbarB);
             statusPosXText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusPosXText.Font = font;
             textBuilder.Clear();
@@ -228,11 +251,15 @@ namespace TurtleSandbox
 
             statusPosYText = new Text();
             statusPosYText.Position = new Vector2f(statusPosYX, statusPosYY);
-            statusPosYText.FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB);
+            statusPosYText.FillColor = new Color((byte)toolbarR, (byte)toolbarG, (byte)toolbarB);
             statusPosYText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusPosYText.Font = font;
             textBuilder.Clear();
             statusPosYText.DisplayedString = textBuilder.ToString();
+
+            gridText = new Text();
+            gridText.Font = font;
+            gridText.FillColor = new Color((byte)gridR, (byte)gridG, (byte)gridB, (byte)gridOpacity);
 
             orderIdToString = new Dictionary<Turtle.OrderId, string>();
             orderIdToString[Turtle.OrderId.origin] = "origin";
@@ -242,12 +269,26 @@ namespace TurtleSandbox
             orderIdToString[Turtle.OrderId.randWalk] = "randWalk";
             orderIdToString[Turtle.OrderId.teleport] = "teleport";
 
+            // Init cursor
+
+            cursorTexture = new Texture("Assets/Cursor.png");
+            cursorSprite = new Sprite();
+            cursorSprite.Texture = cursorTexture;
+            cursorSprite.Color = new Color((byte)toolbarR, (byte)toolbarG, (byte)toolbarB);
+
             // Init splash
 
             splashTexture = new Texture("Assets/Splash.png");
             splashSprite = new Sprite();
             splashSprite.Texture = splashTexture;
 
+            // Init grid
+
+            gridLineTexture = new Texture("Assets/Line.png");
+            gridLineSprite = new Sprite();
+            gridLineSprite.Texture = gridLineTexture;
+            gridLineSprite.Origin = new Vector2f(gridLineTexture.Size.X / 2, gridLineTexture.Size.Y);
+            gridLineSprite.Color = new Color((byte)gridR, (byte)gridG, (byte)gridB, (byte)gridOpacity);
 
             // Init button bar 1
 
@@ -306,6 +347,8 @@ namespace TurtleSandbox
             buttonTurtleSprite.Texture = turtleVisible ? buttonTurtleOnTexture: buttonTurtleOffTexture;
             buttonGridSprite = new Sprite();
             buttonGridSprite.Texture = showGrid ? buttonGridOnTexture : buttonGridOffTexture;
+
+            ////////////////////////// Set elements position and size ////////////////////////////////
 
             // Splash
 
@@ -369,6 +412,7 @@ namespace TurtleSandbox
                 infoMessagesPosition[i] = new Vector2f(0, 0);
                 infoMessagesLifetime[i] = 0;
             }
+
         }
 
         static void UpdateUI(RenderWindow window, float elapsedTime)
@@ -490,7 +534,7 @@ namespace TurtleSandbox
 
                     Vector2f position = infoMessagesPosition[i];
                     infoMessages[i].Position = position + new Vector2f(0, -infoMessageOffset - infoMessageDistance * factor);
-                    infoMessages[i].FillColor = new Color((byte)infoR, (byte)infoG, (byte)infoB, (byte)(255 * opacityFactor));
+                    infoMessages[i].FillColor = new Color((byte)toolbarR, (byte)toolbarG, (byte)toolbarB, (byte)(255 * opacityFactor));
                     window.Draw(infoMessages[i]);
 
                 }
@@ -499,6 +543,75 @@ namespace TurtleSandbox
             // Draw splash
 
             if(showSplash) { window.Draw(splashSprite); }
+
+            // Draw cursor
+
+            Vector2f wp = (Vector2f)Mouse.GetPosition(window);
+            cursorSprite.Position = wp;
+            window.Draw(cursorSprite);
+
+            if(showGrid)
+            {
+                textBuilder.Clear();
+                textBuilder.AppendFormat(texts[TextId.gridCursorCoordinates], wp.X - window.Size.X / 2, -(wp.Y - window.Size.Y / 2));
+                gridText.DisplayedString = textBuilder.ToString();
+                gridText.Position = wp + new Vector2f(gridCoordinatesCursorOffsetX, gridCoordinatesCursorOffsetY);
+                gridText.FillColor = new Color((byte)toolbarR, (byte)toolbarG, (byte)toolbarB); 
+                window.Draw(gridText);
+            }
+        }
+
+        static void DrawGrid(RenderWindow window)
+        {
+            float width = window.Size.X;
+            float height = window.Size.Y;
+
+            // Draw lines
+
+            Vector2f center = new Vector2f(width / 2, height / 2);
+            int XLines = (int)(width / 2.0f / gridSeparation);
+            int YLines = (int)(height / 2.0f / gridSeparation);
+            gridLineSprite.Rotation = 0;
+            for(int i = -XLines; i <= XLines; i++)
+            {
+                gridLineSprite.Scale = new Vector2f((i != 0 ? 2.0f : 6.0f) / gridLineTexture.Size.X, height / gridLineTexture.Size.Y);
+                gridLineSprite.Position = new Vector2f(center.X + i * gridSeparation, height); ;
+                window.Draw(gridLineSprite);
+            }
+
+            gridLineSprite.Rotation = 90;
+            for (int i = -YLines; i <= YLines; i++)
+            {
+                gridLineSprite.Scale = new Vector2f((i != 0 ? 2.0f : 6.0f) / gridLineTexture.Size.X, width / gridLineTexture.Size.Y);
+                gridLineSprite.Position = new Vector2f(0, center.Y + i * gridSeparation);
+                window.Draw(gridLineSprite);
+            }
+
+            // Draw coordinatas
+
+            gridText.Scale = new Vector2f(gridCoordinatesTextScale, gridCoordinatesTextScale);
+
+            float gridTextBaseX = MathF.Max(width / 2 - XLines * gridSeparation, 0);
+            float gridTextBaseY = MathF.Max(height / 2 - YLines * gridSeparation, 0);
+
+            for (int i = -XLines; i <= XLines; i++)
+            {
+                textBuilder.Clear();
+                textBuilder.AppendFormat(texts[TextId.gridCoordinates], (int)(-i * gridSeparation));
+                gridText.DisplayedString = textBuilder.ToString();
+                gridText.Position = new Vector2f(width / 2 - i * gridSeparation + gridCoordinatesTextOffsetX, gridTextBaseY + gridCoordinatesTextOffsetY);
+                window.Draw(gridText);
+            }
+
+            for (int i = -YLines; i <= YLines; i++)
+            {
+                textBuilder.Clear();
+                textBuilder.AppendFormat(texts[TextId.gridCoordinates], (int)(i * gridSeparation));
+                gridText.DisplayedString = textBuilder.ToString();
+                gridText.Position = new Vector2f(gridCoordinatesTextOffsetX, height / 2 - i * gridSeparation + gridCoordinatesTextOffsetY);
+                window.Draw(gridText);
+            }
+
         }
 
         static void OnKeyPressed(object sender, KeyEventArgs e)

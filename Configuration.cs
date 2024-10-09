@@ -42,11 +42,11 @@ namespace TurtleSandbox
 
         static float lineWidth = 4.0f;
 
-        // Color del texto informativo que aparece en pantalla
+        // Color de las herramientas de ayuda que aparecen en pantalla
 
-        static int infoR = 255;
-        static int infoG = 255;
-        static int infoB = 255;
+        static int toolbarR = 255;
+        static int toolbarG = 255;
+        static int toolbarB = 255;
 
         // Color de la rejilla
 

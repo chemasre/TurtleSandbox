@@ -30,9 +30,6 @@ namespace TurtleSandbox
 
         static StringBuilder textBuilder;
 
-        static Texture gridTexture;
-        static Sprite gridSprite;
-
         static bool takeScreenshot;
         static bool stepChanged;
 
@@ -49,8 +46,6 @@ namespace TurtleSandbox
 
             InitUI();
 
-            InitGrid();
-
             InitMusic();
 
             InitTrace();
@@ -61,9 +56,13 @@ namespace TurtleSandbox
             timeBoost = 1;
 
             VideoMode mode = new VideoMode((uint)windowWidth, (uint)windowHeight);
-            RenderWindow window = new RenderWindow(mode, windowTitle);
+
+            Styles style = Styles.Titlebar | Styles.Close;
+            RenderWindow window = new RenderWindow(mode, windowTitle, style);
             Image icon = new Image("Assets/Icon.png");            
             window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
+            window.SetMouseCursorVisible(false);
+
             window.KeyPressed += OnKeyPressed;
             window.MouseButtonPressed += OnMouseButtonPressed;
 
@@ -104,7 +103,7 @@ namespace TurtleSandbox
                 DrawBackground(window);
 
 
-                DrawGrid(window);
+                if(showGrid) { DrawGrid(window); }
                 DrawTrace(window);
 
                 if (takeScreenshot) { TakeScreenshot(window); }
@@ -174,24 +173,6 @@ namespace TurtleSandbox
 
             AddInfoMessage(texts[showGrid ? TextId.gridOn : TextId.gridOff], new Vector2f(buttonTurtleSprite.Position.X, buttonBar2Y));
 
-        }
-
-        static void InitGrid()
-        {
-            gridTexture = new Texture("Assets/Grid.png");
-            gridSprite = new Sprite();
-            gridSprite.Texture = gridTexture;
-            gridSprite.Position = new Vector2f(0, 0);
-            gridSprite.Color = new Color((byte)gridR, (byte)gridG, (byte)gridB, (byte)gridOpacity);
-
-        }
-
-        static void DrawGrid(RenderWindow window)
-        {
-            if (showGrid)
-            {
-                window.Draw(gridSprite);
-            }
         }
 
         static void TakeScreenshot(RenderWindow window)
