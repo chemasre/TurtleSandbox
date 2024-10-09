@@ -39,8 +39,8 @@ namespace TurtleSandbox
         const float gridCoordinatesTextOffsetX = 4.0f;
         const float gridCoordinatesTextOffsetY = 4.0f;
         const float gridSeparation = 50.0f;
-        const float gridCoordinatesCursorOffsetX = 30;
-        const float gridCoordinatesCursorOffsetY = 0;
+        const float gridCoordinatesCursorOffsetX = 23;
+        const float gridCoordinatesCursorOffsetY = -10;
 
 
         const float buttonBar1Scale = 1.0f;
