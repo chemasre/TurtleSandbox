@@ -25,6 +25,8 @@ namespace TurtleSandbox
         static Texture sandTexture;
         static Color sandColor;
 
+        static float holdSplashTimer;
+        static bool holdSplash;
 
         static StringBuilder textBuilder;
 
@@ -65,8 +67,9 @@ namespace TurtleSandbox
             window.KeyPressed += OnKeyPressed;
             window.MouseButtonPressed += OnMouseButtonPressed;
 
-            splashVisible = true;
-            splashTimer = 0;
+            showSplash = true;
+            holdSplash = true;
+            holdSplashTimer = 0;
 
             InitTrace();
 
@@ -77,10 +80,16 @@ namespace TurtleSandbox
 
                 // Update
 
-                if(splashVisible)
+                if(holdSplash)
                 {
-                    splashTimer += elapsedTime;
-                    if(splashTimer > splashDuration) { splashVisible = false; }
+                    showSplash = true;
+
+                    holdSplashTimer += elapsedTime;
+                    if(holdSplashTimer > holdSplashDuration)
+                    {
+                        holdSplash = false;
+                        showSplash = false;
+                    }
                 }
                 
 
@@ -101,8 +110,6 @@ namespace TurtleSandbox
                 if (takeScreenshot) { TakeScreenshot(window); }
 
                 DrawUI(window);
-
-                if (splashVisible) { DrawSplash(window); }
 
                 window.Display();
 

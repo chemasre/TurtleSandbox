@@ -15,7 +15,7 @@ namespace TurtleSandbox
 
         const float splashX = 530;
         const float splashY = 255;
-        const float splashDuration = 5.0f;
+        const float holdSplashDuration = 5.0f;
 
         const int infoMessagesCount = 50;
         const float infoMessageDuration = 2.0f;
@@ -85,8 +85,7 @@ namespace TurtleSandbox
         static Sprite splashSprite;
         static Texture splashTexture;
 
-        static float splashTimer;
-        static bool splashVisible;
+        static bool showSplash;
 
         // Messages
 
@@ -496,11 +495,10 @@ namespace TurtleSandbox
 
                 }
             }
-        }
 
-        public static void DrawSplash(RenderWindow window)
-        {
-            window.Draw(splashSprite);
+            // Draw splash
+
+            if(showSplash) { window.Draw(splashSprite); }
         }
 
         static void OnKeyPressed(object sender, KeyEventArgs e)
@@ -586,6 +584,10 @@ namespace TurtleSandbox
             else if (e.Code == Keyboard.Key.C)
             {
                 takeScreenshot = true;
+            }
+            else if(e.Code == Keyboard.Key.A)
+            {
+                showSplash = !showSplash;
             }
         }
 
