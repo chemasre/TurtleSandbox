@@ -57,5 +57,9 @@ namespace TurtleSandbox
         // Opacidad de la rejilla
 
         static int gridOpacity = 96;
+
+        // Si quieres saltarte la pantalla inicial o no
+
+        static bool skipSplash = false;
     }
 }

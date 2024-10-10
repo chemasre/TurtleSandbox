@@ -12,21 +12,34 @@ namespace TurtleSandbox
     {
         const int windowWidth = 1280;
         const int windowHeight = 720;
+        const float splashDuration = 3.0f;
+        const float splashFadeDuration = 0.5f;
 
         const int playsCount = 9;
 
         const float timeBoostFast = 5.0f;
         const float timeBoostSlow = 0.3f;
 
+        enum AppState
+        {
+            splashHold,
+            splashFade,
+            play
+        };
+
+        static AppState state;
+        static AppState nextState;
+
+        static RenderWindow window;
+
         static Music music;
 
-
-        static Sprite sandSprite;
-        static Texture sandTexture;
+        static Sprite backgroundSprite;
+        static Texture backgroundTexture;
         static Color sandColor;
 
-        static float holdSplashTimer;
-        static bool holdSplash;
+        static float splashTimer;
+        static float splashFadeTimer;
 
         static StringBuilder textBuilder;
 
@@ -44,34 +57,21 @@ namespace TurtleSandbox
 
             textBuilder = new StringBuilder("", 200);
 
-            InitUI();
-
-            InitMusic();
-
-            InitTrace();
 
             stepClock = new Clock();
             updateClock = new Clock();
             elapsedTime = 0;
             timeBoost = 1;
 
-            VideoMode mode = new VideoMode((uint)windowWidth, (uint)windowHeight);
-
-            Styles style = Styles.Titlebar | Styles.Close;
-            RenderWindow window = new RenderWindow(mode, windowTitle, style);
-            Image icon = new Image("Assets/Icon.png");            
-            window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
-            window.SetMouseCursorVisible(false);
-
-            window.KeyPressed += OnKeyPressed;
-            window.MouseButtonPressed += OnMouseButtonPressed;
-
-            showSplash = true;
-            holdSplash = true;
-            holdSplashTimer = 0;
-
+            InitWindow();
+            InitUI(window);
+            InitMusic();
             InitTrace();
 
+            if(skipSplash) { state = AppState.play; nextState = AppState.play; }
+            else { state = AppState.splashHold; nextState = AppState.splashHold; splashTimer = 0; }
+
+            InitTrace();
 
             while (window.IsOpen)
             {
@@ -79,21 +79,34 @@ namespace TurtleSandbox
 
                 // Update
 
-                if(holdSplash)
+                if(state != nextState)
                 {
-                    showSplash = true;
+                    state = nextState;
+                }
 
-                    holdSplashTimer += elapsedTime;
-                    if(holdSplashTimer > holdSplashDuration)
+                if(state == AppState.splashHold)
+                {
+                    splashTimer += elapsedTime;
+                    if(splashTimer >= splashDuration)
                     {
-                        holdSplash = false;
-                        showSplash = false;
+                        nextState = AppState.splashFade;
+                        splashFadeTimer = 0;
                     }
                 }
-                
-
-                UpdateTrace(elapsedTime);
-                UpdateUI(window, elapsedTime);
+                else if(state == AppState.splashFade)
+                {
+                    splashFadeTimer += elapsedTime;
+                    if(splashFadeTimer >= splashFadeDuration)
+                    {
+                        splashFadeTimer = splashFadeDuration;
+                        nextState = AppState.play;
+                    }
+                }
+                else if(state == AppState.play)
+                {
+                    UpdateTrace(elapsedTime);
+                    UpdateUI(window, elapsedTime);
+                }
 
                 elapsedTime = updateClock.ElapsedTime.AsSeconds() * timeBoost;
                 updateClock.Restart();
@@ -102,13 +115,21 @@ namespace TurtleSandbox
 
                 DrawBackground(window);
 
-
-                if(showGrid) { DrawGrid(window); }
-                DrawTrace(window);
-
-                if (takeScreenshot) { TakeScreenshot(window); }
-
-                DrawUI(window);
+                if(state == AppState.splashHold)
+                {
+                    DrawSplash(window, 1.0f, false);
+                }
+                else if(state == AppState.splashFade)
+                {
+                    DrawSplash(window, 1.0f - splashFadeTimer / splashFadeDuration, false);
+                }
+                else if(state == AppState.play)
+                {
+                    if (showGrid) { DrawGrid(window); }
+                    DrawTrace(window);
+                    if (takeScreenshot) { TakeScreenshot(window); }
+                    DrawUI(window);
+                }
 
                 window.Display();
 
@@ -122,17 +143,29 @@ namespace TurtleSandbox
 
         static void InitBackground()
         {
-            sandSprite = new Sprite();
-            sandTexture = new Texture("Assets/Background.png");
-            sandSprite.Texture = sandTexture;
+            backgroundSprite = new Sprite();
+            backgroundTexture = new Texture("Assets/Background.png");
+            backgroundSprite.Texture = backgroundTexture;
             sandColor = new Color((byte)sandR, (byte)sandG, (byte)sandB);
-            sandSprite.Color = sandColor;
+            backgroundSprite.Color = sandColor;
         }
 
         static void DrawBackground(RenderWindow window)
         {
             window.Clear(sandColor);
-            window.Draw(sandSprite);
+            window.Draw(backgroundSprite);
+        }
+
+        static void InitWindow()
+        {
+            VideoMode mode = new VideoMode((uint)windowWidth, (uint)windowHeight);
+
+            Styles style = Styles.Titlebar | Styles.Close;
+            window = new RenderWindow(mode, windowTitle, style);
+            Image icon = new Image("Assets/Icon.png");
+            window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
+            window.SetMouseCursorVisible(false);
+
         }
 
         static void InitMusic()

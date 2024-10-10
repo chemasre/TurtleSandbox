@@ -16,7 +16,8 @@ namespace TurtleSandbox
 
         const float splashX = 530;
         const float splashY = 255;
-        const float holdSplashDuration = 5.0f;
+        const float splashCloseOffsetX = 264;
+        const float splashCloseOffsetY = 8;
 
         const int infoMessagesCount = 50;
         const float infoMessageDuration = 2.0f;
@@ -49,14 +50,9 @@ namespace TurtleSandbox
         const float buttonBarSeparation1 = 6;
 
         const float buttonBar2Scale = 1.0f;
-        const float buttonBar2X = 656;
+        const float buttonBar2X = 650;
         const float buttonBar2Y = 666;
-        const float buttonBarSeparation2 = 6;
-
-        const float buttonBar3Scale = 1.0f;
-        const float buttonBar3X = 10;
-        const float buttonBar3Y = 666;
-        const float buttonBarSeparation3 = 2;
+        const float buttonBarSeparation2 = 2;
 
         // Texts
 
@@ -102,6 +98,9 @@ namespace TurtleSandbox
         static Sprite splashSprite;
         static Texture splashTexture;
 
+        static Sprite splashCloseButtonSprite;
+        static Texture splashCloseButtonTexture;
+
         static bool showSplash;
 
         // Grid
@@ -146,7 +145,7 @@ namespace TurtleSandbox
         static Sprite buttonMusicSprite;
         static Sprite buttonTurtleSprite;
         static Sprite buttonGridSprite;
-        static Sprite[] buttonPlaySprites;
+        static Sprite buttonSplashSprite;
 
         static Texture buttonPlayTexture;
         static Texture buttonPauseTexture;
@@ -162,6 +161,8 @@ namespace TurtleSandbox
         static Texture buttonTurtleOffTexture;
         static Texture buttonGridOnTexture;
         static Texture buttonGridOffTexture;
+        static Texture buttonSplashOnTexture;
+        static Texture buttonSplashOffTexture;
 
         static bool stopOnFastForwardOrBackwardsRelease;
         static bool playOnFastForwardOrBackwardsRelease;
@@ -197,8 +198,14 @@ namespace TurtleSandbox
 
         }
 
-        static void InitUI()
+        static void InitUI(RenderWindow window)
         {
+            // Register callbacks
+
+            window.KeyPressed += OnKeyPressed;
+            window.MouseButtonPressed += OnMouseButtonPressed;
+            window.Closed += OnWindowClosed;
+
             // Init texts
 
             texts = new Dictionary<TextId, string>();
@@ -278,9 +285,12 @@ namespace TurtleSandbox
 
             // Init splash
 
-            splashTexture = new Texture("Assets/Splash.png");
+            splashTexture = new Texture("Assets/Splash/Splash.png");
             splashSprite = new Sprite();
             splashSprite.Texture = splashTexture;
+            splashCloseButtonTexture = new Texture("Assets/Splash/SplashClose.png");
+            splashCloseButtonSprite = new Sprite();
+            splashCloseButtonSprite.Texture = splashCloseButtonTexture;
 
             // Init grid
 
@@ -324,6 +334,8 @@ namespace TurtleSandbox
             buttonTurtleOffTexture = new Texture("Assets/Buttons/TurtleOff.png");
             buttonGridOnTexture = new Texture("Assets/Buttons/GridOn.png");
             buttonGridOffTexture = new Texture("Assets/Buttons/GridOff.png");
+            buttonSplashOnTexture = new Texture("Assets/Buttons/SplashOn.png");
+            buttonSplashOffTexture = new Texture("Assets/Buttons/SplashOff.png");
 
             buttonPlaySprite = new Sprite();
             buttonPlaySprite.Texture = buttonPlayTexture;
@@ -347,12 +359,15 @@ namespace TurtleSandbox
             buttonTurtleSprite.Texture = turtleVisible ? buttonTurtleOnTexture: buttonTurtleOffTexture;
             buttonGridSprite = new Sprite();
             buttonGridSprite.Texture = showGrid ? buttonGridOnTexture : buttonGridOffTexture;
+            buttonSplashSprite = new Sprite();
+            buttonSplashSprite.Texture = showSplash ? buttonSplashOnTexture : buttonSplashOffTexture;
 
             ////////////////////////// Set elements position and size ////////////////////////////////
 
             // Splash
 
             splashSprite.Position = new Vector2f(splashX, splashY);
+            splashCloseButtonSprite.Position = new Vector2f(splashX + splashCloseOffsetX, splashY + splashCloseOffsetY);
 
             float buttonWidth = buttonPlayTexture.Size.X;
 
@@ -383,6 +398,7 @@ namespace TurtleSandbox
             buttonGridSprite.Position           = new Vector2f(buttonBar2X + 8 * buttonWidth + 8 * buttonBarSeparation2, buttonBar2Y);
             buttonMusicSprite.Position          = new Vector2f(buttonBar2X + 9 * buttonWidth + 9 * buttonBarSeparation2, buttonBar2Y);
             buttonScreenshotSprite.Position     = new Vector2f(buttonBar2X + 10 * buttonWidth + 10 * buttonBarSeparation2, buttonBar2Y);
+            buttonSplashSprite.Position         = new Vector2f(buttonBar2X + 11 * buttonWidth + 11 * buttonBarSeparation2, buttonBar2Y);
 
             Vector2f bar2Scale = new Vector2f(buttonBar2Scale, buttonBar2Scale);
             buttonRestartSprite.Scale = bar2Scale;
@@ -413,6 +429,11 @@ namespace TurtleSandbox
                 infoMessagesLifetime[i] = 0;
             }
 
+        }
+
+        private static void Window_Closed(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         static void UpdateUI(RenderWindow window, float elapsedTime)
@@ -519,6 +540,8 @@ namespace TurtleSandbox
             buttonGridSprite.Texture = (showGrid ? buttonGridOnTexture : buttonGridOffTexture);
             window.Draw(buttonGridSprite);
             window.Draw(buttonScreenshotSprite);
+            buttonSplashSprite.Texture = (showSplash ? buttonSplashOnTexture : buttonSplashOffTexture);
+            window.Draw(buttonSplashSprite);
 
             buttonMusicSprite.Texture = (IsMusicPlaying() ? buttonMusicOnTexture : buttonMusicOffTexture);
             window.Draw(buttonMusicSprite);
@@ -542,7 +565,10 @@ namespace TurtleSandbox
 
             // Draw splash
 
-            if(showSplash) { window.Draw(splashSprite); }
+            if(showSplash)
+            {
+                DrawSplash(window);
+            }
 
             // Draw cursor
 
@@ -614,6 +640,13 @@ namespace TurtleSandbox
 
         }
 
+        static void DrawSplash(RenderWindow window, float opacity = 1.0f, bool withCloseButton = true)
+        {
+            splashSprite.Color = new Color(255, 255, 255, (byte)(255 * opacity));
+            window.Draw(splashSprite);
+            if(withCloseButton) { window.Draw(splashCloseButtonSprite); }
+        }
+
         static void OnKeyPressed(object sender, KeyEventArgs e)
         {
             RenderWindow window = (RenderWindow)sender;
@@ -622,7 +655,10 @@ namespace TurtleSandbox
             {
                 window.Close();
             }
-            else if (e.Code == Keyboard.Key.Space)
+
+            if (state != AppState.play) { return; }
+
+            if (e.Code == Keyboard.Key.Space)
             {
                 stepIndex = 0;
                 playState = PlayState.playing;
@@ -708,6 +744,8 @@ namespace TurtleSandbox
         {
             RenderWindow window = (RenderWindow)sender;
 
+            if(state != AppState.play) { return; }
+
             if (e.Button == Mouse.Button.Left)
             {
                 if (buttonPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
@@ -747,7 +785,15 @@ namespace TurtleSandbox
                 {
                     SwitchMusic();
                 }
-                else if(buttonNextPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
+                else if(buttonSplashSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    showSplash = !showSplash;
+                }
+                else if(splashCloseButtonSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                {
+                    showSplash = false;
+                }
+                else if (buttonNextPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
                 {
                     if(nextPlayIndex + 1 >= playsCount) { nextPlayIndex = 0; }
                     else { nextPlayIndex ++; }
@@ -759,6 +805,11 @@ namespace TurtleSandbox
                 }
 
             }
+        }
+
+        static void OnWindowClosed(object sender, EventArgs e)
+        {
+            window.Close();
         }
 
     }
