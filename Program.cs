@@ -10,6 +10,8 @@ namespace TurtleSandbox
 {
     internal partial class Program
     {
+        const string programVersion = "1.03";
+
         const int windowWidth = 1280;
         const int windowHeight = 720;
         const float splashDuration = 3.0f;
@@ -161,7 +163,7 @@ namespace TurtleSandbox
             VideoMode mode = new VideoMode((uint)windowWidth, (uint)windowHeight);
 
             Styles style = Styles.Titlebar | Styles.Close;
-            window = new RenderWindow(mode, windowTitle, style);
+            window = new RenderWindow(mode, windowTitle + " " + programVersion, style);
             Image icon = new Image("Assets/Icon.png");
             window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
             window.SetMouseCursorVisible(false);

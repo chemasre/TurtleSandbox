@@ -10,7 +10,7 @@ namespace TurtleSandbox
     {
         // Título de la ventana. Puedes poner tu nombre aquí
 
-        static string windowTitle = "Turtle Sandbox 1.02";
+        static string windowTitle = "Turtle Sandbox";
 
         // Qué "play" quieres reproducir al principio (1 al 9)
 
