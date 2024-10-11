@@ -275,6 +275,8 @@ namespace TurtleSandbox
             orderIdToString[Turtle.OrderId.randTurn] = "randTurn";
             orderIdToString[Turtle.OrderId.randWalk] = "randWalk";
             orderIdToString[Turtle.OrderId.teleport] = "teleport";
+            orderIdToString[Turtle.OrderId.remember] = "remember";
+            orderIdToString[Turtle.OrderId.recall] = "recall";
 
             // Init cursor
 

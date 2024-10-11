@@ -125,7 +125,7 @@ namespace TurtleSandbox
                 }
                 else if(state == AppState.play)
                 {
-                    if (showGrid) { DrawGrid(window); }
+                    if (showGrid && !takeScreenshot) { DrawGrid(window); }
                     DrawTrace(window);
                     if (takeScreenshot) { TakeScreenshot(window); }
                     DrawUI(window);

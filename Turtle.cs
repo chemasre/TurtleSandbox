@@ -41,7 +41,9 @@ namespace TurtleSandbox
             walk,
             randTurn,
             randWalk,
-            teleport
+            teleport,
+            remember,
+            recall
         }
 
         public struct Order
@@ -194,15 +196,18 @@ namespace TurtleSandbox
             Teleport(0, 0, 90);
         }
 
-        public void Save()
+        public void Remember()
         {
             savedLocation.x = posX;
             savedLocation.y = posY;
             savedLocation.angle = angle;
         }
 
-        public void Restore()
+        public void Recall()
         {
+            overrideOrder = true;
+            overrideOrderValue = new Order();
+            overrideOrderValue.id = OrderId.recall;
             Teleport(savedLocation.x, savedLocation.y, savedLocation.angle);
         }
 
