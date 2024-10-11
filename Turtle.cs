@@ -223,7 +223,7 @@ namespace TurtleSandbox
             p.order = (overrideOrder ? overrideOrderValue : order);
             p.x = posX;
             p.y = posY;
-            p.angle = angle;
+            p.angle = NormalizeAngle(angle);
             p.colorR = colorR;
             p.colorG = colorG;
             p.colorB = colorB;
@@ -231,7 +231,7 @@ namespace TurtleSandbox
             p.draw = false;
             trace.Add(p);
 
-            _angle = 90;
+            _angle = NormalizeAngle(angle);
 
             overrideOrder = false;
         }
