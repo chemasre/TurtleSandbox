@@ -231,7 +231,7 @@ namespace TurtleSandbox
             p.draw = false;
             trace.Add(p);
 
-            _angle = 90;
+            _angle = NormalizeAngle(angle);
 
             overrideOrder = false;
         }

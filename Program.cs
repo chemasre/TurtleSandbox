@@ -10,7 +10,7 @@ namespace TurtleSandbox
 {
     internal partial class Program
     {
-        const string programVersion = "1.03";
+        const string programVersion = "1.031";
 
         const int windowWidth = 1280;
         const int windowHeight = 720;
