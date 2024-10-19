@@ -6,60 +6,60 @@ using System.Threading.Tasks;
 
 namespace TurtleSandbox
 {
-    internal partial class Program
+    internal class Config
     {
         // Título de la ventana. Puedes poner tu nombre aquí
 
-        static string windowTitle = "Turtle Sandbox";
+        public static string windowTitle = "Turtle Sandbox";
 
         // Qué "play" quieres reproducir al principio (1 al 9)
 
-        static int play = 1;
+        public static int play = 1;
 
         // Si quieres que inicialmente se reproduzca la música o no
 
-        static bool playMusic = true;
+        public static bool playMusic = true;
 
         // Si quieres ver la rejilla inicialmente o no
 
-        static bool showGrid = false;
+        public static bool showGrid = true;
 
         // Si quieres ver la barra de herramientas inicialmente o no
 
-        static bool showToolbar = true;
+        public static bool showToolbar = true;
 
         // Tiempo de espera en segundos entre un paso de la tortuga y el siguiente (puede ser 0)
 
-        static float stepWait = 0.2f;
+        public static float stepWait = 0.2f;
 
         // Color inicial de la arena
 
-        static int sandR = 255;
-        static int sandG = 193;
-        static int sandB = 58;
+        public static int sandR = 255;
+        public static int sandG = 193;
+        public static int sandB = 58;
 
         // Ancho de la línea que deja la tortuga
 
-        static float lineWidth = 4.0f;
+        public static float lineWidth = 4.0f;
 
         // Color de las herramientas de ayuda que aparecen en pantalla
 
-        static int toolbarR = 255;
-        static int toolbarG = 255;
-        static int toolbarB = 255;
+        public static int toolbarR = 255;
+        public static int toolbarG = 255;
+        public static int toolbarB = 255;
 
         // Color de la rejilla
 
-        static int gridR = 255;
-        static int gridG = 255;
-        static int gridB = 255;
+        public static int gridR = 255;
+        public static int gridG = 255;
+        public static int gridB = 255;
 
         // Opacidad de la rejilla
 
-        static int gridOpacity = 96;
+        public static int gridOpacity = 96;
 
         // Si quieres saltarte la pantalla inicial o no
 
-        static bool skipSplash = false;
+        public static bool skipSplash = false;
     }
 }

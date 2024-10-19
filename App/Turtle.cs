@@ -11,7 +11,11 @@ namespace TurtleSandbox
 {
     internal class Turtle
     {
+        // Constants
+
         public const int traceInitialCapacity = 1000;
+
+        // Properties
 
         public int steps { get { return trace.Count; } }
         public bool draw;
@@ -25,14 +29,7 @@ namespace TurtleSandbox
             }
         }
 
-        public struct Location
-        {
-            public float x;
-            public float y;
-            public float angle;
-        }
-
-        Location savedLocation;
+        // Enums
 
         public enum OrderId
         {
@@ -46,6 +43,15 @@ namespace TurtleSandbox
             recall
         }
 
+        // Structs
+
+        public struct Location
+        {
+            public float x;
+            public float y;
+            public float angle;
+        }
+
         public struct Order
         {
             public OrderId id;
@@ -56,9 +62,6 @@ namespace TurtleSandbox
             public int intParam2;
             public int intParam3;
         }
-
-        bool overrideOrder;
-        Order overrideOrderValue;
 
         public struct Step
         {
@@ -73,7 +76,20 @@ namespace TurtleSandbox
             public bool draw;
         }
 
+        // Override order
+
+        bool overrideOrder;
+        Order overrideOrderValue;
+
+        // Remember and recall
+
+        Location savedLocation;
+
+        // Trace
+
         List<Step> trace;
+
+        // State
 
         float _angle;
         float colorR;
@@ -88,14 +104,6 @@ namespace TurtleSandbox
             trace = new List<Step>(traceInitialCapacity);
 
             Reset();
-        }
-
-        float NormalizeAngle(float a)
-        {
-            float t = a / 360.0f;
-            float n = (t - (int)t) * 360.0f;
-            if (n < 0) { n += 360.0f; }
-            return n;
         }
 
         public void Turn(float a)
@@ -196,7 +204,7 @@ namespace TurtleSandbox
             Teleport(0, 0, 90);
         }
 
-        public void Remember()
+        public void Save()
         {
             savedLocation.x = posX;
             savedLocation.y = posY;
@@ -285,6 +293,13 @@ namespace TurtleSandbox
             Console.WriteLine("********************************");
         }
 
+        float NormalizeAngle(float a)
+        {
+            float t = a / 360.0f;
+            float n = (t - (int)t) * 360.0f;
+            if (n < 0) { n += 360.0f; }
+            return n;
+        }
 
     }
 }
