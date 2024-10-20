@@ -204,7 +204,7 @@ namespace TurtleSandbox
             Teleport(0, 0, 90);
         }
 
-        public void Save()
+        public void Remember()
         {
             savedLocation.x = posX;
             savedLocation.y = posY;

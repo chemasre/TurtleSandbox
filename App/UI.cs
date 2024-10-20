@@ -58,17 +58,54 @@ namespace TurtleSandbox
 
         // Enums
 
+        public enum ScreenId
+        {
+            Splash,
+            SelectMode,
+            PlayMode
+        };
+
         public enum InfoMessagePosition
         {
             Turtle,
             Toolbar
         };
 
+        // Structs
+
+        public struct Area
+        {
+            public Vector2f position;
+            public Vector2f size;
+            public Sprite content;
+            public float colorR;
+            public float colorG;
+            public float colorB;
+
+        }
+
+        public struct InfoMessage
+        {
+            public Vector2f position;
+            public Text text;
+            public bool free;
+            public float lifetime;
+        }
+
+        // Screen
+
+        static ScreenId screenId;
 
         // Turtle
 
         static Sprite turtleSprite;
         static Texture turtleTexture;
+
+        static bool turtleVisible;
+
+        // Watermark
+
+        static Text watermarkText;
 
         // Font
 
@@ -91,6 +128,7 @@ namespace TurtleSandbox
         static Sprite splashCloseButtonSprite;
         static Texture splashCloseButtonTexture;
 
+        static float splashOpacity;
         static bool showSplash;
 
         // Grid
@@ -99,25 +137,49 @@ namespace TurtleSandbox
         static Sprite gridLineSprite;
         static Texture gridLineTexture;
 
+        // Select mode areas
+
+        static Sprite areaTopBorder;
+        static Sprite areaTopBase;
+        static Sprite areaBottomBorder;
+        static Sprite areaBottomBase;
+        static Sprite areaLeftBorder;
+        static Sprite areaLeftBase;
+        static Sprite areaRightBorder;
+        static Sprite areaRightBase;
+        static Sprite areaTopLeftBorder;
+        static Sprite areaTopLeftBase;
+        static Sprite areaTopRightBorder;
+        static Sprite areaTopRightBase;
+        static Sprite areaBottomLeftBorder;
+        static Sprite areaBottomLeftBase;
+        static Sprite areaBottomRightBorder;
+        static Sprite areaBottomRightBase;
+        static Sprite areaCenterBase;
+
+        static Area selectPlayModeArea;
+        static Area selectBrushModeArea;
+
+        static bool showSelectModeAreas;
+
         // Messages
 
-        static Text[] infoMessages;
-        static bool[] infoMessagesFree;
-        static float[] infoMessagesLifetime;
-        static Vector2f[] infoMessagesPosition;
+        static InfoMessage[] infoMessages;
         static Dictionary<Turtle.OrderId, string> orderIdToString;
 
-        // Button bar 1
+        // Selector
 
-        static Sprite buttonPreviousPlaySprite;
-        static Sprite buttonNextPlaySprite;
+        static Sprite selectorPreviousSprite;
+        static Sprite selectorNextSprite;
 
-        static Texture buttonPreviousPlayTexture;
-        static Texture buttonNextPlayTexture;
+        static Texture selectorPreviousTexture;
+        static Texture selectorNextTexture;
 
-        static Text textCurrentPlay;
+        static Text selectorText;
 
-        // Status bar
+        static bool showSelector;
+
+        // Status
 
         static Text statusAngleText;
         static Text statusPosXText;
@@ -129,7 +191,9 @@ namespace TurtleSandbox
         static Sprite statusBarSprite;
         static Texture statusBarTexture;
 
-        // Button bar 2
+        static bool showStatus;
+
+        // Playback toolbar
 
         static Sprite buttonPlaySprite;
         static Sprite buttonPauseSprite;
@@ -138,6 +202,11 @@ namespace TurtleSandbox
         static Sprite buttonRestartSprite;
         static Sprite buttonFastForwardSprite;
         static Sprite buttonFastBackwardsSprite;
+
+        static bool showPlaybackToolbar;
+
+        // Utils toolbar
+
         static Sprite buttonScreenshotSprite;
         static Sprite buttonMusicSprite;
         static Sprite buttonTurtleSprite;
@@ -160,6 +229,8 @@ namespace TurtleSandbox
         static Texture buttonGridOffTexture;
         static Texture buttonSplashOnTexture;
         static Texture buttonSplashOffTexture;
+
+        static bool showUtilsToolbar;
 
         // Flags
 
@@ -219,11 +290,25 @@ namespace TurtleSandbox
             gridText.Font = font;
             gridText.FillColor = new Color((byte)Config.gridR, (byte)Config.gridG, (byte)Config.gridB, (byte)Config.gridOpacity);
 
+            // Init turtle
+
             turtleSprite = new Sprite();
             turtleTexture = new Texture("Assets/Turtle.png");
             turtleSprite.Texture = turtleTexture;
             turtleSprite.Origin = new Vector2f(50, 50);
             turtleSprite.Scale = new Vector2f(0.5f, 0.5f);
+
+            turtleVisible = true;
+
+            // Init watermark
+
+            watermarkText = new Text();
+            watermarkText.Font = font;
+            watermarkText.Style = Text.Styles.Bold;
+            watermarkText.CharacterSize = 16;
+            watermarkText.DisplayedString = String.Format(Texts.Get(Texts.Id.watermark), AppConfig.appVersion);
+            watermarkText.FillColor = new Color((byte)(0.9234f * 255), (byte)(0.923f * 255), (byte)(0.923f * 255), (byte)(0.5f * 255));
+            watermarkText.Position = (Vector2f)window.Size - new Vector2f(475, 30);
 
             orderIdToString = new Dictionary<Turtle.OrderId, string>();
             orderIdToString[Turtle.OrderId.origin] = "origin";
@@ -250,6 +335,45 @@ namespace TurtleSandbox
             splashCloseButtonTexture = new Texture("Assets/Splash/SplashClose.png");
             splashCloseButtonSprite = new Sprite();
             splashCloseButtonSprite.Texture = splashCloseButtonTexture;
+            splashOpacity = 1;
+
+            showSplash = false;
+
+            // Init select mode areas
+
+            areaTopBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopBorder.png") };
+            areaTopBase = new Sprite() { Texture = new Texture("Assets/Areas/TopBase.png") };
+            areaBottomBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomBorder.png") };
+            areaBottomBase = new Sprite() { Texture = new Texture("Assets/Areas/BottomBase.png") };
+            areaLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/LeftBorder.png") };
+            areaLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/LeftBase.png") };
+            areaRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/RightBorder.png") };
+            areaRightBase = new Sprite() { Texture = new Texture("Assets/Areas/RightBase.png") };
+            areaTopLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopLeftBorder.png") };
+            areaTopLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/TopLeftBase.png") };
+            areaTopRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopRightBorder.png") };
+            areaTopRightBase = new Sprite() { Texture = new Texture("Assets/Areas/TopRightBase.png") };
+            areaBottomLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomLeftBorder.png") };
+            areaBottomLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/BottomLeftBase.png") };
+            areaBottomRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomRightBorder.png") };
+            areaBottomRightBase = new Sprite() {  Texture = new Texture("Assets/Areas/BottomRightBase.png") };
+            areaCenterBase = new Sprite() { Texture = new Texture("Assets/Areas/Base.png") };
+
+            selectPlayModeArea = new Area();
+            selectPlayModeArea.position = new Vector2f(300, 270);
+            selectPlayModeArea.size = new Vector2f(300, 130);
+            selectPlayModeArea.colorR = 220;
+            selectPlayModeArea.colorG = 173;
+            selectPlayModeArea.colorB = 72;
+            selectPlayModeArea.content = new Sprite() { Texture = new Texture("Assets/Areas/SelectPlayModeContent.png") };
+
+            selectBrushModeArea = new Area();
+            selectBrushModeArea.position = new Vector2f(725, 270);
+            selectBrushModeArea.size = new Vector2f(300, 130);
+            selectBrushModeArea.colorR = 220;
+            selectBrushModeArea.colorG = 173;
+            selectBrushModeArea.colorB = 72;
+            selectBrushModeArea.content = new Sprite() { Texture = new Texture("Assets/Areas/SelectBrushModeContent.png") };
 
             // Init grid
 
@@ -259,15 +383,15 @@ namespace TurtleSandbox
             gridLineSprite.Origin = new Vector2f(gridLineTexture.Size.X / 2, gridLineTexture.Size.Y);
             gridLineSprite.Color = new Color((byte)Config.gridR, (byte)Config.gridG, (byte)Config.gridB, (byte)Config.gridOpacity);
 
-            // Init button bar 1
+            // Init selector
 
-            buttonNextPlayTexture = new Texture("Assets/Buttons/Right.png");
-            buttonPreviousPlayTexture = new Texture("Assets/Buttons/Left.png");
+            selectorNextTexture = new Texture("Assets/Buttons/Right.png");
+            selectorPreviousTexture = new Texture("Assets/Buttons/Left.png");
 
-            buttonNextPlaySprite = new Sprite();
-            buttonNextPlaySprite.Texture = buttonNextPlayTexture;
-            buttonPreviousPlaySprite = new Sprite();
-            buttonPreviousPlaySprite.Texture = buttonPreviousPlayTexture;
+            selectorNextSprite = new Sprite();
+            selectorNextSprite.Texture = selectorNextTexture;
+            selectorPreviousSprite = new Sprite();
+            selectorPreviousSprite.Texture = selectorPreviousTexture;
 
             // Init status bar
 
@@ -276,7 +400,7 @@ namespace TurtleSandbox
             statusBarSprite = new Sprite();
             statusBarSprite.Texture = statusBarTexture;
 
-            // Init button bar 2
+            // Init playback toolbar
 
 
             buttonPlayTexture = new Texture("Assets/Buttons/Play.png");
@@ -286,6 +410,10 @@ namespace TurtleSandbox
             buttonRestartTexture = new Texture("Assets/Buttons/Restart.png");
             buttonFastForwardTexture = new Texture("Assets/Buttons/FastForward.png");
             buttonFastBackwardsTexture = new Texture("Assets/Buttons/FastBackward.png");
+
+
+            // Init utils toolbar
+
             buttonScreenshotTexture = new Texture("Assets/Buttons/Screenshot.png");
             buttonMusicOnTexture = new Texture("Assets/Buttons/MusicOn.png");
             buttonMusicOffTexture = new Texture("Assets/Buttons/MusicOff.png");
@@ -332,19 +460,19 @@ namespace TurtleSandbox
 
             // Button bar 1
 
-            buttonPreviousPlaySprite.Position   = new Vector2f(buttonBar1X + 0 * buttonWidth + 0 * buttonBarSeparation1, buttonBar1Y);
-            buttonNextPlaySprite.Position       = new Vector2f(buttonBar1X + 3 * buttonWidth + 3 * buttonBarSeparation1, buttonBar1Y);
+            selectorPreviousSprite.Position   = new Vector2f(buttonBar1X + 0 * buttonWidth + 0 * buttonBarSeparation1, buttonBar1Y);
+            selectorNextSprite.Position       = new Vector2f(buttonBar1X + 3 * buttonWidth + 3 * buttonBarSeparation1, buttonBar1Y);
 
             Vector2f bar1Scale = new Vector2f(buttonBar1Scale, buttonBar1Scale);
             
-            buttonPreviousPlaySprite.Scale = bar1Scale;
-            buttonNextPlaySprite.Scale = bar1Scale;
+            selectorPreviousSprite.Scale = bar1Scale;
+            selectorNextSprite.Scale = bar1Scale;
 
             // Status bar
 
             statusBarSprite.Position = new Vector2f(statusBarX, statusBarY);
 
-            // Button bar 2
+            // Playback toolbar
 
             buttonRestartSprite.Position        = new Vector2f(buttonBar2X + 0 * buttonWidth + 0 * buttonBarSeparation2, buttonBar2Y);
             buttonFastBackwardsSprite.Position  = new Vector2f(buttonBar2X + 1 * buttonWidth + 1 * buttonBarSeparation2, buttonBar2Y);
@@ -353,6 +481,9 @@ namespace TurtleSandbox
             buttonPauseSprite.Position          = new Vector2f(buttonBar2X + 3 * buttonWidth + 3 * buttonBarSeparation2, buttonBar2Y);
             buttonForwardSprite.Position        = new Vector2f(buttonBar2X + 4 * buttonWidth + 4 * buttonBarSeparation2, buttonBar2Y);
             buttonFastForwardSprite.Position    = new Vector2f(buttonBar2X + 5 * buttonWidth + 5 * buttonBarSeparation2, buttonBar2Y);
+
+            // Init utils toolbar
+
             buttonTurtleSprite.Position         = new Vector2f(buttonBar2X + 7 * buttonWidth + 7 * buttonBarSeparation2, buttonBar2Y);
             buttonGridSprite.Position           = new Vector2f(buttonBar2X + 8 * buttonWidth + 8 * buttonBarSeparation2, buttonBar2Y);
             buttonMusicSprite.Position          = new Vector2f(buttonBar2X + 9 * buttonWidth + 9 * buttonBarSeparation2, buttonBar2Y);
@@ -374,18 +505,17 @@ namespace TurtleSandbox
 
             // Init info messages
 
-            infoMessages = new Text[infoMessagesCount];
-            infoMessagesFree = new bool[infoMessagesCount];
-            infoMessagesPosition = new Vector2f[infoMessagesCount];
-            infoMessagesLifetime = new float[infoMessagesCount];
+            infoMessages = new InfoMessage[infoMessagesCount];
+
             for (int i = 0; i < infoMessagesCount; i++)
             {
-                infoMessages[i] = new Text();
-                infoMessages[i].Font = font;
-                infoMessages[i].Scale = new Vector2f(infoMessageScale, infoMessageScale);
-                infoMessagesFree[i] = true;
-                infoMessagesPosition[i] = new Vector2f(0, 0);
-                infoMessagesLifetime[i] = 0;
+                var text = new Text();
+                text.Font = font;
+                text.Scale = new Vector2f(infoMessageScale, infoMessageScale);
+                infoMessages[i].text = text;
+                infoMessages[i].free = true;
+                infoMessages[i].position = new Vector2f(0, 0);
+                infoMessages[i].lifetime = 0;
             }
 
         }
@@ -419,12 +549,12 @@ namespace TurtleSandbox
 
             while (j < infoMessages.Length && !done)
             {
-                if (infoMessagesFree[j]) { free = j; infoMessagesFree[j] = false; done = true; }
+                if (infoMessages[j].free) { free = j; infoMessages[j].free = false; done = true; }
                 else
                 {
-                    if (infoMessagesLifetime[j] > oldestLifeTime)
+                    if (infoMessages[j].lifetime > oldestLifeTime)
                     {
-                        oldestLifeTime = infoMessagesLifetime[j];
+                        oldestLifeTime = infoMessages[j].lifetime;
                         oldest = j;
                     }
 
@@ -433,10 +563,10 @@ namespace TurtleSandbox
             }
 
             int messageIndex = free ?? oldest;
-            infoMessages[messageIndex].DisplayedString = message;
-            infoMessagesPosition[messageIndex] = p;
-            infoMessagesLifetime[messageIndex] = 0;
-            infoMessagesFree[messageIndex] = false;
+            infoMessages[messageIndex].text.DisplayedString = message;
+            infoMessages[messageIndex].position = p;
+            infoMessages[messageIndex].lifetime = 0;
+            infoMessages[messageIndex].free = false;
 
         }
 
@@ -446,10 +576,10 @@ namespace TurtleSandbox
 
             for (int i = 0; i < infoMessages.Length; i++)
             {
-                if (!infoMessagesFree[i])
+                if (!infoMessages[i].free)
                 {
-                    infoMessagesLifetime[i] += elapsedTime;
-                    if (infoMessagesLifetime[i] >= infoMessageDuration) { infoMessagesFree[i] = true; }
+                    infoMessages[i].lifetime += elapsedTime;
+                    if (infoMessages[i].lifetime >= infoMessageDuration) { infoMessages[i].free = true; }
                 }
             }
 
@@ -491,113 +621,156 @@ namespace TurtleSandbox
             }
         }
 
-        public static void Draw(RenderWindow window)
+        public static void Draw(RenderWindow window, bool takeScreenshot = false)
         {
-            if(!Config.showToolbar) { return; }
-
-            // Draw texts
-
-            StringBuilder textBuilder = App.GetTextBuilder();
-
-            textBuilder.Clear();
-            textBuilder.AppendFormat(Texts.Get(Texts.Id.play), App.GetPlayIndex() + 1);
-            playText.DisplayedString = textBuilder.ToString();
-
-            textBuilder.Clear();
-            textBuilder.AppendFormat(Texts.Get(Texts.Id.statusAngle), statusAngle);
-            statusAngleText.DisplayedString = textBuilder.ToString();
-
-            textBuilder.Clear();
-            textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosX), statusPosX);
-            statusPosXText.DisplayedString = textBuilder.ToString();
-
-            textBuilder.Clear();
-            textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosY), statusPosY);
-            statusPosYText.DisplayedString = textBuilder.ToString();
-
-            window.Draw(playText);
-            window.Draw(statusAngleText);
-            window.Draw(statusPosXText);
-            window.Draw(statusPosYText);
-
-            // Draw bars
-
-            // Button bar 1
-
-            window.Draw(buttonPreviousPlaySprite);
-            window.Draw(buttonNextPlaySprite);
-
-            // Status bar
-
-            window.Draw(statusBarSprite);
-
-            // Button bar 2
-
-            window.Draw(buttonRestartSprite);
-            window.Draw(buttonFastBackwardsSprite);
-
-            TracePlayer.PlayState playState = TracePlayer.GetPlayState();
-
-            bool isPlayingState = (playState == PlayState.playing || playState == PlayState.fastBackwards || playState == PlayState.fastForward);
-
-            window.Draw(buttonRestartSprite);
-            window.Draw(buttonFastBackwardsSprite);
-            window.Draw(buttonBackwardsSprite);
-            window.Draw(isPlayingState ? buttonPlaySprite : buttonPauseSprite);
-            window.Draw(buttonForwardSprite);
-            window.Draw(buttonFastForwardSprite);
-
-            buttonTurtleSprite.Texture = (App.GetTurtleVisible() ? buttonTurtleOnTexture: buttonTurtleOffTexture);
-            window.Draw(buttonTurtleSprite);
-
-            buttonGridSprite.Texture = (Config.showGrid ? buttonGridOnTexture : buttonGridOffTexture);
-            window.Draw(buttonGridSprite);
-            window.Draw(buttonScreenshotSprite);
-            buttonSplashSprite.Texture = (showSplash ? buttonSplashOnTexture : buttonSplashOffTexture);
-            window.Draw(buttonSplashSprite);
-
-            buttonMusicSprite.Texture = (App.IsMusicPlaying() ? buttonMusicOnTexture : buttonMusicOffTexture);
-            window.Draw(buttonMusicSprite);
-
-            // Draw info messages
-
-            for (int i = 0; i < infoMessages.Length; i++)
+            if(screenId == ScreenId.Splash)
             {
-                if (!infoMessagesFree[i])
-                {
-                    float factor = infoMessagesLifetime[i] / infoMessageDuration;
-                    float opacityFactor = MathF.Pow(1 - factor, 3);
-
-                    Vector2f position = infoMessagesPosition[i];
-                    infoMessages[i].Position = position + new Vector2f(0, -infoMessageOffset - infoMessageDistance * factor);
-                    infoMessages[i].FillColor = new Color((byte)Config.toolbarR, (byte)Config.toolbarG, (byte)Config.toolbarB, (byte)(255 * opacityFactor));
-                    window.Draw(infoMessages[i]);
-
-                }
+                DrawSplash(window, false);
             }
-
-            // Draw splash
-
-            if(showSplash)
+            else if(screenId == ScreenId.SelectMode)
             {
-                DrawSplash(window);
+                DrawSelectModeArea(selectPlayModeArea, window);
+                DrawSelectModeArea(selectBrushModeArea, window);
+            }
+            else if(screenId == ScreenId.PlayMode)
+            {
+                if (Config.showGrid && !takeScreenshot) { UI.DrawGrid(window); }
+
+                TracePlayer.Draw(window);
+
+                if (turtleVisible) { UI.DrawTurtle(window); }
+
+                if (takeScreenshot)
+                {
+                    if(Config.skipSplash) { window.Draw(watermarkText); }
+
+                    TakeScreenshot(window);
+                }
+
+
+                if (!Config.showToolbar) { return; }
+
+                // Draw texts
+
+                StringBuilder textBuilder = App.GetTextBuilder();
+
+                textBuilder.Clear();
+                textBuilder.AppendFormat(Texts.Get(Texts.Id.play), App.GetPlayIndex() + 1);
+                playText.DisplayedString = textBuilder.ToString();
+
+                textBuilder.Clear();
+                textBuilder.AppendFormat(Texts.Get(Texts.Id.statusAngle), statusAngle);
+                statusAngleText.DisplayedString = textBuilder.ToString();
+
+                textBuilder.Clear();
+                textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosX), statusPosX);
+                statusPosXText.DisplayedString = textBuilder.ToString();
+
+                textBuilder.Clear();
+                textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosY), statusPosY);
+                statusPosYText.DisplayedString = textBuilder.ToString();
+
+                window.Draw(playText);
+                window.Draw(statusAngleText);
+                window.Draw(statusPosXText);
+                window.Draw(statusPosYText);
+
+                // Draw bars
+
+                // Button bar 1
+
+                window.Draw(selectorPreviousSprite);
+                window.Draw(selectorNextSprite);
+
+                // Status bar
+
+                window.Draw(statusBarSprite);
+
+                // Playback toolbar
+
+                window.Draw(buttonRestartSprite);
+                window.Draw(buttonFastBackwardsSprite);
+
+                TracePlayer.PlayState playState = TracePlayer.GetPlayState();
+
+                bool isPlayingState = (playState == PlayState.playing || playState == PlayState.fastBackwards || playState == PlayState.fastForward);
+
+                window.Draw(buttonRestartSprite);
+                window.Draw(buttonFastBackwardsSprite);
+                window.Draw(buttonBackwardsSprite);
+                window.Draw(isPlayingState ? buttonPlaySprite : buttonPauseSprite);
+                window.Draw(buttonForwardSprite);
+                window.Draw(buttonFastForwardSprite);
+
+                // Utils toolbar
+
+                buttonTurtleSprite.Texture = (turtleVisible ? buttonTurtleOnTexture: buttonTurtleOffTexture);
+                window.Draw(buttonTurtleSprite);
+
+                buttonGridSprite.Texture = (Config.showGrid ? buttonGridOnTexture : buttonGridOffTexture);
+                window.Draw(buttonGridSprite);
+                window.Draw(buttonScreenshotSprite);
+                buttonSplashSprite.Texture = (showSplash ? buttonSplashOnTexture : buttonSplashOffTexture);
+                window.Draw(buttonSplashSprite);
+
+                buttonMusicSprite.Texture = (App.IsMusicPlaying() ? buttonMusicOnTexture : buttonMusicOffTexture);
+                window.Draw(buttonMusicSprite);
+
+                // Draw info messages
+
+                for (int i = 0; i < infoMessages.Length; i++)
+                {
+                    if (!infoMessages[i].free)
+                    {
+                        float factor = infoMessages[i].lifetime / infoMessageDuration;
+                        float opacityFactor = MathF.Pow(1 - factor, 3);
+
+                        Vector2f position = infoMessages[i].position;
+                        infoMessages[i].text.Position = position + new Vector2f(0, -infoMessageOffset - infoMessageDistance * factor);
+                        infoMessages[i].text.FillColor = new Color((byte)Config.toolbarR, (byte)Config.toolbarG, (byte)Config.toolbarB, (byte)(255 * opacityFactor));
+                        window.Draw(infoMessages[i].text);
+
+                    }
+                }
+
+                // Draw splash
+
+                if(showSplash) { DrawSplash(window); }
+
+                // Draw coordinates near to cursor when grid is visible
+
+                if (Config.showGrid)
+                {
+                    Vector2f wp1 = (Vector2f)Mouse.GetPosition(window);
+                    textBuilder.Clear();
+                    textBuilder.AppendFormat(Texts.Get(Texts.Id.gridCursorCoordinates), wp1.X - window.Size.X / 2, -(wp1.Y - window.Size.Y / 2));
+                    gridText.DisplayedString = textBuilder.ToString();
+                    gridText.Position = wp1 + new Vector2f(gridCoordinatesCursorOffsetX, gridCoordinatesCursorOffsetY);
+                    gridText.FillColor = new Color((byte)Config.toolbarR, (byte)Config.toolbarG, (byte)Config.toolbarB);
+                    window.Draw(gridText);
+                }
+
             }
 
             // Draw cursor
 
-            Vector2f wp = (Vector2f)Mouse.GetPosition(window);
-            cursorSprite.Position = wp;
+            Vector2f wp2 = (Vector2f)Mouse.GetPosition(window);
+            cursorSprite.Position = wp2;
             window.Draw(cursorSprite);
 
-            if(Config.showGrid)
-            {
-                textBuilder.Clear();
-                textBuilder.AppendFormat(Texts.Get(Texts.Id.gridCursorCoordinates), wp.X - window.Size.X / 2, -(wp.Y - window.Size.Y / 2));
-                gridText.DisplayedString = textBuilder.ToString();
-                gridText.Position = wp + new Vector2f(gridCoordinatesCursorOffsetX, gridCoordinatesCursorOffsetY);
-                gridText.FillColor = new Color((byte)Config.toolbarR, (byte)Config.toolbarG, (byte)Config.toolbarB); 
-                window.Draw(gridText);
-            }
+        }
+
+        public static void SetScreen(ScreenId id)
+        {
+            screenId = id;
+        }
+
+        public static void SwitchGrid()
+        {
+            Config.showGrid = !Config.showGrid;
+
+            UI.AddInfoMessage(Texts.Get(Config.showGrid ? Texts.Id.gridOn : Texts.Id.gridOff), UI.InfoMessagePosition.Toolbar);
+
         }
 
         public static void DrawGrid(RenderWindow window)
@@ -626,7 +799,7 @@ namespace TurtleSandbox
                 window.Draw(gridLineSprite);
             }
 
-            // Draw coordinatas
+            // Draw coordinates
 
             gridText.Scale = new Vector2f(gridCoordinatesTextScale, gridCoordinatesTextScale);
 
@@ -655,6 +828,17 @@ namespace TurtleSandbox
 
         }
 
+        public static void SwitchSplash()
+        {
+            showSplash = !showSplash;
+        }
+
+        public static void SwitchTurtle()
+        {
+            turtleVisible = !turtleVisible;
+            UI.AddInfoMessage(Texts.Get(turtleVisible ? Texts.Id.turtleOn : Texts.Id.turtleOff), UI.InfoMessagePosition.Toolbar);
+        }
+
         public static void DrawTurtle(RenderWindow window)
         {
             turtleSprite.Position = UI.TurtlePositionToScreen(statusPosX, statusPosY, window);
@@ -663,9 +847,115 @@ namespace TurtleSandbox
 
         }
 
-        public static void DrawSplash(RenderWindow window, float opacity = 1.0f, bool withCloseButton = true)
+        static FloatRect GetAreaRect(Area area)
         {
-            splashSprite.Color = new Color(255, 255, 255, (byte)(255 * opacity));
+            var r = new FloatRect(area.position, area.size);
+
+            return r;
+        }
+
+        public static void DrawSelectModeArea(Area area, RenderWindow window)
+        {
+            float cornerWidth = areaTopLeftBase.Texture.Size.X;
+            float cornerHeight = areaTopLeftBase.Texture.Size.Y;
+            float horizontalWidth = (area.size.X - 2 * cornerWidth);
+            float verticalHeight = (area.size.Y - 2 * cornerHeight);
+            float horizontalScale = horizontalWidth / cornerWidth;
+            float verticalScale = verticalHeight / cornerHeight;
+
+            Color color = new Color((byte)area.colorR, (byte)area.colorG, (byte)area.colorB);
+
+            Vector2f p = area.position;
+            Vector2f s = new Vector2f(1, 1);
+            areaTopLeftBase.Position = p;
+            areaTopLeftBase.Color = color;
+            areaTopLeftBorder.Position = p;
+
+            p = area.position + new Vector2f(cornerWidth, 0);
+            s = new Vector2f(horizontalScale, 1);
+            areaTopBase.Position = p;
+            areaTopBase.Scale = s;
+            areaTopBase.Color = color;
+            areaTopBorder.Position = p;
+            areaTopBorder.Scale = s;
+
+            p = area.position + new Vector2f(cornerWidth, 0) + new Vector2f(horizontalWidth, 0);
+            areaTopRightBase.Position = p;
+            areaTopRightBase.Color = color;
+            areaTopRightBorder.Position = p;
+
+            p = area.position + new Vector2f(0, cornerHeight);
+            s = new Vector2f(1, verticalScale);
+            areaLeftBase.Position = p;
+            areaLeftBase.Scale = s;
+            areaLeftBase.Color = color;
+            areaLeftBorder.Position = p;
+            areaLeftBorder.Scale = s;
+
+            p = area.position + new Vector2f(cornerWidth, cornerHeight);
+            s = new Vector2f(horizontalScale, verticalScale);
+            areaCenterBase.Position = p;
+            areaCenterBase.Scale = s;
+            areaCenterBase.Color = color;
+            area.content.Position = p;
+
+            p = area.position + new Vector2f(cornerWidth, cornerHeight) + new Vector2f(horizontalWidth, 0);
+            s = new Vector2f(1, verticalScale);
+            areaRightBase.Position = p;
+            areaRightBase.Scale = s;
+            areaRightBase.Color = color;
+            areaRightBorder.Position = p;
+            areaRightBorder.Scale = s;
+
+            p = area.position + new Vector2f(0, cornerHeight) + new Vector2f(0, verticalHeight);
+            areaBottomLeftBase.Position = p;
+            areaBottomLeftBase.Color = color;
+            areaBottomLeftBorder.Position = p;
+
+            p = area.position + new Vector2f(cornerWidth, cornerHeight) + new Vector2f(0, verticalHeight);
+            s = new Vector2f(horizontalScale, 1);
+            areaBottomBase.Position = p;
+            areaBottomBase.Scale = s;
+            areaBottomBase.Color = color;
+            areaBottomBorder.Position = p;
+            areaBottomBorder.Scale = s;
+
+            p = area.position + new Vector2f(cornerWidth, cornerHeight) + new Vector2f(horizontalWidth, verticalHeight);
+            areaBottomRightBase.Position = p;
+            areaBottomRightBase.Color = color;
+            areaBottomRightBorder.Position = p;
+
+            window.Draw(areaTopLeftBase);
+            window.Draw(areaTopBase);
+            window.Draw(areaTopRightBase);
+            window.Draw(areaLeftBase);
+            window.Draw(areaCenterBase);
+            window.Draw(areaRightBase);
+            window.Draw(areaBottomLeftBase);
+            window.Draw(areaBottomBase);
+            window.Draw(areaBottomRightBase);
+
+            window.Draw(areaTopLeftBorder);
+            window.Draw(areaTopBorder);
+            window.Draw(areaTopRightBorder);
+            window.Draw(areaLeftBorder);
+            window.Draw(areaRightBorder);
+            window.Draw(areaBottomBorder);
+            window.Draw(areaBottomLeftBorder);
+            window.Draw(areaBottomRightBorder);
+
+            window.Draw(area.content);
+        }
+
+        public static void SetSplashOpacity(float _opacity)
+        {
+            splashOpacity = _opacity;
+        }
+
+
+        public static void DrawSplash(RenderWindow window, bool withCloseButton = true)
+        {
+            splashSprite.Color = new Color(255, 255, 255, (byte)(255 * splashOpacity));
             window.Draw(splashSprite);
             if(withCloseButton) { window.Draw(splashCloseButtonSprite); }
         }
@@ -717,165 +1007,202 @@ namespace TurtleSandbox
                 window.Close();
             }
 
-            if (App.GetState() != App.State.play) { return; }
+            if(screenId == ScreenId.PlayMode)
+            {
+                if (e.Code == Keyboard.Key.Space)
+                {
+                    TracePlayer.SetStep(0);
+                    TracePlayer.Play();
+                }
+                else if (e.Code == Keyboard.Key.Right)
+                {
+                    TracePlayer.StepForward();
+                    TracePlayer.Stop();
+                }
+                else if (e.Code == Keyboard.Key.Left)
+                {
+                    TracePlayer.StepBackward();
+                    TracePlayer.Stop();
+                }
+                else if (e.Code == Keyboard.Key.Enter)
+                {
+                    PlayState playState = TracePlayer.GetPlayState();
+                    if (playState == PlayState.playing) { TracePlayer.Stop(); }
+                    else if (playState == PlayState.stopped) { TracePlayer.Play(); }
+                }
+                else if (e.Code == Keyboard.Key.M)
+                {
+                    App.SwitchMusic();
+                }
+                else if (e.Code == Keyboard.Key.H)
+                {
+                    UI.SwitchTurtle();
+                }
+                else if (e.Code == Keyboard.Key.I || e.Code == Keyboard.Key.Tab)
+                {
+                    Config.showToolbar = !Config.showToolbar;
+                }
+                else if (e.Code == Keyboard.Key.G)
+                {
+                    UI.SwitchGrid();
+                }
+                else if (e.Code == Keyboard.Key.Num1)
+                {
+                    App.SetPlayIndex(0);
+                }
+                else if (e.Code == Keyboard.Key.Num2)
+                {
+                    App.SetPlayIndex(1);
+                }
+                else if (e.Code == Keyboard.Key.Num3)
+                {
+                    App.SetPlayIndex(2);
+                }
+                else if (e.Code == Keyboard.Key.Num4)
+                {
+                    App.SetPlayIndex(3);
+                }
+                else if (e.Code == Keyboard.Key.Num5)
+                {
+                    App.SetPlayIndex(4);
+                }
+                else if (e.Code == Keyboard.Key.Num6)
+                {
+                    App.SetPlayIndex(5);
+                }
+                else if (e.Code == Keyboard.Key.Num7)
+                {
+                    App.SetPlayIndex(6);
+                }
+                else if (e.Code == Keyboard.Key.Num8)
+                {
+                    App.SetPlayIndex(7);
+                }
+                else if (e.Code == Keyboard.Key.Num9)
+                {
+                    App.SetPlayIndex(8);
+                }
+                else if (e.Code == Keyboard.Key.C)
+                {
+                    App.TakeScreenshot();
+                }
+                else if (e.Code == Keyboard.Key.A)
+                {
+                    UI.SwitchSplash();
+                }
 
-            if (e.Code == Keyboard.Key.Space)
-            {
-                TracePlayer.SetStep(0);
-                TracePlayer.Play();
             }
-            else if (e.Code == Keyboard.Key.Right)
-            {
-                TracePlayer.StepForward();
-                TracePlayer.Stop();
-            }
-            else if (e.Code == Keyboard.Key.Left)
-            {
-                TracePlayer.StepBackward();
-                TracePlayer.Stop();
-            }
-            else if (e.Code == Keyboard.Key.Enter)
-            {
-                PlayState playState = TracePlayer.GetPlayState();
-                if (playState == PlayState.playing) { TracePlayer.Stop(); }
-                else if (playState == PlayState.stopped) { TracePlayer.Play(); }
-            }
-            else if (e.Code == Keyboard.Key.M)
-            {
-                App.SwitchMusic();
-            }
-            else if (e.Code == Keyboard.Key.H)
-            {
-                App.SwitchTurtle();
-            }
-            else if (e.Code == Keyboard.Key.I || e.Code == Keyboard.Key.Tab)
-            {
-                Config.showToolbar = !Config.showToolbar;
-            }
-            else if (e.Code == Keyboard.Key.G)
-            {
-                App.SwitchGrid();
-            }
-            else if (e.Code == Keyboard.Key.Num1)
-            {
-                App.SetPlayIndex(0);
-            }
-            else if (e.Code == Keyboard.Key.Num2)
-            {
-                App.SetPlayIndex(1);
-            }
-            else if (e.Code == Keyboard.Key.Num3)
-            {
-                App.SetPlayIndex(2);
-            }
-            else if (e.Code == Keyboard.Key.Num4)
-            {
-                App.SetPlayIndex(3);
-            }
-            else if (e.Code == Keyboard.Key.Num5)
-            {
-                App.SetPlayIndex(4);
-            }
-            else if (e.Code == Keyboard.Key.Num6)
-            {
-                App.SetPlayIndex(5);
-            }
-            else if (e.Code == Keyboard.Key.Num7)
-            {
-                App.SetPlayIndex(6);
-            }
-            else if (e.Code == Keyboard.Key.Num8)
-            {
-                App.SetPlayIndex(7);
-            }
-            else if (e.Code == Keyboard.Key.Num9)
-            {
-                App.SetPlayIndex(8);
-            }
-            else if (e.Code == Keyboard.Key.C)
-            {
-                App.TakeScreenshot();
-            }
-            else if(e.Code == Keyboard.Key.A)
-            {
-                showSplash = !showSplash;
-            }
+
         }
 
         static void OnMouseButtonPressed(object sender, MouseButtonEventArgs e)
         {
             RenderWindow window = (RenderWindow)sender;
 
-            App.State state = App.GetState();
-
-            if(state != App.State.play) { return; }
-
-            if (e.Button == Mouse.Button.Left)
+            if(screenId == ScreenId.SelectMode)
             {
-                TracePlayer.PlayState playState = TracePlayer.GetPlayState(); 
+                Vector2f wp = (Vector2f)Mouse.GetPosition(window);
 
-                if (buttonPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
+                if (GetAreaRect(selectPlayModeArea).Contains(wp)) { App.OnPlayModeSelected(); }
+                else if (GetAreaRect(selectBrushModeArea).Contains(wp)) { App.OnBrushModeSelected(); }
+            }
+            else if(screenId == ScreenId.PlayMode)
+            {
+                if (e.Button == Mouse.Button.Left)
                 {
-                    if(playState == TracePlayer.PlayState.playing) { TracePlayer.Stop(); }
-                    else if(playState == TracePlayer.PlayState.stopped) { TracePlayer.Play(); }
-                }
-                else if (buttonRestartSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    TracePlayer.SetStep(0);
-                    TracePlayer.Play();
+                    TracePlayer.PlayState playState = TracePlayer.GetPlayState(); 
 
-                }
-                else if (buttonForwardSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    TracePlayer.StepForward();
-                    TracePlayer.Stop();
-                }
-                else if (buttonBackwardsSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    TracePlayer.StepBackward();
-                    TracePlayer.Stop();
+                    if (buttonPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        if(playState == TracePlayer.PlayState.playing) { TracePlayer.Stop(); }
+                        else if(playState == TracePlayer.PlayState.stopped) { TracePlayer.Play(); }
+                    }
+                    else if (buttonRestartSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        TracePlayer.SetStep(0);
+                        TracePlayer.Play();
 
+                    }
+                    else if (buttonForwardSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        TracePlayer.StepForward();
+                        TracePlayer.Stop();
+                    }
+                    else if (buttonBackwardsSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        TracePlayer.StepBackward();
+                        TracePlayer.Stop();
+
+                    }
+                    else if (buttonScreenshotSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        App.TakeScreenshot();
+                    }
+                    else if (buttonTurtleSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        UI.SwitchTurtle();
+                    }
+                    else if (buttonGridSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        UI.SwitchGrid();
+                    }
+                    else if (buttonMusicSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        App.SwitchMusic();
+                    }
+                    else if(buttonSplashSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        UI.SwitchSplash();
+                    }
+                    else if(showSplash && splashCloseButtonSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        showSplash = false;
+                    }
+                    else if (selectorNextSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        App.NextPlayIndex();
+                    }
+                    else if (selectorPreviousSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        App.PreviousPlayIndex();
+                    }
                 }
-                else if (buttonScreenshotSprite.GetGlobalBounds().Contains(e.X, e.Y))
+            }
+        }
+
+        static void TakeScreenshot(RenderWindow window)
+        {
+            Texture texture = new Texture(window.Size.X, window.Size.Y);
+            texture.Update(window);
+            Image image = texture.CopyToImage();
+            StringBuilder textBuilder = App.GetTextBuilder();
+
+            bool done = false;
+            int index = 0;
+            while (index < 1000 && !done)
+            {
+                textBuilder.Clear();
+                textBuilder.AppendFormat(Texts.Get(Texts.Id.screenshotFilename), index);
+                string fileName = textBuilder.ToString();
+
+                if (!File.Exists(fileName))
                 {
-                    App.TakeScreenshot();
+                    UI.AddInfoMessage(Texts.Get(Texts.Id.screenshotSaved), UI.InfoMessagePosition.Toolbar);
+                    image.SaveToFile(fileName);
+                    done = true;
                 }
-                else if (buttonTurtleSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    App.SwitchTurtle();
-                }
-                else if (buttonGridSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    App.SwitchGrid();
-                }
-                else if (buttonMusicSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    App.SwitchMusic();
-                }
-                else if(buttonSplashSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    showSplash = !showSplash;
-                }
-                else if(splashCloseButtonSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    showSplash = false;
-                }
-                else if (buttonNextPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    App.NextPlayIndex();
-                }
-                else if (buttonPreviousPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
-                {
-                    App.PreviousPlayIndex();
-                }
+                else { index++; }
+
 
             }
+
         }
 
         static void OnWindowClosed(object sender, EventArgs e)
         {
             App.Quit();
         }
+
 
     }
 }

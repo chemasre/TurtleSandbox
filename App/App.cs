@@ -16,6 +16,7 @@ namespace TurtleSandbox
         {
             splashHold,
             splashFade,
+            selectMode,
             play
         };
 
@@ -31,7 +32,6 @@ namespace TurtleSandbox
         // Turtle
 
         static Turtle turtle;
-        static bool turtleVisible;
 
         // Play
 
@@ -58,6 +58,11 @@ namespace TurtleSandbox
 
         static bool takeScreenshot;
 
+        // Select mode screen
+
+        static bool modeSelected;
+        static bool modeSelectedIsPlay;
+
         // Time
 
         static float timeBoost;
@@ -80,8 +85,19 @@ namespace TurtleSandbox
             InitPlay();
             TracePlayer.Init();
 
-            if(Config.skipSplash) { state = State.play; nextState = State.play; }
-            else { state = State.splashHold; nextState = State.splashHold; splashTimer = 0; }
+            if(Config.skipSplash)
+            {
+                state = State.play;
+                nextState = State.play;
+                UI.SetScreen(UI.ScreenId.PlayMode);
+            }
+            else
+            {
+                state = State.splashHold;
+                nextState = State.splashHold;
+                splashTimer = 0;
+                UI.SetScreen(UI.ScreenId.Splash);
+            }
 
             TracePlayer.Init();
 
@@ -93,6 +109,25 @@ namespace TurtleSandbox
 
                 if(state != nextState)
                 {
+                    if(state == State.splashFade)
+                    {
+                        UI.SetSplashOpacity(1);
+                    }
+
+                    if(nextState == State.splashHold)
+                    {
+                        UI.SetScreen(UI.ScreenId.Splash);
+                        UI.SetSplashOpacity(1);
+                    }
+                    else if(nextState == State.selectMode)
+                    {
+                        UI.SetScreen(UI.ScreenId.SelectMode);
+                    }
+                    else if(nextState == State.play)
+                    {
+                        UI.SetScreen(UI.ScreenId.PlayMode);
+                    }
+
                     state = nextState;
                 }
 
@@ -108,9 +143,26 @@ namespace TurtleSandbox
                 else if(state == State.splashFade)
                 {
                     splashFadeTimer += elapsedTime;
-                    if(splashFadeTimer >= AppConfig.splashFadeDuration)
+
+                    if (splashFadeTimer >= AppConfig.splashFadeDuration)
                     {
                         splashFadeTimer = AppConfig.splashFadeDuration;
+                        nextState = State.selectMode;
+                    }
+                    else
+                    {
+                        UI.SetSplashOpacity(1.0f - splashFadeTimer / AppConfig.splashFadeDuration);
+                    }
+                }
+                else if(state == State.selectMode)
+                {
+                    if(modeSelected)
+                    {
+                        if(modeSelectedIsPlay)
+                        {
+                            Console.WriteLine("Selected play mode");
+                        }
+
                         nextState = State.play;
                     }
                 }
@@ -130,28 +182,14 @@ namespace TurtleSandbox
 
                 DrawBackground(window);
 
-                if(state == State.splashHold)
-                {
-                    UI.DrawSplash(window, 1.0f, false);
-                }
-                else if(state == State.splashFade)
-                {
-                    UI.DrawSplash(window, 1.0f - splashFadeTimer / AppConfig.splashFadeDuration, false);
-                }
-                else if(state == State.play)
-                {
-                    if (Config.showGrid && !takeScreenshot) { UI.DrawGrid(window); }
-                    TracePlayer.Draw(window);
-                    if(turtleVisible) { UI.DrawTurtle(window); }
-                    if (takeScreenshot) { TakeScreenshot(window); }
-                    UI.Draw(window);
-                }
+                UI.Draw(window, takeScreenshot);
 
                 window.Display();
 
                 // Flags
 
                 takeScreenshot = false;
+                modeSelected = false;
             }
         }
 
@@ -164,22 +202,6 @@ namespace TurtleSandbox
         {
             return textBuilder;
         }
-
-        public static bool GetTurtleVisible()
-        {
-            return turtleVisible;
-        }
-
-        public static bool GetGridVisible()
-        {
-            return Config.showGrid;
-        }
-
-        public static State GetState()
-        {
-            return state;
-        }
-
 
         static void InitTime()
         {
@@ -338,51 +360,22 @@ namespace TurtleSandbox
 
         }
 
-        public static void SwitchGrid()
-        {
-            Config.showGrid = !Config.showGrid;
-
-            UI.AddInfoMessage(Texts.Get(Config.showGrid ? Texts.Id.gridOn : Texts.Id.gridOff), UI.InfoMessagePosition.Toolbar);
-
-        }
-
         static void InitTurtle()
         {
             turtle = new Turtle();
-            turtleVisible = true;
+        }
+
+        public static void OnPlayModeSelected()
+        {
+            modeSelected = true;
+            modeSelectedIsPlay = true;
 
         }
 
-        public static void SwitchTurtle()
+        public static void OnBrushModeSelected()
         {
-            turtleVisible = !turtleVisible;
-            UI.AddInfoMessage(Texts.Get(turtleVisible ? Texts.Id.turtleOn : Texts.Id.turtleOff), UI.InfoMessagePosition.Toolbar);
-        }
-
-        static void TakeScreenshot(RenderWindow window)
-        {
-            Texture texture = new Texture(window.Size.X, window.Size.Y);
-            texture.Update(window);
-            Image image = texture.CopyToImage();
-
-            bool done = false;
-            int index = 0;
-            while (index < 1000 && !done)
-            {
-                textBuilder.Clear();
-                textBuilder.AppendFormat(Texts.Get(Texts.Id.screenshotFilename), index);
-                string fileName = textBuilder.ToString();
-
-                if (!File.Exists(fileName))
-                {
-                    UI.AddInfoMessage(Texts.Get(Texts.Id.screenshotSaved), UI.InfoMessagePosition.Toolbar);
-                    image.SaveToFile(fileName);
-                    done = true;
-                }
-                else { index++; }
-
-
-            }
+            modeSelected = true;
+            modeSelectedIsPlay = true;
 
         }
 
@@ -390,6 +383,7 @@ namespace TurtleSandbox
         {
             window.Close();
         }
+
 
     }
 }
