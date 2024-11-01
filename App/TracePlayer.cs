@@ -166,7 +166,7 @@ namespace TurtleSandbox
 
         }
 
-        public static void Draw(RenderWindow window)
+        public static void Draw(RenderWindow window, float opacity)
         {
             for (int i = 0; i < stepIndex; i++)
             {
@@ -184,7 +184,7 @@ namespace TurtleSandbox
                     lineSprite.Position = UI.TurtlePositionToScreen(p1.x, p1.y, window);
                     lineSprite.Rotation = rotation;
                     lineSprite.Scale = new Vector2f(Config.lineWidth / 50.0f, length / 600.0f);
-                    lineSprite.Color = new Color((byte)p2.colorR, (byte)p2.colorG, (byte)p2.colorB, (byte)p2.opacity);
+                    lineSprite.Color = new Color((byte)p2.colorR, (byte)p2.colorG, (byte)p2.colorB, (byte)(p2.opacity * opacity));
                     window.Draw(lineSprite);
                 }
 

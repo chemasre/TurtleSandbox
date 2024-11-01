@@ -14,10 +14,10 @@ namespace TurtleSandbox
 
         public enum State
         {
-            splashHold,
-            splashFade,
-            selectMode,
-            play
+            Splash,
+            SelectMode,
+            Play,
+            Brush
         };
 
         // State
@@ -33,11 +33,6 @@ namespace TurtleSandbox
 
         static Turtle turtle;
 
-        // Play
-
-        static int playIndex = 0;
-        static int nextPlayIndex = 0;
-
         // Background
 
         static Sprite backgroundSprite;
@@ -47,7 +42,6 @@ namespace TurtleSandbox
         // Splash
 
         static float splashTimer;
-        static float splashFadeTimer;
 
         // Shared important objects
 
@@ -82,21 +76,20 @@ namespace TurtleSandbox
             UI.Init(window);
             InitMusic();
             InitTurtle();
-            InitPlay();
             TracePlayer.Init();
 
             if(Config.skipSplash)
             {
-                state = State.play;
-                nextState = State.play;
-                UI.SetScreen(UI.ScreenId.PlayMode);
+                state = State.Play;
+                nextState = State.Play;
+                UI.GotoScreen(UI.ScreenId.PlayMode, true);
             }
             else
             {
-                state = State.splashHold;
-                nextState = State.splashHold;
+                state = State.Splash;
+                nextState = State.Splash;
                 splashTimer = 0;
-                UI.SetScreen(UI.ScreenId.Splash);
+                UI.GotoScreen(UI.ScreenId.Splash, true);
             }
 
             TracePlayer.Init();
@@ -109,72 +102,71 @@ namespace TurtleSandbox
 
                 if(state != nextState)
                 {
-                    if(state == State.splashFade)
+                    if(nextState == State.Splash)
                     {
-                        UI.SetSplashOpacity(1);
+                        splashTimer = 0;
                     }
-
-                    if(nextState == State.splashHold)
+                    else if(nextState == State.SelectMode)
                     {
-                        UI.SetScreen(UI.ScreenId.Splash);
-                        UI.SetSplashOpacity(1);
                     }
-                    else if(nextState == State.selectMode)
+                    else if(nextState == State.Play)
                     {
-                        UI.SetScreen(UI.ScreenId.SelectMode);
-                    }
-                    else if(nextState == State.play)
-                    {
-                        UI.SetScreen(UI.ScreenId.PlayMode);
+                        PlayMode.Init();
                     }
 
                     state = nextState;
                 }
 
-                if(state == State.splashHold)
+                if(state == State.Splash)
                 {
-                    splashTimer += elapsedTime;
-                    if(splashTimer >= AppConfig.splashDuration)
+                    if(UI.GetCurrentScreen() == UI.ScreenId.Splash && !UI.IsTransitioning())
                     {
-                        nextState = State.splashFade;
-                        splashFadeTimer = 0;
-                    }
-                }
-                else if(state == State.splashFade)
-                {
-                    splashFadeTimer += elapsedTime;
-
-                    if (splashFadeTimer >= AppConfig.splashFadeDuration)
-                    {
-                        splashFadeTimer = AppConfig.splashFadeDuration;
-                        nextState = State.selectMode;
-                    }
-                    else
-                    {
-                        UI.SetSplashOpacity(1.0f - splashFadeTimer / AppConfig.splashFadeDuration);
-                    }
-                }
-                else if(state == State.selectMode)
-                {
-                    if(modeSelected)
-                    {
-                        if(modeSelectedIsPlay)
+                        splashTimer += elapsedTime;
+                        if(splashTimer >= AppConfig.splashDuration)
                         {
-                            Console.WriteLine("Selected play mode");
+                            UI.GotoScreen(UI.ScreenId.SelectMode);
                         }
-
-                        nextState = State.play;
+                    }
+                    else if(UI.GetCurrentScreen() == UI.ScreenId.SelectMode && !UI.IsTransitioning())
+                    {
+                        nextState = State.SelectMode;
                     }
                 }
-                else if(state == State.play)
+                else if(state == State.SelectMode)
                 {
-                    UpdatePlay();
+                    if(UI.GetCurrentScreen() == UI.ScreenId.SelectMode && !UI.IsTransitioning())
+                    {
+                        if(modeSelected)
+                        {
+                            if(modeSelectedIsPlay)
+                            {
+                                UI.GotoScreen(UI.ScreenId.PlayMode);
+                            }
+                            else
+                            {
+                                UI.GotoScreen(UI.ScreenId.BrushMode);
+                            }
+                        }
+                    }
+                    else if(UI.GetCurrentScreen() == UI.ScreenId.PlayMode && !UI.IsTransitioning())
+                    {
+                        nextState = State.Play;
+                    }
+                    else if(UI.GetCurrentScreen() == UI.ScreenId.BrushMode && !UI.IsTransitioning())
+                    {
+                        nextState = State.Brush;
+                    }
+                }
+                else if(state == State.Play)
+                {
+                    PlayMode.Update();
 
                     UpdateTime();
 
                     TracePlayer.Update(elapsedTime, timeBoost);
-                    UI.Update(elapsedTime);
                 }
+
+                UI.Update(elapsedTime);
 
                 UpdateElapsedTime();
 
@@ -248,7 +240,7 @@ namespace TurtleSandbox
             VideoMode mode = new VideoMode((uint)AppConfig.windowWidth, (uint)AppConfig.windowHeight);
 
             Styles style = Styles.Titlebar | Styles.Close;
-            window = new RenderWindow(mode, Config.windowTitle + " " + AppConfig.appVersion, style);
+            window = new RenderWindow(mode, Config.windowTitle + " v" + AppConfig.appVersion, style);
             Image icon = new Image("Assets/Icon.png");
             window.SetIcon(icon.Size.X, icon.Size.Y, icon.Pixels);
             window.SetMouseCursorVisible(false);
@@ -297,72 +289,19 @@ namespace TurtleSandbox
 
         }
 
-        static void InitPlay()
-        {
-            playIndex = Config.play - 1;
-            nextPlayIndex = Config.play - 1;
-
-        }
-
-        public static int GetPlayIndex()
-        {
-            return playIndex;
-        }
-
-        public static void SetPlayIndex(int index)
-        {
-            nextPlayIndex = index;
-        }
-
-        public static void NextPlayIndex()
-        {
-            if (nextPlayIndex + 1 >= AppConfig.playsCount) { nextPlayIndex = 0; }
-            else { nextPlayIndex++; }
-
-        }
-
-        public static void PreviousPlayIndex()
-        {
-            if(nextPlayIndex - 1 < 0) { nextPlayIndex = AppConfig.playsCount - 1; }
-            else { nextPlayIndex--; }
-        }
-
         public static void TakeScreenshot()
         {
             takeScreenshot = true;
         }
 
-        static void UpdatePlay()
-        {
-            if (playIndex != nextPlayIndex)
-            {
-                TracePlayer.SetStep(0);
-                playIndex = nextPlayIndex;
-                TracePlayer.Play();
-            }
-
-            // Generate trace
-
-            turtle.Reset();
-
-            if (playIndex == 0) { Play1(); }
-            else if (playIndex == 1) { Play2(); }
-            else if (playIndex == 2) { Play3(); }
-            else if (playIndex == 3) { Play4(); }
-            else if (playIndex == 4) { Play5(); }
-            else if (playIndex == 5) { Play6(); }
-            else if (playIndex == 6) { Play7(); }
-            else if (playIndex == 7) { Play8(); }
-            else if (playIndex == 8) { Play9(); }
-
-            List<Turtle.Step> trace = turtle.GetTrace();
-            TracePlayer.SetTrace(trace);
-
-        }
-
         static void InitTurtle()
         {
             turtle = new Turtle();
+        }
+
+        public static Turtle GetTurtle()
+        {
+            return turtle;
         }
 
         public static void OnPlayModeSelected()
@@ -375,7 +314,7 @@ namespace TurtleSandbox
         public static void OnBrushModeSelected()
         {
             modeSelected = true;
-            modeSelectedIsPlay = true;
+            modeSelectedIsPlay = false;
 
         }
 

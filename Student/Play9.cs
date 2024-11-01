@@ -1,7 +1,7 @@
 ﻿
 namespace TurtleSandbox
 {
-    internal partial class App
+    internal partial class PlayMode
     {
         // Funciones de la tortuga
         //

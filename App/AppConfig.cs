@@ -21,5 +21,8 @@ namespace TurtleSandbox
         public const float timeBoostSlow = 0.3f;
 
         public const float pixelsPerStep = 1;
+
+        public const float screenTransitionTime = 1.0f;
+
     }
 }
