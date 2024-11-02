@@ -172,10 +172,16 @@ namespace TurtleSandbox
 
         static bool showSelectModeAreas;
 
+        // Stroke preview
+
+        static Sprite strokePreviewSprite;
+        static List<Vector2f> strokePreview;
+
         // Messages
 
         static InfoMessage[] infoMessages;
         static Dictionary<Turtle.OrderId, string> orderIdToString;
+
 
         // Selector
 
@@ -254,6 +260,8 @@ namespace TurtleSandbox
 
             window.KeyPressed += OnKeyPressed;
             window.MouseButtonPressed += OnMouseButtonPressed;
+            window.MouseButtonReleased += OnMouseButtonReleased;
+            window.MouseMoved += OnMouseMoved;
             window.Closed += OnWindowClosed;
 
             // Init screen
@@ -352,6 +360,16 @@ namespace TurtleSandbox
             cursorSprite = new Sprite();
             cursorSprite.Texture = cursorTexture;
             cursorSprite.Color = uiColor;
+
+            // Init stroke preview
+
+            Texture strokePreviewTexture = new Texture("Assets/LineDashed.png");
+            strokePreviewSprite = new Sprite();
+            strokePreviewSprite.Texture = strokePreviewTexture;
+            strokePreviewSprite.Origin = new Vector2f(strokePreviewTexture.Size.X / 2, 0);
+            strokePreviewSprite.Scale = new Vector2f(1, 100);
+
+            strokePreview = new List<Vector2f>(1000);
 
             // Init splash
 
@@ -581,6 +599,7 @@ namespace TurtleSandbox
 
         }
 
+
         public static void SetStatus(int posX, int posY, int angle)
         {
             statusPosX = posX;
@@ -723,9 +742,11 @@ namespace TurtleSandbox
                 DrawSelectModeArea(selectPlayModeArea, window);
                 DrawSelectModeArea(selectBrushModeArea, window);
             }
-            else if(screenId == ScreenId.PlayMode)
+            else if(screenId == ScreenId.PlayMode || screenId == ScreenId.BrushMode)
             {
-                if (Config.showGrid && !takeScreenshot) { UI.DrawGrid(window); }
+                if (Config.showGrid && !takeScreenshot) { DrawGrid(window); }
+
+                if(screenId == ScreenId.BrushMode) { DrawStrokePreview(window); }
 
                 TracePlayer.Draw(window, opacity);
 
@@ -746,7 +767,9 @@ namespace TurtleSandbox
                 StringBuilder textBuilder = App.GetTextBuilder();
 
                 textBuilder.Clear();
-                textBuilder.AppendFormat(Texts.Get(Texts.Id.play), PlayMode.GetPlayIndex() + 1);
+                
+                if(screenId == ScreenId.PlayMode) { textBuilder.AppendFormat(Texts.Get(Texts.Id.play), PlayMode.GetPlayIndex() + 1); }
+                else { textBuilder.AppendFormat(Texts.Get(Texts.Id.brush), BrushMode.GetBrushIndex() + 1); }
                 playText.DisplayedString = textBuilder.ToString();
 
                 textBuilder.Clear();
@@ -1095,6 +1118,17 @@ namespace TurtleSandbox
             return -a - 90;
         }
 
+        public static Vector2f ScreenPositionToTurtle(float x, float y, RenderWindow window)
+        {
+            Vector2f p = new Vector2f(x, y) - new Vector2f(window.Size.X / 2, window.Size.Y / 2);
+            return new Vector2f(p.X, -p.Y) / AppConfig.pixelsPerStep;
+        }
+
+        public static float ScreenRotationToTurtleAngle(float a)
+        {
+            return -(a + 90);
+        }
+
 
         static void DrawColoredSprite(RenderWindow w, Sprite s)
         {
@@ -1123,7 +1157,7 @@ namespace TurtleSandbox
 
             if(isTransitioning) { return; }
 
-            if(screenId == ScreenId.PlayMode)
+            if(screenId == ScreenId.PlayMode || screenId == ScreenId.BrushMode)
             {
                 if (e.Code == Keyboard.Key.Space)
                 {
@@ -1164,39 +1198,48 @@ namespace TurtleSandbox
                 }
                 else if (e.Code == Keyboard.Key.Num1)
                 {
-                    PlayMode.SetPlayIndex(0);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(0); }
+                    else { BrushMode.SetBrushIndex(0); }
                 }
                 else if (e.Code == Keyboard.Key.Num2)
                 {
-                    PlayMode.SetPlayIndex(1);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(1); }
+                    else { BrushMode.SetBrushIndex(1); }
                 }
                 else if (e.Code == Keyboard.Key.Num3)
                 {
-                    PlayMode.SetPlayIndex(2);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(2); }
+                    else { BrushMode.SetBrushIndex(2); }
                 }
                 else if (e.Code == Keyboard.Key.Num4)
                 {
-                    PlayMode.SetPlayIndex(3);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(3); }
+                    else { BrushMode.SetBrushIndex(3); }
                 }
                 else if (e.Code == Keyboard.Key.Num5)
                 {
-                    PlayMode.SetPlayIndex(4);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(4); }
+                    else { BrushMode.SetBrushIndex(4); }
                 }
                 else if (e.Code == Keyboard.Key.Num6)
                 {
-                    PlayMode.SetPlayIndex(5);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(5); }
+                    else { BrushMode.SetBrushIndex(5); }
                 }
                 else if (e.Code == Keyboard.Key.Num7)
                 {
-                    PlayMode.SetPlayIndex(6);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(6); }
+                    else { BrushMode.SetBrushIndex(6); }
                 }
                 else if (e.Code == Keyboard.Key.Num8)
                 {
-                    PlayMode.SetPlayIndex(7);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(7); }
+                    else { BrushMode.SetBrushIndex(7); }
                 }
                 else if (e.Code == Keyboard.Key.Num9)
                 {
-                    PlayMode.SetPlayIndex(8);
+                    if (screenId == ScreenId.PlayMode) { PlayMode.SetPlayIndex(8); }
+                    else { BrushMode.SetBrushIndex(8); }
                 }
                 else if (e.Code == Keyboard.Key.C)
                 {
@@ -1209,6 +1252,41 @@ namespace TurtleSandbox
 
             }
 
+        }
+
+        public static void ClearStrokePreview()
+        {
+            strokePreview.Clear();
+        }
+
+        public static void AddStrokePreview(Vector2f point)
+        {
+            strokePreview.Add(point);
+        }
+
+        public static void UpdateStrokePreview(Vector2f point)
+        {
+            strokePreview[strokePreview.Count - 1] = point;
+        }
+
+
+        public static void DrawStrokePreview(RenderWindow window)
+        {
+            for(int i = 0; i < strokePreview.Count - 1; i ++)
+            {
+                Vector2f p1 = strokePreview[i];
+                Vector2f p2 = strokePreview[i + 1];
+                float aX = p2.X - p1.X;
+                float aY = p2.Y - p1.Y;
+                float rotation = MathF.Atan2(aY, aX) * 180 / MathF.PI - 90;
+                float length = MathF.Sqrt(aX * aX + aY * aY) * AppConfig.pixelsPerStep;
+                strokePreviewSprite.Position = p1;
+                strokePreviewSprite.Rotation = rotation;
+                strokePreviewSprite.Scale = new Vector2f(Config.lineWidth / 50.0f, length / 600.0f);
+                strokePreviewSprite.Color = uiColor;
+                DrawColoredSprite(window, strokePreviewSprite);
+
+            }
         }
 
         static void OnMouseButtonPressed(object sender, MouseButtonEventArgs e)
@@ -1224,7 +1302,7 @@ namespace TurtleSandbox
                 if (GetAreaRect(selectPlayModeArea).Contains(wp)) { App.OnPlayModeSelected(); }
                 else if (GetAreaRect(selectBrushModeArea).Contains(wp)) { App.OnBrushModeSelected(); }
             }
-            else if(screenId == ScreenId.PlayMode)
+            else if(screenId == ScreenId.PlayMode || screenId == ScreenId.BrushMode)
             {
                 if (e.Button == Mouse.Button.Left)
                 {
@@ -1278,15 +1356,48 @@ namespace TurtleSandbox
                     }
                     else if (selectorNextSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
-                        PlayMode.NextPlayIndex();
+                        if(screenId == ScreenId.PlayMode) { PlayMode.NextPlayIndex(); }
+                        else { BrushMode.NextBrushIndex(); }
                     }
                     else if (selectorPreviousSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
-                        PlayMode.PreviousPlayIndex();
+                        if (screenId == ScreenId.PlayMode) { PlayMode.PreviousPlayIndex(); }
+                        else { BrushMode.PreviousBrushIndex(); }
+                    }
+                    else if(screenId == ScreenId.BrushMode)
+                    {
+                        BrushMode.BeginStroke(Mouse.GetPosition(window), window);
                     }
                 }
             }
         }
+
+
+        private static void OnMouseMoved(object sender, MouseMoveEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (isTransitioning) { return; }
+
+            if (screenId == ScreenId.BrushMode)
+            {
+                BrushMode.UpdateStroke(Mouse.GetPosition(window), window);
+            }
+        }
+
+        static void OnMouseButtonReleased(object sender, MouseButtonEventArgs e)
+        {
+            RenderWindow window = (RenderWindow)sender;
+
+            if (isTransitioning) { return; }
+
+            if(screenId == ScreenId.BrushMode)
+            {
+                BrushMode.EndStroke(Mouse.GetPosition(window), window);
+            }
+
+        }
+
 
         static void TakeScreenshot(RenderWindow window)
         {

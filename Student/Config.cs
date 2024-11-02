@@ -16,9 +16,13 @@ namespace TurtleSandbox
 
         public static int play = 1;
 
+        // Qué brocha quieres tener seleccionada al principio (1 al 9)
+
+        public static int brush = 1;
+
         // Si quieres que inicialmente se reproduzca la música o no
 
-        public static bool playMusic = true;
+        public static bool playMusic = false;
 
         // Si quieres ver la rejilla inicialmente o no
 

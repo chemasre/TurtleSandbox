@@ -27,6 +27,7 @@ namespace TurtleSandbox
             gridCoordinates,
             gridCursorCoordinates,
             watermark,
+            brush
 
         };
 
@@ -52,6 +53,7 @@ namespace TurtleSandbox
             texts[Id.gridCoordinates] = "{0}";
             texts[Id.gridCursorCoordinates] = "({0,3},{1,3})";
             texts[Id.watermark] = "Turtle Sandbox v{0} by Sinestesia Game Design";
+            texts[Id.brush] = "Brush {0,1}";
         }
 
         public static string Get(Id id)

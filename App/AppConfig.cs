@@ -16,6 +16,7 @@ namespace TurtleSandbox
         public const float splashFadeDuration = 0.5f;
 
         public const int playsCount = 9;
+        public const int brushesCount = 9;
 
         public const float timeBoostFast = 5.0f;
         public const float timeBoostSlow = 0.3f;
@@ -23,6 +24,8 @@ namespace TurtleSandbox
         public const float pixelsPerStep = 1;
 
         public const float screenTransitionTime = 1.0f;
+
+        public const float strokeMinLength = 20;
 
     }
 }

@@ -137,7 +137,7 @@ namespace TurtleSandbox
             colorB = b;
         }
 
-        public void Opacity(int o)
+        public void Opacity(float o)
         {
             opacity = o;
         }

@@ -113,6 +113,10 @@ namespace TurtleSandbox
                     {
                         PlayMode.Init();
                     }
+                    else if(nextState == State.Brush)
+                    {
+                        BrushMode.Init();
+                    }
 
                     state = nextState;
                 }
@@ -157,10 +161,11 @@ namespace TurtleSandbox
                         nextState = State.Brush;
                     }
                 }
-                else if(state == State.Play)
+                else if(state == State.Play || state == State.Brush)
                 {
-                    PlayMode.Update();
-
+                    if(state == State.Play) { PlayMode.Update(); }
+                    else { BrushMode.Update(); }
+                    
                     UpdateTime();
 
                     TracePlayer.Update(elapsedTime, timeBoost);

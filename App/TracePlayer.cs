@@ -69,6 +69,11 @@ namespace TurtleSandbox
             stepClock.Restart();
         }
 
+        public static void SetEndStep()
+        {
+            SetStep(trace.Count - 1);
+        }
+
         public static void SetTrace(List<Turtle.Step> _trace)
         {
             trace = _trace;
