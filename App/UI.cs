@@ -863,41 +863,45 @@ namespace TurtleSandbox
                 }
             }
 
-            // Check input
 
-            bool fastForwardKey = Keyboard.IsKeyPressed(Keyboard.Key.RShift);
-            bool fastBackwardsKey = Keyboard.IsKeyPressed(Keyboard.Key.LShift);
-            bool fastForwardMouse = false;
-            bool fastBackwardsMouse = false;
-
-            if (Mouse.IsButtonPressed(Mouse.Button.Left))
+            if(screenId == ScreenId.PlayMode)
             {
-                Vector2i p = Mouse.GetPosition(window);
-                fastForwardMouse = buttonFastForwardSprite.GetGlobalBounds().Contains(p.X, p.Y);
-                fastBackwardsMouse = buttonFastBackwardsSprite.GetGlobalBounds().Contains(p.X, p.Y);
-            }
+                // Check input
 
-            bool fastForward = (fastForwardKey || fastForwardMouse);
-            bool fastBackwards = (fastBackwardsKey || fastBackwardsMouse);
+                bool fastForwardKey = Keyboard.IsKeyPressed(Keyboard.Key.RShift);
+                bool fastBackwardsKey = Keyboard.IsKeyPressed(Keyboard.Key.LShift);
+                bool fastForwardMouse = false;
+                bool fastBackwardsMouse = false;
 
-            TracePlayer.PlayState playState = TracePlayer.GetPlayState();
+                if (Mouse.IsButtonPressed(Mouse.Button.Left))
+                {
+                    Vector2i p = Mouse.GetPosition(window);
+                    fastForwardMouse = buttonFastForwardSprite.GetGlobalBounds().Contains(p.X, p.Y);
+                    fastBackwardsMouse = buttonFastBackwardsSprite.GetGlobalBounds().Contains(p.X, p.Y);
+                }
 
-            if (fastForward || fastBackwards)
-            {
-                if(playState == TracePlayer.PlayState.playing) { playOnFastForwardOrBackwardsRelease = true; }
-                else if(playState == TracePlayer.PlayState.stopped) { stopOnFastForwardOrBackwardsRelease = true; }
+                bool fastForward = (fastForwardKey || fastForwardMouse);
+                bool fastBackwards = (fastBackwardsKey || fastBackwardsMouse);
 
-                if(fastForward) { TracePlayer.FastForward(); }
-                else { TracePlayer.FastBackwards();  }
-            }
-            else
-            {
-                if(stopOnFastForwardOrBackwardsRelease) { TracePlayer.Stop(); }
-                else if(playOnFastForwardOrBackwardsRelease) { TracePlayer.Play(); }
+                TracePlayer.PlayState playState = TracePlayer.GetPlayState();
 
-                playOnFastForwardOrBackwardsRelease = false;
-                stopOnFastForwardOrBackwardsRelease = false;
+                if (fastForward || fastBackwards)
+                {
+                    if(playState == TracePlayer.PlayState.playing) { playOnFastForwardOrBackwardsRelease = true; }
+                    else if(playState == TracePlayer.PlayState.stopped) { stopOnFastForwardOrBackwardsRelease = true; }
+
+                    if(fastForward) { TracePlayer.FastForward(); }
+                    else { TracePlayer.FastBackwards();  }
+                }
+                else
+                {
+                    if(stopOnFastForwardOrBackwardsRelease) { TracePlayer.Stop(); }
+                    else if(playOnFastForwardOrBackwardsRelease) { TracePlayer.Play(); }
+
+                    playOnFastForwardOrBackwardsRelease = false;
+                    stopOnFastForwardOrBackwardsRelease = false;
                 
+                }
             }
         }
 
@@ -1355,28 +1359,33 @@ namespace TurtleSandbox
 
             if(screenId == ScreenId.PlayMode || screenId == ScreenId.BrushMode)
             {
-                if (e.Code == Keyboard.Key.Space)
+                if(screenId == ScreenId.PlayMode)
                 {
-                    TracePlayer.SetStep(0);
-                    TracePlayer.Play();
+                    if (e.Code == Keyboard.Key.Space)
+                    {
+                        TracePlayer.SetStep(0);
+                        TracePlayer.Play();
+                    }
+                    else if (e.Code == Keyboard.Key.Right)
+                    {
+                        TracePlayer.StepForward();
+                        TracePlayer.Stop();
+                    }
+                    else if (e.Code == Keyboard.Key.Left)
+                    {
+                        TracePlayer.StepBackward();
+                        TracePlayer.Stop();
+                    }
+                    else if (e.Code == Keyboard.Key.Enter)
+                    {
+                        PlayState playState = TracePlayer.GetPlayState();
+                        if (playState == PlayState.playing) { TracePlayer.Stop(); }
+                        else if (playState == PlayState.stopped) { TracePlayer.Play(); }
+                    }
                 }
-                else if (e.Code == Keyboard.Key.Right)
-                {
-                    TracePlayer.StepForward();
-                    TracePlayer.Stop();
-                }
-                else if (e.Code == Keyboard.Key.Left)
-                {
-                    TracePlayer.StepBackward();
-                    TracePlayer.Stop();
-                }
-                else if (e.Code == Keyboard.Key.Enter)
-                {
-                    PlayState playState = TracePlayer.GetPlayState();
-                    if (playState == PlayState.playing) { TracePlayer.Stop(); }
-                    else if (playState == PlayState.stopped) { TracePlayer.Play(); }
-                }
-                else if (e.Code == Keyboard.Key.M)
+
+
+                if (e.Code == Keyboard.Key.M)
                 {
                     App.SwitchMusic();
                 }
