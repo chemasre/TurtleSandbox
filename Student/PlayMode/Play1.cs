@@ -19,7 +19,7 @@ namespace TurtleSandbox
         //     turtle.RandTurn(min, max)  -> Le hace girar un ángulo al azar entre min y max, ambos incluidos. Min y max pueden ser menores que 0.
 
         //      turtle.Remember()         -> Hace que la tortuga memorice la posición y ángulo en que está ahora
-        //      turgle.Recall()           -> Devuelve a la tortuga a la posició y ángulo que había memorizado
+        //      turgle.Recall()           -> Devuelve a la tortuga a la posición y ángulo que había memorizado
 
         static void Play1()
         {

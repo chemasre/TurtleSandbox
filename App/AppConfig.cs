@@ -34,7 +34,7 @@ namespace TurtleSandbox
 
         public const int brushesCount = 9;
 
-        public const float strokeMinLength = 20;
+        public const float strokeMinLength = 100;
 
         public const int brushSizesCount = 5;
         public const int brushColorsCount = 16;

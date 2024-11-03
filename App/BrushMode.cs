@@ -13,8 +13,6 @@ namespace TurtleSandbox
 {
     internal partial class BrushMode
     {
-        static int turtleSpeed = 2;
-
         static int brushIndex = 0;
         static int brushColorIndex = 0;
         static int brushSizeIndex = 0;
@@ -63,29 +61,55 @@ namespace TurtleSandbox
 
         public struct Stroke
         {
-            public float startPosX { get; set; }
-            public float startPosY { get; set; }
-            public float endPosX { get; set; }
-            public float endPosY { get; set; }
+            public float posX;
+            public float posY;
+            public float nextPosX;
+            public float nextPosY;
+            public float distance;
+            public float angle;
+            public float nextAngle;
+            public float turn;
+            public float percent;
+            public float nextPercent;
+        };
+
+        public struct Brush
+        {
+            public float size;
+            public float colorR;
+            public float colorG;
+            public float colorB;
+            public float opacity;
+        };
+
+        public struct StrokeData
+        {
+            public float posX { get; set; }
+            public float posY { get; set; }
+            public float nextPosX { get; set; }
+            public float nextPosY { get; set; }
             public float distance { get; set; }
-            public float startAngle { get; set; }
-            public float endAngle { get; set; }
-            public float startPercent { get; set; }
-            public float endPercent { get; set; }
+            public float angle { get; set; }
+            public float nextAngle { get; set; }
+            public float turn { get; set; }
+            public float percent { get; set; }
+            public float nextPercent { get; set; }
 
             public int brushIndex { get; set; }
+            public float brushSize { get; set; }
             public float brushColorR { get; set; }
             public float brushColorG { get; set; }
             public float brushColorB { get; set; }
-            public float brushSize { get; set; }
             public float brushOpacity { get; set; }
         };
 
 
-        static List<Stroke> strokeList;
-        static List<Stroke> strokeUndoList;
+        static List<StrokeData> strokeList;
+        static List<StrokeData> strokeUndoList;
         static bool recordingStroke;
+        static StrokeData strokeData;
         static Stroke stroke;
+        static Brush brush;
         static float progress;
 
         public static void Init()
@@ -105,22 +129,11 @@ namespace TurtleSandbox
             TracePlayer.SetStep(0);
             TracePlayer.Stop();
 
-            strokeList = new List<Stroke>(1000);
-            strokeUndoList = new List<Stroke>(1000);
-            stroke = new Stroke();
+            strokeList = new List<StrokeData>(1000);
+            strokeUndoList = new List<StrokeData>(1000);
+            strokeData = new StrokeData();
         }
 
-        public static int GetTurtleSpeed()
-        {
-            return turtleSpeed;
-        }
-
-        public static void NextTurtleSpeed()
-        {
-            if (turtleSpeed + 1 >= AppConfig.playsCount) { turtleSpeed = 0; }
-            else { turtleSpeed++; }
-
-        }
 
         public static int GetBrushIndex()
         {
@@ -159,8 +172,8 @@ namespace TurtleSandbox
                     strokeUndoList.Clear();
                     UI.ClearStrokePreview();
                     Vector2f tp = UI.ScreenPositionToTurtle(screenPosition.X, screenPosition.Y, window);
-                    stroke.startPosX = tp.X;
-                    stroke.startPosY = tp.Y;
+                    strokeData.posX = tp.X;
+                    strokeData.posY = tp.Y;
                     UI.AddStrokePreview((Vector2f)screenPosition);
                     UI.AddStrokePreview((Vector2f)screenPosition);
                     progress = 0;
@@ -175,7 +188,7 @@ namespace TurtleSandbox
             {
                 if (recordingStroke)
                 {
-                    Vector2f tp1 = new Vector2f(stroke.startPosX, stroke.startPosY);
+                    Vector2f tp1 = new Vector2f(strokeData.posX, strokeData.posY);
                     Vector2f tp2 = UI.ScreenPositionToTurtle(screenPosition.X, screenPosition.Y, window);
 
 
@@ -184,25 +197,25 @@ namespace TurtleSandbox
                     if (distance >= AppConfig.strokeMinLength)
                     {
                         UI.AddStrokePreview((Vector2f)screenPosition);
-                        stroke.endPosX = tp2.X;
-                        stroke.endPosY = tp2.Y;
-                        stroke.distance = distance;
-                        stroke.startAngle = MathF.Atan2(ap.Y, ap.X) * 180 / MathF.PI;
-                        stroke.startPercent = progress;
-                        stroke.brushIndex = brushIndex;
-                        stroke.brushColorR = brushColors[brushColorIndex].R;
-                        stroke.brushColorG = brushColors[brushColorIndex].G;
-                        stroke.brushColorB = brushColors[brushColorIndex].B;
-                        stroke.brushSize = brushSizes[brushSizeIndex];
-                        stroke.brushOpacity = brushOpacities[brushOpacityIndex];
+                        strokeData.nextPosX = tp2.X;
+                        strokeData.nextPosY = tp2.Y;
+                        strokeData.distance = distance;
+                        strokeData.angle = Turtle.NormalizeAngle(MathF.Atan2(ap.Y, ap.X) * 180 / MathF.PI);
+                        strokeData.percent = progress;
+                        strokeData.brushIndex = brushIndex;
+                        strokeData.brushColorR = brushColors[brushColorIndex].R;
+                        strokeData.brushColorG = brushColors[brushColorIndex].G;
+                        strokeData.brushColorB = brushColors[brushColorIndex].B;
+                        strokeData.brushSize = brushSizes[brushSizeIndex];
+                        strokeData.brushOpacity = brushOpacities[brushOpacityIndex];
 
-                        strokeList.Add(stroke);
+                        strokeList.Add(strokeData);
 
                         progress = 1;
 
-                        stroke = new Stroke();
-                        stroke.startPosX = tp2.X;
-                        stroke.startPosY = tp2.Y;
+                        strokeData = new StrokeData();
+                        strokeData.posX = tp2.X;
+                        strokeData.posY = tp2.Y;
                     }
                     else
                     {
@@ -220,115 +233,133 @@ namespace TurtleSandbox
             if (TracePlayer.GetPlayState() == TracePlayer.PlayState.stopped)
             {
                 Vector2f tp = UI.ScreenPositionToTurtle(screenPosition.X, screenPosition.Y, window);
-                stroke.endPosX = tp.X;
-                stroke.endPosY = tp.Y;
-                stroke.distance = MathF.Sqrt(MathF.Pow(stroke.startPosX - tp.X, 2) + MathF.Pow(stroke.startPosY - tp.Y, 2));
-                float aX = tp.X - stroke.startPosX;
-                float aY = tp.Y - stroke.startPosY;            
-                stroke.startAngle = MathF.Atan2(aY, aX) * 180 / MathF.PI;
-                stroke.startPercent = progress;
-                stroke.brushIndex = brushIndex;
-                stroke.brushColorR = brushColors[brushColorIndex].R;
-                stroke.brushColorG = brushColors[brushColorIndex].G;
-                stroke.brushColorB = brushColors[brushColorIndex].B;
-                stroke.brushSize = brushSizes[brushSizeIndex];
-                stroke.brushOpacity = brushOpacities[brushOpacityIndex];
+                strokeData.nextPosX = tp.X;
+                strokeData.nextPosY = tp.Y;
+                strokeData.distance = MathF.Sqrt(MathF.Pow(strokeData.posX - tp.X, 2) + MathF.Pow(strokeData.posY - tp.Y, 2));
+                float aX = tp.X - strokeData.posX;
+                float aY = tp.Y - strokeData.posY;            
+                strokeData.angle = Turtle.NormalizeAngle(MathF.Atan2(aY, aX) * 180 / MathF.PI);
+                strokeData.percent = progress;
+                strokeData.brushIndex = brushIndex;
+                strokeData.brushColorR = brushColors[brushColorIndex].R;
+                strokeData.brushColorG = brushColors[brushColorIndex].G;
+                strokeData.brushColorB = brushColors[brushColorIndex].B;
+                strokeData.brushSize = brushSizes[brushSizeIndex];
+                strokeData.brushOpacity = brushOpacities[brushOpacityIndex];
 
-                strokeList.Add(stroke);
+                strokeList.Add(strokeData);
 
                 // End stroke sequence
 
                 int i = strokeList.Count - 1;
                 int sequenceStart;
 
-                while((int)(strokeList[i].startPercent)!= 0) { i --; }
+                while((int)(strokeList[i].percent)!= 0) { i --; }
                 sequenceStart = i;
 
                 int sequenceTotal = strokeList.Count - sequenceStart;
 
                 for(i = sequenceStart; i < strokeList.Count; i++)
                 {
-                    stroke = strokeList[i];
-                    stroke.startPercent = (i - sequenceStart) / (float)sequenceTotal;
-                    strokeList[i] = stroke;
+                    strokeData = strokeList[i];
+                    strokeData.percent = (i - sequenceStart) / (float)sequenceTotal;
+                    strokeList[i] = strokeData;
                 }
 
                 for (i = sequenceStart; i < strokeList.Count; i++)
                 {
-                    stroke = strokeList[i];
+                    strokeData = strokeList[i];
 
                     if (i < strokeList.Count - 1)
                     {
-                        Stroke next = strokeList[i + 1];
-                        stroke.endAngle = next.startAngle;
-                        stroke.endPercent = next.startPercent;
+                        StrokeData next = strokeList[i + 1];
+                        strokeData.nextAngle = next.angle;
+                        strokeData.turn = Turtle.CalculateTurn(strokeData.angle, strokeData.nextAngle);
+                        strokeData.nextPercent = next.percent;
                     }
                     else
                     {
-                        stroke.endAngle = stroke.startAngle;
-                        stroke.endPercent = 1;
+                        strokeData.nextAngle = strokeData.angle;
+                        strokeData.turn = Turtle.CalculateTurn(strokeData.angle, strokeData.nextAngle);
+                        strokeData.nextPercent = 1;
                     }
 
-                    strokeList[i] = stroke;
+                    strokeList[i] = strokeData;
                 }
 
                 for (i = sequenceStart; i < strokeList.Count; i++)
                 {
-                    stroke = strokeList[i];
-
-                    turtle.Color(stroke.brushColorR, stroke.brushColorG, stroke.brushColorB);
-                    turtle.Opacity(stroke.brushOpacity);
-                    turtle.Teleport(stroke.startPosX, stroke.startPosY, stroke.startAngle);
-                    RunBrush(stroke.brushIndex);
+                    strokeData = strokeList[i];
+                    RunBrush();
 
                 }
 
                 recordingStroke = false;
 
-                if(turtleSpeed == 0) { TracePlayer.Play(); }
-                else if(turtleSpeed == 1) { TracePlayer.FastForward(); }
-                else { TracePlayer.SetEndStep(); }
+                TracePlayer.SetEndStep();
 
                 UI.ClearStrokePreview();
             }
 
         }
 
-        static void RunBrush(int index)
+        static void RunBrush()
         {
-            if (index == 0) { Brush1(); }
-            else if (index == 1) { Brush2(); }
-            else if (index == 2) { Brush3(); }
-            else if (index == 3) { Brush4(); }
-            else if (index == 4) { Brush5(); }
-            else if (index == 5) { Brush6(); }
-            else if (index == 6) { Brush7(); }
-            else if (index == 7) { Brush8(); }
-            else // index == 8
+            stroke = new Stroke();
+            stroke.posX = strokeData.posX;
+            stroke.posY = strokeData.posY;
+            stroke.distance = strokeData.distance;
+            stroke.angle = strokeData.angle;
+            stroke.nextAngle = strokeData.nextAngle;
+            stroke.turn = strokeData.turn;
+            stroke.percent = strokeData.percent;
+            stroke.nextPercent = strokeData.nextPercent;
+
+            brush = new Brush();
+            brush.colorR = strokeData.brushColorR;
+            brush.colorG = strokeData.brushColorG;
+            brush.colorB = strokeData.brushColorB;
+            brush.size = strokeData.brushSize;
+            brush.opacity = strokeData.brushOpacity;
+
+            turtle.Color(strokeData.brushColorR, strokeData.brushColorG, strokeData.brushColorB);
+            turtle.Opacity(strokeData.brushOpacity);
+            turtle.Teleport(strokeData.posX, strokeData.posY, strokeData.angle);
+
+            if (strokeData.brushIndex == 0) { Brush1(); }
+            else if (strokeData.brushIndex == 1) { Brush2(); }
+            else if (strokeData.brushIndex == 2) { Brush3(); }
+            else if (strokeData.brushIndex == 3) { Brush4(); }
+            else if (strokeData.brushIndex == 4) { Brush5(); }
+            else if (strokeData.brushIndex == 5) { Brush6(); }
+            else if (strokeData.brushIndex == 6) { Brush7(); }
+            else if (strokeData.brushIndex == 7) { Brush8(); }
+            else // strokeData.brushIndex == 8
             { Brush9(); }
         }
 
         static void PrintStrokeList(bool undo = false, bool brief = false)
         {
-            List<Stroke> l = undo ? strokeUndoList : strokeList;
+            List<StrokeData> l = undo ? strokeUndoList : strokeList;
 
             Console.WriteLine("-------- " + (undo ? "undo " : "stroke ") + "list -----------");
 
             for(int i = 0; i < l.Count; i++)
             {
-                Stroke s = l[i];
+                StrokeData s = l[i];
 
-                if(brief) { Console.WriteLine(i + ": %" + s.startPercent); }
+                if(brief) { Console.WriteLine(i + ": %" + s.percent); }
                 else
                 {
                     Console.WriteLine("--------[" + i + "]-----------");
-                    Console.WriteLine("StartPos......." + s.startPosX + ", " + s.startPosY);
-                    Console.WriteLine("EndPos........." + s.endPosX + ", " + s.endPosY);
+                    Console.WriteLine("StartPos......." + s.posX + ", " + s.posY);
+                    Console.WriteLine("EndPos........." + s.nextPosX + ", " + s.nextPosY);
                     Console.WriteLine("Distance......." + s.distance);
-                    Console.WriteLine("StartAngle....." + s.startAngle);
-                    Console.WriteLine("EndAngle......." + s.endAngle);
-                    Console.WriteLine("StartFraction.." + s.startPercent);
-                    Console.WriteLine("EndFraction...." + s.endPercent);
+                    Console.WriteLine("StartAngle....." + s.angle);
+                    Console.WriteLine("EndAngle......." + s.nextAngle);
+                    Console.WriteLine("Turn..........." + s.turn);
+                    Console.WriteLine("StartFraction.." + s.percent);
+                    Console.WriteLine("EndFraction...." + s.nextPercent);
                 }
             }
         }
@@ -372,7 +403,7 @@ namespace TurtleSandbox
             if(strokeList.Count == 0) { return; }
 
             int count = 0;
-            while (strokeList[strokeList.Count - 1 - count].startPercent != 0) { count ++; }
+            while (strokeList[strokeList.Count - 1 - count].percent != 0) { count ++; }
             count ++;
 
             for(int i = 0; i < count; i++)
@@ -394,7 +425,7 @@ namespace TurtleSandbox
             while (!found)
             {
                 if (count >= strokeUndoList.Count) { found = true; }
-                else if (strokeUndoList[count].startPercent == 0) { found = true; }
+                else if (strokeUndoList[count].percent == 0) { found = true; }
                 else { count++; }
             }
 
@@ -424,7 +455,7 @@ namespace TurtleSandbox
             if(File.Exists("strokes.json"))
             {
                 string json = File.ReadAllText("strokes.json", Encoding.UTF8);
-                strokeList = JsonSerializer.Deserialize< List<Stroke> >(json);
+                strokeList = JsonSerializer.Deserialize< List<StrokeData> >(json);
                 RunStrokeList();
                 TracePlayer.SetEndStep();
             }
@@ -444,12 +475,8 @@ namespace TurtleSandbox
 
             for (int i = 0; i < strokeList.Count; i++)
             {
-                stroke = strokeList[i];
-
-                turtle.Color(stroke.brushColorR, stroke.brushColorG, stroke.brushColorB);
-                turtle.Opacity(stroke.brushOpacity);
-                turtle.Teleport(stroke.startPosX, stroke.startPosY, stroke.startAngle);
-                RunBrush(stroke.brushIndex);
+                strokeData = strokeList[i];
+                RunBrush();
 
             }
 

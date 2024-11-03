@@ -293,12 +293,26 @@ namespace TurtleSandbox
             Console.WriteLine("********************************");
         }
 
-        float NormalizeAngle(float a)
+        public static float NormalizeAngle(float a)
         {
             float t = a / 360.0f;
             float n = (t - (int)t) * 360.0f;
             if (n < 0) { n += 360.0f; }
             return n;
+        }
+
+        public static float CalculateTurn(float a1, float a2)
+        {
+            float a1n = NormalizeAngle(a1);
+            float a2n = NormalizeAngle(a2);
+            float r;
+
+            a2n = NormalizeAngle(a2n - a1n);
+            if(a2n > 180) { r = 360.0f - a2n; }
+            else { r = -a2n; }
+
+            return r;
+
         }
 
     }
