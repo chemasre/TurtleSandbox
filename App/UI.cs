@@ -46,15 +46,25 @@ namespace TurtleSandbox
         const float gridCoordinatesCursorOffsetX = 23;
         const float gridCoordinatesCursorOffsetY = -10;
 
-        const float buttonBar1Scale = 1.0f;
-        const float buttonBar1X = 25;
-        const float buttonBar1Y = 666;
-        const float buttonBarSeparation1 = 6;
+        const float selectorBarScale = 1.0f;
+        const float selectorBarX = 25;
+        const float selectorBarY = 666;
+        const float selectorBarSeparation = 6;
 
-        const float buttonBar2Scale = 1.0f;
-        const float buttonBar2X = 650;
-        const float buttonBar2Y = 666;
-        const float buttonBarSeparation2 = 2;
+        const float playbackBarScale = 1.0f;
+        const float playbackBarX = 650;
+        const float playbackBarY = 666;
+        const float playbackBarSeparation = 2;
+
+        const float strokeBarScale = 1.0f;
+        const float strokeBarX = 340;
+        const float strokeBarY = 666;
+        const float strokeBarSeparation = 2;
+
+        const float fileBarScale = 1.0f;
+        const float fileBarX = 696;
+        const float fileBarY = 666;
+        const float fileBarSeparation = 2;
 
 
         // Enums
@@ -101,6 +111,10 @@ namespace TurtleSandbox
         static bool isTransitioning;
         static float transitionTimer;
 
+        //////////////////////////////////////////////////////////////////////////
+        /////////                  COMMON ELEMENTS                       /////////
+        //////////////////////////////////////////////////////////////////////////
+
         // Turtle
 
         static Sprite turtleSprite;
@@ -116,16 +130,67 @@ namespace TurtleSandbox
 
         static Font font;
 
-        // Play
-
-        static Text playText;
-
         // Cursor
 
         static Sprite cursorSprite;
         static Texture cursorTexture;
 
-        // Splash
+        // Grid
+
+        static Text gridText;
+        static Sprite gridLineSprite;
+        static Texture gridLineTexture;
+
+        // Selector
+
+        static Sprite selectorPreviousSprite;
+        static Sprite selectorNextSprite;
+
+        static Texture selectorPreviousTexture;
+        static Texture selectorNextTexture;
+
+        static Text selectorText;
+
+        static bool showSelector;
+
+        // Utils toolbar
+
+        static Sprite buttonScreenshotSprite;
+        static Sprite buttonMusicSprite;
+        static Sprite buttonTurtleSprite;
+        static Sprite buttonGridSprite;
+        static Sprite buttonSandColorSprite;
+        static Sprite buttonSplashSprite;
+
+        static Texture buttonPlayTexture;
+        static Texture buttonPauseTexture;
+        static Texture buttonForwardTexture;
+        static Texture buttonBackwardsTexture;
+        static Texture buttonRestartTexture;
+        static Texture buttonFastForwardTexture;
+        static Texture buttonFastBackwardsTexture;
+        static Texture buttonScreenshotTexture;
+        static Texture buttonMusicOnTexture;
+        static Texture buttonMusicOffTexture;
+        static Texture buttonTurtleOnTexture;
+        static Texture buttonTurtleOffTexture;
+        static Texture buttonGridOnTexture;
+        static Texture buttonGridOffTexture;
+        static Texture[] buttonSandColorTextures;
+        static Texture buttonSplashOnTexture;
+        static Texture buttonSplashOffTexture;
+
+        static bool showUtilsToolbar;
+
+        // Messages
+
+        static InfoMessage[] infoMessages;
+        static Dictionary<Turtle.OrderId, string> orderIdToString;
+
+
+        //////////////////////////////////////////////////////////////////////////
+        /////////                  SPLASH                                /////////
+        //////////////////////////////////////////////////////////////////////////
 
         static Sprite splashSprite;
         static Texture splashTexture;
@@ -134,18 +199,16 @@ namespace TurtleSandbox
         static Texture splashCloseButtonTexture;
 
         static float opacity;
-        static Color uiColor;
-        static Color toolbarColor;
-        static Color gridColor;
+        static Color toolbarColor1;
+        static Color toolbarColor2;
 
 
         static bool showSplash;
 
-        // Grid
 
-        static Text gridText;
-        static Sprite gridLineSprite;
-        static Texture gridLineTexture;
+        //////////////////////////////////////////////////////////////////////////
+        /////////                  SELECT MODE                           /////////
+        //////////////////////////////////////////////////////////////////////////
 
         // Select mode areas
 
@@ -172,28 +235,47 @@ namespace TurtleSandbox
 
         static bool showSelectModeAreas;
 
+        //////////////////////////////////////////////////////////////////////////
+        /////////                  BRUSH MODE                            /////////
+        //////////////////////////////////////////////////////////////////////////
+
         // Stroke preview
 
         static Sprite strokePreviewSprite;
         static List<Vector2f> strokePreview;
 
-        // Messages
+        // Stroke toolbar
 
-        static InfoMessage[] infoMessages;
-        static Dictionary<Turtle.OrderId, string> orderIdToString;
+        static Sprite buttonUndoSprite;
+        static Sprite buttonRedoSprite;
+        static Sprite buttonSizeSprite;
+        static Sprite buttonColorSprite;
+        static Sprite buttonOpacitySprite;
 
+        static Texture buttonUndoTexture;
+        static Texture buttonRedoTexture;
+        static Texture[] buttonSizeTextures;
+        static Texture[] buttonColorTextures;
+        static Texture[] buttonOpacityTextures;
 
-        // Selector
+        static bool showStrokeToolbar;
 
-        static Sprite selectorPreviousSprite;
-        static Sprite selectorNextSprite;
+        // File toolbar
 
-        static Texture selectorPreviousTexture;
-        static Texture selectorNextTexture;
+        static Sprite buttonNewSprite;
+        static Sprite buttonSaveSprite;
+        static Sprite buttonLoadSprite;
 
-        static Text selectorText;
+        static Texture buttonNewTexture;
+        static Texture buttonSaveTexture;
+        static Texture buttonLoadTexture;
 
-        static bool showSelector;
+        static bool showFileToolbar;
+
+        //////////////////////////////////////////////////////////////////////////
+        /////////                  PLAY MODE                             /////////
+        //////////////////////////////////////////////////////////////////////////
+
 
         // Status
 
@@ -221,33 +303,6 @@ namespace TurtleSandbox
 
         static bool showPlaybackToolbar;
 
-        // Utils toolbar
-
-        static Sprite buttonScreenshotSprite;
-        static Sprite buttonMusicSprite;
-        static Sprite buttonTurtleSprite;
-        static Sprite buttonGridSprite;
-        static Sprite buttonSplashSprite;
-
-        static Texture buttonPlayTexture;
-        static Texture buttonPauseTexture;
-        static Texture buttonForwardTexture;
-        static Texture buttonBackwardsTexture;
-        static Texture buttonRestartTexture;
-        static Texture buttonFastForwardTexture;
-        static Texture buttonFastBackwardsTexture;
-        static Texture buttonScreenshotTexture;
-        static Texture buttonMusicOnTexture;
-        static Texture buttonMusicOffTexture;
-        static Texture buttonTurtleOnTexture;
-        static Texture buttonTurtleOffTexture;
-        static Texture buttonGridOnTexture;
-        static Texture buttonGridOffTexture;
-        static Texture buttonSplashOnTexture;
-        static Texture buttonSplashOffTexture;
-
-        static bool showUtilsToolbar;
-
         // Flags
 
         static bool stopOnFastForwardOrBackwardsRelease;
@@ -274,20 +329,19 @@ namespace TurtleSandbox
 
             opacity = 1;
 
-            uiColor = new Color(255, 255, 255, (byte)(255 * opacity));
-            gridColor = new Color((byte)Config.gridR, (byte)Config.gridG, (byte)Config.gridB, (byte)(Config.gridOpacity * opacity));
-            toolbarColor = new Color((byte)Config.toolbarR, (byte)Config.toolbarG, (byte)Config.toolbarB, (byte)(255 * opacity));
+            toolbarColor1 = new Color((byte)Config.toolbar1R, (byte)Config.toolbar1G, (byte)Config.toolbar1B, (byte)(255 * opacity));
+            toolbarColor2 = new Color((byte)Config.toolbar2R, (byte)Config.toolbar2G, (byte)Config.toolbar2B, (byte)(255 * opacity));
 
             // Init texts
 
             font = new Font("Assets/Font.ttf");
 
-            playText = new Text();
-            playText.Position = new Vector2f(playTextX, playTextY);
-            playText.FillColor = toolbarColor;
-            playText.Scale = new Vector2f(playTextScale, playTextScale);
-            playText.Font = font;
-            playText.DisplayedString = "";
+            selectorText = new Text();
+            selectorText.Position = new Vector2f(playTextX, playTextY);
+            selectorText.FillColor = toolbarColor1;
+            selectorText.Scale = new Vector2f(playTextScale, playTextScale);
+            selectorText.Font = font;
+            selectorText.DisplayedString = "";
 
             statusPosX = 0;
             statusPosY = 0;
@@ -297,7 +351,7 @@ namespace TurtleSandbox
 
             statusAngleText = new Text();
             statusAngleText.Position = new Vector2f(statusAngleX, statusAngleY);
-            statusAngleText.FillColor = toolbarColor;
+            statusAngleText.FillColor = toolbarColor1;
             statusAngleText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusAngleText.Font = font;
             textBuilder.Clear();
@@ -305,7 +359,7 @@ namespace TurtleSandbox
 
             statusPosXText = new Text();
             statusPosXText.Position = new Vector2f(statusPosXX, statusPosXY);
-            statusPosXText.FillColor = toolbarColor;
+            statusPosXText.FillColor = toolbarColor1;
             statusPosXText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusPosXText.Font = font;
             textBuilder.Clear();
@@ -313,7 +367,7 @@ namespace TurtleSandbox
 
             statusPosYText = new Text();
             statusPosYText.Position = new Vector2f(statusPosYX, statusPosYY);
-            statusPosYText.FillColor = toolbarColor;
+            statusPosYText.FillColor = toolbarColor1;
             statusPosYText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusPosYText.Font = font;
             textBuilder.Clear();
@@ -321,7 +375,7 @@ namespace TurtleSandbox
 
             gridText = new Text();
             gridText.Font = font;
-            gridText.FillColor = gridColor;
+            gridText.FillColor =  new Color(toolbarColor1.R, toolbarColor1.G, toolbarColor1.B, (byte)Config.gridOpacity);
 
             // Init turtle
 
@@ -330,7 +384,7 @@ namespace TurtleSandbox
             turtleSprite.Texture = turtleTexture;
             turtleSprite.Origin = new Vector2f(50, 50);
             turtleSprite.Scale = new Vector2f(0.5f, 0.5f);
-            turtleSprite.Color = uiColor;
+            turtleSprite.Color = toolbarColor1;
 
             turtleVisible = true;
 
@@ -359,7 +413,7 @@ namespace TurtleSandbox
             cursorTexture = new Texture("Assets/Cursor.png");
             cursorSprite = new Sprite();
             cursorSprite.Texture = cursorTexture;
-            cursorSprite.Color = uiColor;
+            cursorSprite.Color = toolbarColor1;
 
             // Init stroke preview
 
@@ -368,6 +422,7 @@ namespace TurtleSandbox
             strokePreviewSprite.Texture = strokePreviewTexture;
             strokePreviewSprite.Origin = new Vector2f(strokePreviewTexture.Size.X / 2, 0);
             strokePreviewSprite.Scale = new Vector2f(1, 100);
+            strokePreviewSprite.Color = toolbarColor1;
 
             strokePreview = new List<Vector2f>(1000);
 
@@ -376,49 +431,49 @@ namespace TurtleSandbox
             splashTexture = new Texture("Assets/Splash/Splash.png");
             splashSprite = new Sprite();
             splashSprite.Texture = splashTexture;
-            splashSprite.Color = uiColor;
+            splashSprite.Color = toolbarColor1;
             splashCloseButtonTexture = new Texture("Assets/Splash/SplashClose.png");
             splashCloseButtonSprite = new Sprite();
             splashCloseButtonSprite.Texture = splashCloseButtonTexture;
-            splashCloseButtonSprite.Color = uiColor;
+            splashCloseButtonSprite.Color = toolbarColor1;
 
             showSplash = false;
 
             // Init select mode areas
 
-            areaTopBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopBorder.png"), Color = uiColor };
-            areaTopBase = new Sprite() { Texture = new Texture("Assets/Areas/TopBase.png"), Color = uiColor };
-            areaBottomBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomBorder.png"), Color = uiColor };
-            areaBottomBase = new Sprite() { Texture = new Texture("Assets/Areas/BottomBase.png"), Color = uiColor };
-            areaLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/LeftBorder.png"), Color = uiColor };
-            areaLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/LeftBase.png"), Color = uiColor };
-            areaRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/RightBorder.png"), Color = uiColor };
-            areaRightBase = new Sprite() { Texture = new Texture("Assets/Areas/RightBase.png"), Color = uiColor };
-            areaTopLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopLeftBorder.png"), Color = uiColor };
-            areaTopLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/TopLeftBase.png"), Color = uiColor };
-            areaTopRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopRightBorder.png"), Color = uiColor };
-            areaTopRightBase = new Sprite() { Texture = new Texture("Assets/Areas/TopRightBase.png"), Color = uiColor };
-            areaBottomLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomLeftBorder.png"), Color = uiColor };
-            areaBottomLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/BottomLeftBase.png"), Color = uiColor };
-            areaBottomRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomRightBorder.png"), Color = uiColor };
-            areaBottomRightBase = new Sprite() {  Texture = new Texture("Assets/Areas/BottomRightBase.png"), Color = uiColor };
-            areaCenterBase = new Sprite() { Texture = new Texture("Assets/Areas/Base.png"), Color = uiColor };
+            areaTopBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopBorder.png"), Color = toolbarColor1 };
+            areaTopBase = new Sprite() { Texture = new Texture("Assets/Areas/TopBase.png"), Color = toolbarColor1 };
+            areaBottomBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomBorder.png"), Color = toolbarColor1 };
+            areaBottomBase = new Sprite() { Texture = new Texture("Assets/Areas/BottomBase.png"), Color = toolbarColor1 };
+            areaLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/LeftBorder.png"), Color = toolbarColor1 };
+            areaLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/LeftBase.png"), Color = toolbarColor1 };
+            areaRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/RightBorder.png"), Color = toolbarColor1 };
+            areaRightBase = new Sprite() { Texture = new Texture("Assets/Areas/RightBase.png"), Color = toolbarColor1 };
+            areaTopLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopLeftBorder.png"), Color = toolbarColor1 };
+            areaTopLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/TopLeftBase.png"), Color = toolbarColor1 };
+            areaTopRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/TopRightBorder.png"), Color = toolbarColor1 };
+            areaTopRightBase = new Sprite() { Texture = new Texture("Assets/Areas/TopRightBase.png"), Color = toolbarColor1 };
+            areaBottomLeftBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomLeftBorder.png"), Color = toolbarColor1 };
+            areaBottomLeftBase = new Sprite() { Texture = new Texture("Assets/Areas/BottomLeftBase.png"), Color = toolbarColor1 };
+            areaBottomRightBorder = new Sprite() { Texture = new Texture("Assets/Areas/BottomRightBorder.png"), Color = toolbarColor1 };
+            areaBottomRightBase = new Sprite() {  Texture = new Texture("Assets/Areas/BottomRightBase.png"), Color = toolbarColor1 };
+            areaCenterBase = new Sprite() { Texture = new Texture("Assets/Areas/Base.png"), Color = toolbarColor1 };
 
             selectPlayModeArea = new Area();
             selectPlayModeArea.position = new Vector2f(300, 270);
             selectPlayModeArea.size = new Vector2f(300, 130);
-            selectPlayModeArea.colorR = 220;
-            selectPlayModeArea.colorG = 173;
-            selectPlayModeArea.colorB = 72;
-            selectPlayModeArea.content = new Sprite() { Texture = new Texture("Assets/Areas/SelectPlayModeContent.png") };
+            selectPlayModeArea.colorR = toolbarColor2.R;
+            selectPlayModeArea.colorG = toolbarColor2.G;
+            selectPlayModeArea.colorB = toolbarColor2.B;
+            selectPlayModeArea.content = new Sprite() { Texture = new Texture("Assets/Areas/SelectPlayModeContent.png"), Color = toolbarColor1 };
 
             selectBrushModeArea = new Area();
             selectBrushModeArea.position = new Vector2f(725, 270);
             selectBrushModeArea.size = new Vector2f(300, 130);
-            selectBrushModeArea.colorR = 220;
-            selectBrushModeArea.colorG = 173;
-            selectBrushModeArea.colorB = 72;
-            selectBrushModeArea.content = new Sprite() { Texture = new Texture("Assets/Areas/SelectBrushModeContent.png") };
+            selectBrushModeArea.colorR = toolbarColor2.R;
+            selectBrushModeArea.colorG = toolbarColor2.G;
+            selectBrushModeArea.colorB = toolbarColor2.B;
+            selectBrushModeArea.content = new Sprite() { Texture = new Texture("Assets/Areas/SelectBrushModeContent.png"), Color = toolbarColor1 };
 
             // Init grid
 
@@ -426,19 +481,97 @@ namespace TurtleSandbox
             gridLineSprite = new Sprite();
             gridLineSprite.Texture = gridLineTexture;
             gridLineSprite.Origin = new Vector2f(gridLineTexture.Size.X / 2, gridLineTexture.Size.Y);
-            gridLineSprite.Color = gridColor;
+            gridLineSprite.Color = new Color(toolbarColor1.R, toolbarColor1.G, toolbarColor1.B, (byte)Config.gridOpacity);
 
-            // Init selector
+            // Init selector bar
 
             selectorNextTexture = new Texture("Assets/Buttons/Right.png");
             selectorPreviousTexture = new Texture("Assets/Buttons/Left.png");
 
             selectorNextSprite = new Sprite();
             selectorNextSprite.Texture = selectorNextTexture;
-            selectorNextSprite.Color = toolbarColor;
+            selectorNextSprite.Color = toolbarColor1;
             selectorPreviousSprite = new Sprite();
             selectorPreviousSprite.Texture = selectorPreviousTexture;
-            selectorPreviousSprite.Color = toolbarColor;
+            selectorPreviousSprite.Color = toolbarColor1;
+
+            // Init stroke bar
+
+            buttonSizeTextures = new Texture[] {    new Texture("Assets/Buttons/Size1.png"),
+                                                    new Texture("Assets/Buttons/Size2.png"),
+                                                    new Texture("Assets/Buttons/Size3.png"),
+                                                    new Texture("Assets/Buttons/Size4.png"),
+                                                    new Texture("Assets/Buttons/Size5.png") };
+
+
+            buttonColorTextures = new Texture[] {   new Texture("Assets/Buttons/Color01.png"),
+                                                    new Texture("Assets/Buttons/Color02.png"),
+                                                    new Texture("Assets/Buttons/Color03.png"),
+                                                    new Texture("Assets/Buttons/Color04.png"),
+                                                    new Texture("Assets/Buttons/Color05.png"),
+                                                    new Texture("Assets/Buttons/Color06.png"),
+                                                    new Texture("Assets/Buttons/Color07.png"),
+                                                    new Texture("Assets/Buttons/Color08.png"),
+                                                    new Texture("Assets/Buttons/Color09.png"),
+                                                    new Texture("Assets/Buttons/Color10.png"),
+                                                    new Texture("Assets/Buttons/Color11.png"),
+                                                    new Texture("Assets/Buttons/Color12.png"),
+                                                    new Texture("Assets/Buttons/Color13.png"),
+                                                    new Texture("Assets/Buttons/Color14.png"),
+                                                    new Texture("Assets/Buttons/Color15.png"),
+                                                    new Texture("Assets/Buttons/Color16.png") };
+
+            buttonOpacityTextures = new Texture[] { new Texture("Assets/Buttons/Opacity10.png"),
+                                                    new Texture("Assets/Buttons/Opacity09.png"),
+                                                    new Texture("Assets/Buttons/Opacity08.png"),
+                                                    new Texture("Assets/Buttons/Opacity07.png"),
+                                                    new Texture("Assets/Buttons/Opacity06.png"),
+                                                    new Texture("Assets/Buttons/Opacity05.png"),
+                                                    new Texture("Assets/Buttons/Opacity04.png"),
+                                                    new Texture("Assets/Buttons/Opacity03.png"),
+                                                    new Texture("Assets/Buttons/Opacity02.png"),
+                                                    new Texture("Assets/Buttons/Opacity01.png") };
+
+            buttonUndoTexture = new Texture("Assets/Buttons/Undo.png");
+            buttonRedoTexture = new Texture("Assets/Buttons/Redo.png");
+
+            buttonSizeSprite = new Sprite();
+            buttonSizeSprite.Texture = buttonSizeTextures[0];
+            buttonSizeSprite.Color = toolbarColor1;
+
+            buttonColorSprite = new Sprite();
+            buttonColorSprite.Texture = buttonColorTextures[BrushMode.GetBrushColorIndex()];
+            buttonColorSprite.Color = new Color(255, 255, 255);
+
+            buttonOpacitySprite = new Sprite();
+            buttonOpacitySprite.Texture = buttonOpacityTextures[0];
+            buttonOpacitySprite.Color = toolbarColor1;
+
+            buttonUndoSprite = new Sprite();
+            buttonUndoSprite.Texture = buttonUndoTexture;
+            buttonUndoSprite.Color = toolbarColor1;
+
+            buttonRedoSprite = new Sprite();
+            buttonRedoSprite.Texture = buttonRedoTexture;
+            buttonRedoSprite.Color = toolbarColor1;
+
+            // Init file bar
+
+            buttonNewTexture = new Texture("Assets/Buttons/New.png");
+            buttonSaveTexture = new Texture("Assets/Buttons/Save.png");
+            buttonLoadTexture = new Texture("Assets/Buttons/Load.png");
+
+            buttonNewSprite = new Sprite();
+            buttonNewSprite.Texture = buttonNewTexture;
+            buttonNewSprite.Color = toolbarColor1;
+
+            buttonSaveSprite = new Sprite();
+            buttonSaveSprite.Texture = buttonSaveTexture;
+            buttonSaveSprite.Color = toolbarColor1;
+
+            buttonLoadSprite = new Sprite();
+            buttonLoadSprite.Texture = buttonLoadTexture;
+            buttonLoadSprite.Color = toolbarColor1;
 
             // Init status bar
 
@@ -446,7 +579,7 @@ namespace TurtleSandbox
 
             statusBarSprite = new Sprite();
             statusBarSprite.Texture = statusBarTexture;
-            statusBarSprite.Color = toolbarColor;
+            statusBarSprite.Color = toolbarColor1;
 
             // Init playback toolbar
 
@@ -470,43 +603,63 @@ namespace TurtleSandbox
             buttonSplashOnTexture = new Texture("Assets/Buttons/SplashOn.png");
             buttonSplashOffTexture = new Texture("Assets/Buttons/SplashOff.png");
 
+            buttonSandColorTextures = new Texture[] { new Texture("Assets/Buttons/Color01.png"),
+                                                    new Texture("Assets/Buttons/Color02.png"),
+                                                    new Texture("Assets/Buttons/Color03.png"),
+                                                    new Texture("Assets/Buttons/Color04.png"),
+                                                    new Texture("Assets/Buttons/Color05.png"),
+                                                    new Texture("Assets/Buttons/Color06.png"),
+                                                    new Texture("Assets/Buttons/Color07.png"),
+                                                    new Texture("Assets/Buttons/Color08.png"),
+                                                    new Texture("Assets/Buttons/Color09.png"),
+                                                    new Texture("Assets/Buttons/Color10.png"),
+                                                    new Texture("Assets/Buttons/Color11.png"),
+                                                    new Texture("Assets/Buttons/Color12.png"),
+                                                    new Texture("Assets/Buttons/Color13.png"),
+                                                    new Texture("Assets/Buttons/Color14.png"),
+                                                    new Texture("Assets/Buttons/Color15.png"),
+                                                    new Texture("Assets/Buttons/Color16.png") };
+
             buttonPlaySprite = new Sprite();
             buttonPlaySprite.Texture = buttonPlayTexture;
-            buttonPlaySprite.Color = toolbarColor;
+            buttonPlaySprite.Color = toolbarColor1;
 
             buttonPauseSprite = new Sprite();
             buttonPauseSprite.Texture = buttonPauseTexture;
-            buttonPauseSprite.Color = toolbarColor;
+            buttonPauseSprite.Color = toolbarColor1;
             buttonForwardSprite = new Sprite();
             buttonForwardSprite.Texture = buttonForwardTexture;
-            buttonForwardSprite.Color = toolbarColor;
+            buttonForwardSprite.Color = toolbarColor1;
             buttonBackwardsSprite = new Sprite();
             buttonBackwardsSprite.Texture = buttonBackwardsTexture;
-            buttonBackwardsSprite.Color = toolbarColor;
+            buttonBackwardsSprite.Color = toolbarColor1;
             buttonRestartSprite = new Sprite();
             buttonRestartSprite.Texture = buttonRestartTexture;
-            buttonRestartSprite.Color = toolbarColor;
+            buttonRestartSprite.Color = toolbarColor1;
             buttonFastForwardSprite = new Sprite();
             buttonFastForwardSprite.Texture = buttonFastForwardTexture;
-            buttonFastForwardSprite.Color = toolbarColor;
+            buttonFastForwardSprite.Color = toolbarColor1;
             buttonFastBackwardsSprite = new Sprite();
             buttonFastBackwardsSprite.Texture = buttonFastBackwardsTexture;
-            buttonFastBackwardsSprite.Color = toolbarColor;
+            buttonFastBackwardsSprite.Color = toolbarColor1;
             buttonScreenshotSprite = new Sprite();
             buttonScreenshotSprite.Texture = buttonScreenshotTexture;
-            buttonScreenshotSprite.Color = toolbarColor;
+            buttonScreenshotSprite.Color = toolbarColor1;
             buttonMusicSprite = new Sprite();
             buttonMusicSprite.Texture = buttonMusicOffTexture;
-            buttonMusicSprite.Color = toolbarColor;
+            buttonMusicSprite.Color = toolbarColor1;
             buttonTurtleSprite = new Sprite();
             buttonTurtleSprite.Texture = buttonTurtleOffTexture;
-            buttonTurtleSprite.Color = toolbarColor;
+            buttonTurtleSprite.Color = toolbarColor1;
             buttonGridSprite = new Sprite();
             buttonGridSprite.Texture = buttonGridOffTexture;
-            buttonGridSprite.Color = toolbarColor;
+            buttonGridSprite.Color = toolbarColor1;
+            buttonSandColorSprite = new Sprite();
+            buttonSandColorSprite.Texture = buttonSandColorTextures[App.GetBackgroundColorIndex()];
+            buttonSandColorSprite.Color = new Color(255, 255, 255);
             buttonSplashSprite = new Sprite();
             buttonSplashSprite.Texture = buttonSplashOffTexture;
-            buttonSplashSprite.Color = toolbarColor;
+            buttonSplashSprite.Color = toolbarColor1;
 
             ////////////////////////// Set elements position and size ////////////////////////////////
 
@@ -514,72 +667,89 @@ namespace TurtleSandbox
 
             splashSprite.Position = new Vector2f(splashX, splashY);
             splashCloseButtonSprite.Position = new Vector2f(splashX + splashCloseOffsetX, splashY + splashCloseOffsetY);
-            splashCloseButtonSprite.Color = uiColor;
+            splashCloseButtonSprite.Color = toolbarColor1;
 
             float buttonWidth = buttonPlayTexture.Size.X;
 
-            // Button bar 1
+            // Selector bar
 
-            selectorPreviousSprite.Position   = new Vector2f(buttonBar1X + 0 * buttonWidth + 0 * buttonBarSeparation1, buttonBar1Y);
-            selectorNextSprite.Position       = new Vector2f(buttonBar1X + 3 * buttonWidth + 3 * buttonBarSeparation1, buttonBar1Y);
+            selectorPreviousSprite.Position   = new Vector2f(selectorBarX + 0 * buttonWidth + 0 * selectorBarSeparation, selectorBarY);
+            selectorNextSprite.Position       = new Vector2f(selectorBarX + 3 * buttonWidth + 3 * selectorBarSeparation, selectorBarY);
 
 
-            Vector2f bar1Scale = new Vector2f(buttonBar1Scale, buttonBar1Scale);
+            Vector2f barScale = new Vector2f(selectorBarScale, selectorBarScale);
             
-            selectorPreviousSprite.Scale = bar1Scale;
-            selectorNextSprite.Scale = bar1Scale;
+            selectorPreviousSprite.Scale = barScale;
+            selectorNextSprite.Scale = barScale;
 
-            selectorNextSprite.Color = toolbarColor;
-            selectorPreviousSprite.Color = toolbarColor;
+            selectorNextSprite.Color = toolbarColor1;
+            selectorPreviousSprite.Color = toolbarColor1;
+
+            // Stroke bar
+
+            buttonSizeSprite.Position     = new Vector2f(strokeBarX + 0 * buttonWidth + 0 * strokeBarSeparation, strokeBarY);
+            buttonColorSprite.Position    = new Vector2f(strokeBarX + 1 * buttonWidth + 1 * strokeBarSeparation, strokeBarY);
+            buttonOpacitySprite.Position  = new Vector2f(strokeBarX + 2 * buttonWidth + 2 * strokeBarSeparation, strokeBarY);
+            buttonUndoSprite.Position     = new Vector2f(strokeBarX + 3 * buttonWidth + 3 * strokeBarSeparation, strokeBarY);
+            buttonRedoSprite.Position     = new Vector2f(strokeBarX + 4 * buttonWidth + 4 * strokeBarSeparation, strokeBarY);
+
+            // File bar
+
+            buttonNewSprite.Position = new Vector2f(fileBarX + 0 * buttonWidth + 0 * fileBarSeparation, fileBarY);
+            buttonSaveSprite.Position = new Vector2f(fileBarX + 1 * buttonWidth + 1 * fileBarSeparation, fileBarY);
+            buttonLoadSprite.Position = new Vector2f(fileBarX + 2 * buttonWidth + 2 * fileBarSeparation, fileBarY);
 
             // Status bar
 
             statusBarSprite.Position = new Vector2f(statusBarX, statusBarY);
-            statusBarSprite.Color = toolbarColor;
+            statusBarSprite.Color = toolbarColor1;
 
             // Playback toolbar
 
-            buttonRestartSprite.Position        = new Vector2f(buttonBar2X + 0 * buttonWidth + 0 * buttonBarSeparation2, buttonBar2Y);
-            buttonFastBackwardsSprite.Position  = new Vector2f(buttonBar2X + 1 * buttonWidth + 1 * buttonBarSeparation2, buttonBar2Y);
-            buttonBackwardsSprite.Position      = new Vector2f(buttonBar2X + 2 * buttonWidth + 2 * buttonBarSeparation2, buttonBar2Y);
-            buttonPlaySprite.Position           = new Vector2f(buttonBar2X + 3 * buttonWidth + 3 * buttonBarSeparation2, buttonBar2Y);
-            buttonPauseSprite.Position          = new Vector2f(buttonBar2X + 3 * buttonWidth + 3 * buttonBarSeparation2, buttonBar2Y);
-            buttonForwardSprite.Position        = new Vector2f(buttonBar2X + 4 * buttonWidth + 4 * buttonBarSeparation2, buttonBar2Y);
-            buttonFastForwardSprite.Position    = new Vector2f(buttonBar2X + 5 * buttonWidth + 5 * buttonBarSeparation2, buttonBar2Y);
+            buttonRestartSprite.Position        = new Vector2f(playbackBarX + 0 * buttonWidth + 0 * playbackBarSeparation, playbackBarY);
+            buttonFastBackwardsSprite.Position  = new Vector2f(playbackBarX + 1 * buttonWidth + 1 * playbackBarSeparation, playbackBarY);
+            buttonBackwardsSprite.Position      = new Vector2f(playbackBarX + 2 * buttonWidth + 2 * playbackBarSeparation, playbackBarY);
+            buttonPlaySprite.Position           = new Vector2f(playbackBarX + 3 * buttonWidth + 3 * playbackBarSeparation, playbackBarY);
+            buttonPauseSprite.Position          = new Vector2f(playbackBarX + 3 * buttonWidth + 3 * playbackBarSeparation, playbackBarY);
+            buttonForwardSprite.Position        = new Vector2f(playbackBarX + 4 * buttonWidth + 4 * playbackBarSeparation, playbackBarY);
+            buttonFastForwardSprite.Position    = new Vector2f(playbackBarX + 5 * buttonWidth + 5 * playbackBarSeparation, playbackBarY);
 
-            buttonRestartSprite.Color           = toolbarColor;
-            buttonFastBackwardsSprite.Color     = toolbarColor;
-            buttonBackwardsSprite.Color         = toolbarColor;
-            buttonPlaySprite.Color              = toolbarColor;
-            buttonPauseSprite.Color             = toolbarColor;
-            buttonForwardSprite.Color           = toolbarColor;
-            buttonFastForwardSprite.Color       = toolbarColor;
+            buttonRestartSprite.Color           = toolbarColor1;
+            buttonFastBackwardsSprite.Color     = toolbarColor1;
+            buttonBackwardsSprite.Color         = toolbarColor1;
+            buttonPlaySprite.Color              = toolbarColor1;
+            buttonPauseSprite.Color             = toolbarColor1;
+            buttonForwardSprite.Color           = toolbarColor1;
+            buttonFastForwardSprite.Color       = toolbarColor1;
 
             // Init utils toolbar
 
-            buttonTurtleSprite.Position         = new Vector2f(buttonBar2X + 7 * buttonWidth + 7 * buttonBarSeparation2, buttonBar2Y);
-            buttonGridSprite.Position           = new Vector2f(buttonBar2X + 8 * buttonWidth + 8 * buttonBarSeparation2, buttonBar2Y);
-            buttonMusicSprite.Position          = new Vector2f(buttonBar2X + 9 * buttonWidth + 9 * buttonBarSeparation2, buttonBar2Y);
-            buttonScreenshotSprite.Position     = new Vector2f(buttonBar2X + 10 * buttonWidth + 10 * buttonBarSeparation2, buttonBar2Y);
-            buttonSplashSprite.Position         = new Vector2f(buttonBar2X + 11 * buttonWidth + 11 * buttonBarSeparation2, buttonBar2Y);
+            buttonTurtleSprite.Position         = new Vector2f(playbackBarX + 6 * buttonWidth + 6 * playbackBarSeparation, playbackBarY);
+            buttonGridSprite.Position           = new Vector2f(playbackBarX + 7 * buttonWidth + 7 * playbackBarSeparation, playbackBarY);
+            buttonSandColorSprite.Position      = new Vector2f(playbackBarX + 8 * buttonWidth + 8 * playbackBarSeparation, playbackBarY);
+            buttonMusicSprite.Position          = new Vector2f(playbackBarX + 9 * buttonWidth + 9 * playbackBarSeparation, playbackBarY);
+            buttonScreenshotSprite.Position     = new Vector2f(playbackBarX + 10 * buttonWidth + 10 * playbackBarSeparation, playbackBarY);
+            buttonSplashSprite.Position         = new Vector2f(playbackBarX + 11 * buttonWidth + 11 * playbackBarSeparation, playbackBarY);
 
-            buttonTurtleSprite.Color = toolbarColor;
-            buttonGridSprite.Color = toolbarColor;
-            buttonMusicSprite.Color = toolbarColor;
-            buttonScreenshotSprite.Color = toolbarColor;
-            buttonSplashSprite.Color = toolbarColor;
+            buttonTurtleSprite.Color = toolbarColor1;
+            buttonGridSprite.Color = toolbarColor1;
+            buttonSandColorSprite.Color = new Color(255, 255, 255);
+            buttonMusicSprite.Color = toolbarColor1;
+            buttonScreenshotSprite.Color = toolbarColor1;
+            buttonSplashSprite.Color = toolbarColor1;
 
-            Vector2f bar2Scale = new Vector2f(buttonBar2Scale, buttonBar2Scale);
-            buttonRestartSprite.Scale = bar2Scale;
-            buttonFastBackwardsSprite.Scale = bar2Scale;
-            buttonBackwardsSprite.Scale = bar2Scale;
-            buttonPlaySprite.Scale = bar2Scale;
-            buttonPauseSprite.Scale = bar2Scale;
-            buttonForwardSprite.Scale = bar2Scale;
-            buttonFastForwardSprite.Scale = bar2Scale;
-            buttonTurtleSprite.Scale = bar2Scale;
-            buttonGridSprite.Scale = bar2Scale;
-            buttonScreenshotSprite.Scale = bar2Scale;
+            barScale = new Vector2f(playbackBarScale, playbackBarScale);
+            buttonRestartSprite.Scale = barScale;
+            buttonFastBackwardsSprite.Scale = barScale;
+            buttonBackwardsSprite.Scale = barScale;
+            buttonPlaySprite.Scale = barScale;
+            buttonPauseSprite.Scale = barScale;
+            buttonForwardSprite.Scale = barScale;
+            buttonFastForwardSprite.Scale = barScale;
+            buttonTurtleSprite.Scale = barScale;
+            buttonGridSprite.Scale = barScale;
+            buttonSandColorSprite.Scale = barScale;
+            buttonScreenshotSprite.Scale = barScale;
 
 
             // Init info messages
@@ -613,7 +783,7 @@ namespace TurtleSandbox
 
             if(position == InfoMessagePosition.Toolbar)
             {
-                p = new Vector2f(buttonTurtleSprite.Position.X, buttonBar2Y);
+                p = new Vector2f(buttonTurtleSprite.Position.X, playbackBarY);
             }
             else // position = InfoMessagePosition.Turtle
             {
@@ -759,62 +929,86 @@ namespace TurtleSandbox
                     TakeScreenshot(window);
                 }
 
-
                 if (!Config.showToolbar) { return; }
-
-                // Draw texts
-
-                StringBuilder textBuilder = App.GetTextBuilder();
-
-                textBuilder.Clear();
-                
-                if(screenId == ScreenId.PlayMode) { textBuilder.AppendFormat(Texts.Get(Texts.Id.play), PlayMode.GetPlayIndex() + 1); }
-                else { textBuilder.AppendFormat(Texts.Get(Texts.Id.brush), BrushMode.GetBrushIndex() + 1); }
-                playText.DisplayedString = textBuilder.ToString();
-
-                textBuilder.Clear();
-                textBuilder.AppendFormat(Texts.Get(Texts.Id.statusAngle), statusAngle);
-                statusAngleText.DisplayedString = textBuilder.ToString();
-
-                textBuilder.Clear();
-                textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosX), statusPosX);
-                statusPosXText.DisplayedString = textBuilder.ToString();
-
-                textBuilder.Clear();
-                textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosY), statusPosY);
-                statusPosYText.DisplayedString = textBuilder.ToString();
-
-                DrawColoredText(window, playText);
-                DrawColoredText(window, statusAngleText);
-                DrawColoredText(window, statusPosXText);
-                DrawColoredText(window, statusPosYText);
 
                 // Draw bars
 
-                // Button bar 1
+                // Selector bar
 
                 DrawColoredSprite(window, selectorPreviousSprite);
                 DrawColoredSprite(window, selectorNextSprite);
 
-                // Status bar
+                StringBuilder textBuilder = App.GetTextBuilder();
 
-                DrawColoredSprite(window, statusBarSprite);
+                textBuilder.Clear();
 
-                // Playback toolbar
+                if (screenId == ScreenId.PlayMode) { textBuilder.AppendFormat(Texts.Get(Texts.Id.play), PlayMode.GetPlayIndex() + 1); }
+                else { textBuilder.AppendFormat(Texts.Get(Texts.Id.brush), BrushMode.GetBrushIndex() + 1); }
+                selectorText.DisplayedString = textBuilder.ToString();
 
-                DrawColoredSprite(window, buttonRestartSprite);
-                DrawColoredSprite(window, buttonFastBackwardsSprite);
+                DrawColoredText(window, selectorText);
 
-                TracePlayer.PlayState playState = TracePlayer.GetPlayState();
+                if (screenId == ScreenId.PlayMode)
+                {
+                    // Status bar
 
-                bool isPlayingState = (playState == PlayState.playing || playState == PlayState.fastBackwards || playState == PlayState.fastForward);
+                    DrawColoredSprite(window, statusBarSprite);
 
-                DrawColoredSprite(window, buttonRestartSprite);
-                DrawColoredSprite(window, buttonFastBackwardsSprite);
-                DrawColoredSprite(window, buttonBackwardsSprite);
-                DrawColoredSprite(window, isPlayingState ? buttonPlaySprite : buttonPauseSprite);
-                DrawColoredSprite(window, buttonForwardSprite);
-                DrawColoredSprite(window, buttonFastForwardSprite);
+                    textBuilder.Clear();
+                    textBuilder.AppendFormat(Texts.Get(Texts.Id.statusAngle), statusAngle);
+                    statusAngleText.DisplayedString = textBuilder.ToString();
+
+                    textBuilder.Clear();
+                    textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosX), statusPosX);
+                    statusPosXText.DisplayedString = textBuilder.ToString();
+
+                    textBuilder.Clear();
+                    textBuilder.AppendFormat(Texts.Get(Texts.Id.statusPosY), statusPosY);
+                    statusPosYText.DisplayedString = textBuilder.ToString();
+
+                    DrawColoredText(window, statusAngleText);
+                    DrawColoredText(window, statusPosXText);
+                    DrawColoredText(window, statusPosYText);
+
+                    // Playback toolbar
+
+                    DrawColoredSprite(window, buttonRestartSprite);
+                    DrawColoredSprite(window, buttonFastBackwardsSprite);
+
+                    TracePlayer.PlayState playState = TracePlayer.GetPlayState();
+
+                    bool isPlayingState = (playState == PlayState.playing || playState == PlayState.fastBackwards || playState == PlayState.fastForward);
+
+                    DrawColoredSprite(window, buttonRestartSprite);
+                    DrawColoredSprite(window, buttonFastBackwardsSprite);
+                    DrawColoredSprite(window, buttonBackwardsSprite);
+                    DrawColoredSprite(window, isPlayingState ? buttonPlaySprite : buttonPauseSprite);
+                    DrawColoredSprite(window, buttonForwardSprite);
+                    DrawColoredSprite(window, buttonFastForwardSprite);
+
+
+                }
+                else // screenId == ScreenId.BrushMode
+                {
+                    // Stroke bar
+
+                    buttonSizeSprite.Texture = buttonSizeTextures[BrushMode.GetBrushSizeIndex()];
+                    buttonColorSprite.Texture = buttonColorTextures[BrushMode.GetBrushColorIndex()];
+                    buttonOpacitySprite.Texture = buttonOpacityTextures[BrushMode.GetBrushOpacityIndex()];
+
+                    DrawColoredSprite(window, buttonSizeSprite);
+                    DrawColoredSprite(window, buttonColorSprite);
+                    DrawColoredSprite(window, buttonOpacitySprite);
+                    DrawColoredSprite(window, buttonUndoSprite);
+                    DrawColoredSprite(window, buttonRedoSprite);
+
+                    // File bar
+
+                    DrawColoredSprite(window, buttonNewSprite);
+                    DrawColoredSprite(window, buttonSaveSprite);
+                    DrawColoredSprite(window, buttonLoadSprite);
+
+                }
 
                 // Utils toolbar
 
@@ -823,6 +1017,8 @@ namespace TurtleSandbox
 
                 buttonGridSprite.Texture = (Config.showGrid ? buttonGridOnTexture : buttonGridOffTexture);
                 DrawColoredSprite(window, buttonGridSprite);
+                buttonSandColorSprite.Texture = buttonSandColorTextures[App.GetBackgroundColorIndex()];
+                DrawColoredSprite(window, buttonSandColorSprite);
                 DrawColoredSprite(window, buttonScreenshotSprite);
                 buttonSplashSprite.Texture = (showSplash ? buttonSplashOnTexture : buttonSplashOffTexture);
                 DrawColoredSprite(window, buttonSplashSprite);
@@ -841,7 +1037,7 @@ namespace TurtleSandbox
 
                         Vector2f position = infoMessages[i].position;
                         infoMessages[i].text.Position = position + new Vector2f(0, -infoMessageOffset - infoMessageDistance * factor);
-                        infoMessages[i].text.FillColor = new Color((byte)Config.toolbarR, (byte)Config.toolbarG, (byte)Config.toolbarB, (byte)(255 * opacityFactor * opacity));
+                        infoMessages[i].text.FillColor = new Color((byte)Config.toolbar1R, (byte)Config.toolbar1G, (byte)Config.toolbar1B, (byte)(255 * opacityFactor * opacity));
                         window.Draw(infoMessages[i].text);
 
                     }
@@ -860,7 +1056,7 @@ namespace TurtleSandbox
                     textBuilder.AppendFormat(Texts.Get(Texts.Id.gridCursorCoordinates), wp1.X - window.Size.X / 2, -(wp1.Y - window.Size.Y / 2));
                     gridText.DisplayedString = textBuilder.ToString();
                     gridText.Position = wp1 + new Vector2f(gridCoordinatesCursorOffsetX, gridCoordinatesCursorOffsetY);
-                    gridText.FillColor = new Color((byte)Config.toolbarR, (byte)Config.toolbarG, (byte)Config.toolbarB);
+                    gridText.FillColor = new Color((byte)Config.toolbar1R, (byte)Config.toolbar1G, (byte)Config.toolbar1B);
                     DrawColoredText(window, gridText);
                 }
 
@@ -913,7 +1109,7 @@ namespace TurtleSandbox
             for(int i = -XLines; i <= XLines; i++)
             {
                 gridLineSprite.Scale = new Vector2f((i != 0 ? 2.0f : 6.0f) / gridLineTexture.Size.X, height / gridLineTexture.Size.Y);
-                gridLineSprite.Position = new Vector2f(center.X + i * gridSeparation, height); ;
+                gridLineSprite.Position = new Vector2f(center.X + i * gridSeparation, height);
                 DrawColoredSprite(window, gridLineSprite);
             }
 
@@ -1075,7 +1271,7 @@ namespace TurtleSandbox
 
         public static void DrawSplash(RenderWindow window, bool withCloseButton = true)
         {
-            splashSprite.Color = uiColor;
+            splashSprite.Color = toolbarColor1;
             DrawColoredSprite(window, splashSprite);
             if(withCloseButton) { DrawColoredSprite(window, splashCloseButtonSprite); }
         }
@@ -1283,7 +1479,7 @@ namespace TurtleSandbox
                 strokePreviewSprite.Position = p1;
                 strokePreviewSprite.Rotation = rotation;
                 strokePreviewSprite.Scale = new Vector2f(Config.lineWidth / 50.0f, length / 600.0f);
-                strokePreviewSprite.Color = uiColor;
+                strokePreviewSprite.Color = toolbarColor1;
                 DrawColoredSprite(window, strokePreviewSprite);
 
             }
@@ -1295,81 +1491,151 @@ namespace TurtleSandbox
 
             if (isTransitioning) { return; }
 
+            bool processed = false;
+
             if (screenId == ScreenId.SelectMode)
             {
                 Vector2f wp = (Vector2f)Mouse.GetPosition(window);
 
-                if (GetAreaRect(selectPlayModeArea).Contains(wp)) { App.OnPlayModeSelected(); }
-                else if (GetAreaRect(selectBrushModeArea).Contains(wp)) { App.OnBrushModeSelected(); }
+                if (GetAreaRect(selectPlayModeArea).Contains(wp)) { App.OnPlayModeSelected(); processed = true; }
+                else if (GetAreaRect(selectBrushModeArea).Contains(wp)) { App.OnBrushModeSelected(); processed = true; }
             }
             else if(screenId == ScreenId.PlayMode || screenId == ScreenId.BrushMode)
             {
                 if (e.Button == Mouse.Button.Left)
                 {
-                    TracePlayer.PlayState playState = TracePlayer.GetPlayState(); 
-
-                    if (buttonPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
-                    {
-                        if(playState == TracePlayer.PlayState.playing) { TracePlayer.Stop(); }
-                        else if(playState == TracePlayer.PlayState.stopped) { TracePlayer.Play(); }
-                    }
-                    else if (buttonRestartSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                    {
-                        TracePlayer.SetStep(0);
-                        TracePlayer.Play();
-
-                    }
-                    else if (buttonForwardSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                    {
-                        TracePlayer.StepForward();
-                        TracePlayer.Stop();
-                    }
-                    else if (buttonBackwardsSprite.GetGlobalBounds().Contains(e.X, e.Y))
-                    {
-                        TracePlayer.StepBackward();
-                        TracePlayer.Stop();
-
-                    }
-                    else if (buttonScreenshotSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    if (buttonScreenshotSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         App.TakeScreenshot();
+                        processed = true;
                     }
                     else if (buttonTurtleSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         UI.SwitchTurtle();
+                        processed = true;
                     }
                     else if (buttonGridSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         UI.SwitchGrid();
+                        processed = true;
+                    }
+                    else if (buttonSandColorSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                    {
+                        App.NextBackgroundColorIndex();
+                        processed = true;
                     }
                     else if (buttonMusicSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         App.SwitchMusic();
+                        processed = true;
                     }
                     else if(buttonSplashSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         UI.SwitchSplash();
+                        processed = true;
                     }
                     else if(showSplash && splashCloseButtonSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         showSplash = false;
+                        processed = true;
                     }
                     else if (selectorNextSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         if(screenId == ScreenId.PlayMode) { PlayMode.NextPlayIndex(); }
                         else { BrushMode.NextBrushIndex(); }
+                        processed = true;
                     }
                     else if (selectorPreviousSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         if (screenId == ScreenId.PlayMode) { PlayMode.PreviousPlayIndex(); }
                         else { BrushMode.PreviousBrushIndex(); }
-                    }
-                    else if(screenId == ScreenId.BrushMode)
-                    {
-                        BrushMode.BeginStroke(Mouse.GetPosition(window), window);
+                        processed = true;
                     }
                 }
+
+                if (screenId == ScreenId.PlayMode)
+                {
+                    if (e.Button == Mouse.Button.Left)
+                    {
+                        // Playback toolbar
+
+                        TracePlayer.PlayState playState = TracePlayer.GetPlayState();
+
+                        if (buttonPlaySprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            if (playState == TracePlayer.PlayState.playing) { TracePlayer.Stop(); }
+                            else if (playState == TracePlayer.PlayState.stopped) { TracePlayer.Play(); }
+                            processed = true;
+                        }
+                        else if (buttonRestartSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            TracePlayer.SetStep(0);
+                            TracePlayer.Play();
+                            processed = true;
+
+                        }
+                        else if (buttonForwardSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            TracePlayer.StepForward();
+                            TracePlayer.Stop();
+                            processed = true;
+                        }
+                        else if (buttonBackwardsSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            TracePlayer.StepBackward();
+                            TracePlayer.Stop();
+                            processed = true;
+
+                        }
+                    }
+                }
+                else // screenId == ScreenId.BrushMode
+                {
+                    if (screenId == ScreenId.BrushMode && !processed)
+                    {
+                        if (buttonSizeSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.NextBrushSizeIndex();
+                        }
+                        else if (buttonColorSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.NextBrushColorIndex();
+                        }
+                        else if (buttonOpacitySprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.NextBrushOpacityIndex();
+                        }
+                        else if (buttonUndoSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.UndoStrokeSequence();
+                        }
+                        else if (buttonRedoSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.RedoStrokeSequence();
+                        }
+                        else if (buttonNewSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.NewStrokeList();
+                        }
+                        else if (buttonLoadSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.LoadStrokeList();
+                        }
+                        else if (buttonSaveSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.SaveStrokeList();
+                        }
+                        else
+                        {
+                            BrushMode.BeginStroke(Mouse.GetPosition(window), window);
+                            processed = true;
+                        }
+                    }
+
+                }
             }
+
+
         }
 
 

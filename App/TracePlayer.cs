@@ -120,7 +120,7 @@ namespace TurtleSandbox
 
             stepChanged = false;
             
-            bool stepWaitOver = stepClock.ElapsedTime.AsSeconds() > Config.stepWait / timeBoost;
+            bool stepWaitOver = stepClock.ElapsedTime.AsSeconds() > AppConfig.stepWait / timeBoost;
             bool isPlayingState = (playState == PlayState.playing);
             bool isFastForwardState = (playState == PlayState.fastForward);
             bool isFastBackwardsState = (playState == PlayState.fastBackwards);

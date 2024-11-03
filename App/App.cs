@@ -37,7 +37,24 @@ namespace TurtleSandbox
 
         static Sprite backgroundSprite;
         static Texture backgroundTexture;
-        static Color sandColor;
+        static Color[] sandColors = new Color[] {  new Color(26, 28, 44),
+                                                           new Color(93, 39, 93),
+                                                           new Color(177, 62, 83),
+                                                           new Color(239, 125, 87),
+                                                           new Color(255, 205, 117),
+                                                           new Color(167, 240, 112),
+                                                           new Color(56, 183, 100),
+                                                           new Color(37, 113, 121),
+                                                           new Color(41, 54, 111),
+                                                           new Color(59, 93, 201),
+                                                           new Color(65, 166, 246),
+                                                           new Color(115, 239, 247),
+                                                           new Color(244, 244, 244),
+                                                           new Color(148, 176, 194),
+                                                           new Color(86, 108, 134),
+                                                           new Color(51, 60, 87)
+                                                 };
+        static int backgroundColorIndex;
 
         // Splash
 
@@ -230,13 +247,14 @@ namespace TurtleSandbox
             backgroundSprite = new Sprite();
             backgroundTexture = new Texture("Assets/Background.png");
             backgroundSprite.Texture = backgroundTexture;
-            sandColor = new Color((byte)Config.sandR, (byte)Config.sandG, (byte)Config.sandB);
-            backgroundSprite.Color = sandColor;
+            backgroundSprite.Color = sandColors[Config.sandColor];
+            backgroundColorIndex = Config.sandColor;
         }
 
         static void DrawBackground(RenderWindow window)
         {
-            window.Clear(sandColor);
+            window.Clear(sandColors[backgroundColorIndex]);
+            backgroundSprite.Color = sandColors[backgroundColorIndex];
             window.Draw(backgroundSprite);
         }
 
@@ -328,6 +346,15 @@ namespace TurtleSandbox
             window.Close();
         }
 
+        public static int GetBackgroundColorIndex()
+        {
+            return backgroundColorIndex;
+        }
 
+        public static void NextBackgroundColorIndex()
+        {
+            if (backgroundColorIndex + 1 >= AppConfig.sandColorsCount) { backgroundColorIndex = 0; }
+            else { backgroundColorIndex++; }
+        }
     }
 }

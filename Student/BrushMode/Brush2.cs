@@ -10,18 +10,22 @@ namespace TurtleSandbox
     {
         static void Brush2()
         {
-            float width = stroke.segmentProgress * 20;
+            float width1 = stroke.startPercent * stroke.brushSize;
+            float width2 = stroke.endPercent * stroke.brushSize;
 
+            turtle.Opacity(255 - stroke.startPercent * 255);
             turtle.Turn(-90);
-            turtle.Walk(width);
+            turtle.Walk(width1);
             turtle.Turn(90);
             turtle.Walk(stroke.distance);
+            turtle.Opacity(255 - stroke.endPercent * 255);
             turtle.Turn(90);
-            turtle.Walk(width * 2);
+            turtle.Walk(width2 * 2);
             turtle.Turn(90);
             turtle.Walk(stroke.distance);
-            turtle.Walk(width);
-            turtle.Opacity(255 - stroke.segmentProgress * 255);
+            turtle.Opacity(255 - stroke.startPercent * 255);
+            turtle.Turn(90);
+            turtle.Walk(width1);
 
 
         }
