@@ -13,12 +13,20 @@ namespace TurtleSandbox
 {
     internal partial class BrushMode
     {
+        static int strokeLengthIndex = 0;
         static int brushIndex = 0;
         static int brushColorIndex = 0;
         static int brushSizeIndex = 0;
         static int brushOpacityIndex = 0;
 
         static Turtle turtle;
+
+        public static float[] strokeLengths = new float[] {
+                                                            80.0f,
+                                                            60.0f,
+                                                            40.0f,
+                                                            20.0f
+                                                        };
 
         public static Color[] brushColors = new Color[] {  new Color(26, 28, 44),
                                                            new Color(93, 39, 93),
@@ -114,6 +122,7 @@ namespace TurtleSandbox
 
         public static void Init()
         {
+            strokeLengthIndex = Config.strokeLength - 1;
             brushIndex = Config.brush - 1;
             brushSizeIndex = Config.brushSize - 1;
             brushColorIndex = Config.brushColor - 1;
@@ -194,7 +203,7 @@ namespace TurtleSandbox
 
                     Vector2f ap = tp2 - tp1;
                     float distance = MathF.Sqrt(ap.X * ap.X + ap.Y * ap.Y);
-                    if (distance >= AppConfig.strokeMinLength)
+                    if (distance >= strokeLengths[strokeLengthIndex])
                     {
                         UI.AddStrokePreview((Vector2f)screenPosition);
                         strokeData.nextPosX = tp2.X;
@@ -364,9 +373,30 @@ namespace TurtleSandbox
             }
         }
 
+        public static int GetStrokeLengthIndex()
+        {
+            return strokeLengthIndex;
+        }
+
+        public static float GetStrokeLength()
+        {
+            return strokeLengths[strokeLengthIndex] * AppConfig.pixelsPerStep;
+        }
+
+        public static void NextStrokeLengthIndex()
+        {
+            if (strokeLengthIndex + 1 >= AppConfig.strokeLengthsCount) { strokeLengthIndex = 0; }
+            else { strokeLengthIndex++; }
+        }
+
         public static int GetBrushOpacityIndex()
         {
             return brushOpacityIndex;
+        }
+
+        public static float GetBrushOpacity()
+        {
+            return brushOpacities[brushOpacityIndex];
         }
 
         public static void NextBrushOpacityIndex()
@@ -381,6 +411,11 @@ namespace TurtleSandbox
             return brushSizeIndex;
         }
 
+        public static float GetBrushSize()
+        {
+            return brushSizes[brushSizeIndex] * AppConfig.pixelsPerStep;
+        }
+
         public static void NextBrushSizeIndex()
         {
             if(brushSizeIndex + 1 >= AppConfig.brushSizesCount) { brushSizeIndex = 0; }
@@ -391,6 +426,7 @@ namespace TurtleSandbox
         {
             return brushColorIndex;
         }
+
 
         public static void NextBrushColorIndex()
         {

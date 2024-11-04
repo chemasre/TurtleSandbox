@@ -47,7 +47,20 @@ namespace TurtleSandbox
     {
         static void Brush1()
         {
-            turtle.Walk(stroke.distance);
+            turtle.Opacity(brush.opacity * (1 - stroke.percent));
+
+            for (int j = 0; j < 5; j++)
+            {
+                for(int i = 0; i < 12; i++)
+                {
+                    turtle.RandWalk(brush.size * (1 - stroke.percent), brush.size * (1 - stroke.percent) * 2);
+                    turtle.RandTurn(360.0f / 12 / 2, 360.0f / 12);
+                }
+
+                turtle.RandTurn(360 / 5.0f, 360 / 5.0f * 2);
+
+            }
+
         }
     }
 }

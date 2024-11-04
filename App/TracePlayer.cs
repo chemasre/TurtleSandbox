@@ -48,6 +48,7 @@ namespace TurtleSandbox
 
             lineSprite = new Sprite();
             lineTexture = new Texture("Assets/Line.png");
+            lineTexture.Smooth = true;
             lineSprite.Texture = lineTexture;
             lineSprite.Origin = new Vector2f(25.0f, 0);
             lineSprite.Position = new Vector2f(window.Size.X, window.Size.Y);

@@ -12,21 +12,34 @@ namespace TurtleSandbox
 
         public static string windowTitle = "Turtle Sandbox";
 
-        // Qué "play" quieres reproducir al principio (1 al 9)
+        // PLAY MODE: Qué "play" quieres reproducir al principio (1 al 9)
 
         public static int play = 1;
 
-        // Qué brocha quieres tener seleccionada al principio (1 al 9)
+        // BRUSH MODE: Qué distancia de trazo quieres tener seleccionada al principio (1 a 4)
+
+        public static int strokeLength = 2;
+
+        // BRUSH MODE: Qué brocha quieres tener seleccionada al principio (1 a 9)
 
         public static int brush = 1;
+
+        // BRUSH MODE: Qué tamaño de brocha quieres tener seleccionado al principio (1 a 5)
+
         public static int brushSize = 2;
+
+        // BRUSH MODE: Qué color de brocha quieres tener seleccionado al principio (1 a 16)
+
         public static int brushColor = 13;
+
+        // BRUSH MODE: Qué opacidad de brocha quieres tener seleccionada al principio (1 a 10)
+
         public static int brushOpacity = 1;
 
 
         // Si quieres que inicialmente se reproduzca la música o no
 
-        public static bool playMusic = false;
+        public static bool playMusic = true;
 
         // Si quieres ver la rejilla inicialmente o no
 

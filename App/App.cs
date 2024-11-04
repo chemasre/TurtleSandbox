@@ -27,7 +27,8 @@ namespace TurtleSandbox
 
         // Music
 
-        static Music music;
+        static Music[] musics;
+        static int musicIndex;
 
         // Turtle
 
@@ -100,6 +101,8 @@ namespace TurtleSandbox
                 state = State.Play;
                 nextState = State.Play;
                 UI.GotoScreen(UI.ScreenId.PlayMode, true);
+                SetMusic(AppConfig.playModeMusic);
+                if (Config.playMusic) { PlayMusic(); }
             }
             else
             {
@@ -107,7 +110,10 @@ namespace TurtleSandbox
                 nextState = State.Splash;
                 splashTimer = 0;
                 UI.GotoScreen(UI.ScreenId.Splash, true);
+                SetMusic(AppConfig.splashMusic);
+                if (Config.playMusic) { PlayMusic(); }
             }
+
 
             TracePlayer.Init();
 
@@ -129,10 +135,14 @@ namespace TurtleSandbox
                     else if(nextState == State.Play)
                     {
                         PlayMode.Init();
+                        SetMusic(AppConfig.playModeMusic);
+                        if (Config.playMusic) { PlayMusic(); }
                     }
                     else if(nextState == State.Brush)
                     {
                         BrushMode.Init();
+                        SetMusic(AppConfig.brushModeMusic);
+                        if (Config.playMusic) { PlayMusic(); }
                     }
 
                     state = nextState;
@@ -282,32 +292,44 @@ namespace TurtleSandbox
 
         static void InitMusic()
         {
-            music = new Music("Assets/Music.wav");
-            music.Loop = true;
+            musics = new Music[] { new Music("Assets/Musics/Music1.wav"),
+                                   new Music("Assets/Musics/Music2.wav"),
+                                   new Music("Assets/Musics/Music3.wav") };
 
-            if (Config.playMusic)
-            {
-                music.Play();
-            }
+            for(int i = 0; i < AppConfig.musicsCount; i++) { musics[i].Loop = true; }
+
+        }
+
+        public static void SetMusic(int index)
+        {
+            musicIndex = index;
+        }
+        public static void PlayMusic()
+        {
+            for(int i = 0; i < AppConfig.musicsCount; i++) { musics[i].Stop(); }
+            musics[musicIndex].Play();
 
         }
 
         public static bool IsMusicPlaying()
         {
-            return music.Status == SoundStatus.Playing;
+            return musics[musicIndex].Status == SoundStatus.Playing;
         }
 
         public static void SwitchMusic()
         {
-            if (music.Status == SoundStatus.Playing)
+            if (musics[musicIndex].Status == SoundStatus.Playing)
             {
-                UI.AddInfoMessage(Texts.Get(Texts.Id.musicOff), UI.InfoMessagePosition.Toolbar);
-                music.Stop();
+                UI.AddInfoMessage(Texts.Get(Texts.Id.musicOff), UI.InfoMessagePosition.UtilsToolbar);
+                musics[musicIndex].Stop();
             }
             else
             {
-                UI.AddInfoMessage(Texts.Get(Texts.Id.musicOn), UI.InfoMessagePosition.Toolbar);
-                music.Play();
+                if(Config.playMusic)
+                {
+                    UI.AddInfoMessage(Texts.Get(Texts.Id.musicOn), UI.InfoMessagePosition.UtilsToolbar);
+                    musics[musicIndex].Play();
+                }
             }
 
         }

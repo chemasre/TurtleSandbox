@@ -80,7 +80,10 @@ namespace TurtleSandbox
         public enum InfoMessagePosition
         {
             Turtle,
-            Toolbar
+            UtilsToolbar,
+            StrokeToolbar,
+            UndoToolbar,
+            FileToolbar
         };
 
         // Structs
@@ -248,12 +251,14 @@ namespace TurtleSandbox
 
         static Sprite buttonUndoSprite;
         static Sprite buttonRedoSprite;
+        static Sprite buttonLengthSprite;
         static Sprite buttonSizeSprite;
         static Sprite buttonColorSprite;
         static Sprite buttonOpacitySprite;
 
         static Texture buttonUndoTexture;
         static Texture buttonRedoTexture;
+        static Texture[] buttonStrokeLengthTextures;
         static Texture[] buttonSizeTextures;
         static Texture[] buttonColorTextures;
         static Texture[] buttonOpacityTextures;
@@ -418,11 +423,16 @@ namespace TurtleSandbox
             // Init stroke preview
 
             Texture strokePreviewTexture = new Texture("Assets/LineDashed.png");
+            strokePreviewTexture.Smooth = true;
+            strokePreviewTexture.Repeated = true;
             strokePreviewSprite = new Sprite();
             strokePreviewSprite.Texture = strokePreviewTexture;
             strokePreviewSprite.Origin = new Vector2f(strokePreviewTexture.Size.X / 2, 0);
             strokePreviewSprite.Scale = new Vector2f(1, 100);
             strokePreviewSprite.Color = toolbarColor1;
+            IntRect rect = strokePreviewSprite.TextureRect;
+            rect.Height = (int)BrushMode.GetStrokeLength();
+            strokePreviewSprite.TextureRect = rect;
 
             strokePreview = new List<Vector2f>(1000);
 
@@ -497,6 +507,11 @@ namespace TurtleSandbox
 
             // Init stroke bar
 
+            buttonStrokeLengthTextures = new Texture[] { new Texture("Assets/Buttons/StrokeLength1.png"),
+                                                    new Texture("Assets/Buttons/StrokeLength2.png"),
+                                                    new Texture("Assets/Buttons/StrokeLength3.png"),
+                                                    new Texture("Assets/Buttons/StrokeLength4.png") };
+
             buttonSizeTextures = new Texture[] {    new Texture("Assets/Buttons/Size1.png"),
                                                     new Texture("Assets/Buttons/Size2.png"),
                                                     new Texture("Assets/Buttons/Size3.png"),
@@ -535,8 +550,12 @@ namespace TurtleSandbox
             buttonUndoTexture = new Texture("Assets/Buttons/Undo.png");
             buttonRedoTexture = new Texture("Assets/Buttons/Redo.png");
 
+            buttonLengthSprite = new Sprite();
+            buttonLengthSprite.Texture = buttonStrokeLengthTextures[BrushMode.GetStrokeLengthIndex()];
+            buttonLengthSprite.Color = toolbarColor1;
+
             buttonSizeSprite = new Sprite();
-            buttonSizeSprite.Texture = buttonSizeTextures[0];
+            buttonSizeSprite.Texture = buttonSizeTextures[BrushMode.GetBrushSizeIndex()];
             buttonSizeSprite.Color = toolbarColor1;
 
             buttonColorSprite = new Sprite();
@@ -544,7 +563,7 @@ namespace TurtleSandbox
             buttonColorSprite.Color = new Color(255, 255, 255);
 
             buttonOpacitySprite = new Sprite();
-            buttonOpacitySprite.Texture = buttonOpacityTextures[0];
+            buttonOpacitySprite.Texture = buttonOpacityTextures[BrushMode.GetBrushOpacityIndex()];
             buttonOpacitySprite.Color = toolbarColor1;
 
             buttonUndoSprite = new Sprite();
@@ -690,8 +709,9 @@ namespace TurtleSandbox
             buttonSizeSprite.Position     = new Vector2f(strokeBarX + 0 * buttonWidth + 0 * strokeBarSeparation, strokeBarY);
             buttonColorSprite.Position    = new Vector2f(strokeBarX + 1 * buttonWidth + 1 * strokeBarSeparation, strokeBarY);
             buttonOpacitySprite.Position  = new Vector2f(strokeBarX + 2 * buttonWidth + 2 * strokeBarSeparation, strokeBarY);
-            buttonUndoSprite.Position     = new Vector2f(strokeBarX + 3 * buttonWidth + 3 * strokeBarSeparation, strokeBarY);
-            buttonRedoSprite.Position     = new Vector2f(strokeBarX + 4 * buttonWidth + 4 * strokeBarSeparation, strokeBarY);
+            buttonLengthSprite.Position   = new Vector2f(strokeBarX + 3 * buttonWidth + 3 * strokeBarSeparation, strokeBarY);
+            buttonUndoSprite.Position     = new Vector2f(strokeBarX + 4 * buttonWidth + 4 * strokeBarSeparation, strokeBarY);
+            buttonRedoSprite.Position     = new Vector2f(strokeBarX + 5 * buttonWidth + 5 * strokeBarSeparation, strokeBarY);
 
             // File bar
 
@@ -781,9 +801,21 @@ namespace TurtleSandbox
         {
             Vector2f p;
 
-            if(position == InfoMessagePosition.Toolbar)
+            if (position == InfoMessagePosition.UtilsToolbar)
             {
                 p = new Vector2f(buttonTurtleSprite.Position.X, playbackBarY);
+            }
+            else if (position == InfoMessagePosition.StrokeToolbar)
+            {
+                p = new Vector2f(buttonSizeSprite.Position.X, playbackBarY);
+            }
+            else if (position == InfoMessagePosition.UndoToolbar)
+            {
+                p = new Vector2f(buttonUndoSprite.Position.X, playbackBarY);
+            }
+            else if (position == InfoMessagePosition.FileToolbar)
+            {
+                p = new Vector2f(buttonNewSprite.Position.X, playbackBarY);
             }
             else // position = InfoMessagePosition.Turtle
             {
@@ -999,10 +1031,12 @@ namespace TurtleSandbox
                     buttonSizeSprite.Texture = buttonSizeTextures[BrushMode.GetBrushSizeIndex()];
                     buttonColorSprite.Texture = buttonColorTextures[BrushMode.GetBrushColorIndex()];
                     buttonOpacitySprite.Texture = buttonOpacityTextures[BrushMode.GetBrushOpacityIndex()];
+                    buttonLengthSprite.Texture = buttonStrokeLengthTextures[BrushMode.GetStrokeLengthIndex()];
 
                     DrawColoredSprite(window, buttonSizeSprite);
                     DrawColoredSprite(window, buttonColorSprite);
                     DrawColoredSprite(window, buttonOpacitySprite);
+                    DrawColoredSprite(window, buttonLengthSprite);
                     DrawColoredSprite(window, buttonUndoSprite);
                     DrawColoredSprite(window, buttonRedoSprite);
 
@@ -1095,7 +1129,7 @@ namespace TurtleSandbox
         {
             Config.showGrid = !Config.showGrid;
 
-            UI.AddInfoMessage(Texts.Get(Config.showGrid ? Texts.Id.gridOn : Texts.Id.gridOff), UI.InfoMessagePosition.Toolbar);
+            UI.AddInfoMessage(Texts.Get(Config.showGrid ? Texts.Id.gridOn : Texts.Id.gridOff), UI.InfoMessagePosition.UtilsToolbar);
 
         }
 
@@ -1162,7 +1196,7 @@ namespace TurtleSandbox
         public static void SwitchTurtle()
         {
             turtleVisible = !turtleVisible;
-            UI.AddInfoMessage(Texts.Get(turtleVisible ? Texts.Id.turtleOn : Texts.Id.turtleOff), UI.InfoMessagePosition.Toolbar);
+            UI.AddInfoMessage(Texts.Get(turtleVisible ? Texts.Id.turtleOn : Texts.Id.turtleOff), UI.InfoMessagePosition.UtilsToolbar);
         }
 
         public static void DrawTurtle(RenderWindow window)
@@ -1477,7 +1511,11 @@ namespace TurtleSandbox
 
         public static void DrawStrokePreview(RenderWindow window)
         {
-            for(int i = 0; i < strokePreview.Count - 1; i ++)
+            IntRect rect = strokePreviewSprite.TextureRect;
+            rect.Height = (int)BrushMode.GetStrokeLength();
+            strokePreviewSprite.TextureRect = rect;
+
+            for (int i = 0; i < strokePreview.Count - 1; i ++)
             {
                 Vector2f p1 = strokePreview[i];
                 Vector2f p2 = strokePreview[i + 1];
@@ -1487,7 +1525,7 @@ namespace TurtleSandbox
                 float length = MathF.Sqrt(aX * aX + aY * aY) * AppConfig.pixelsPerStep;
                 strokePreviewSprite.Position = p1;
                 strokePreviewSprite.Rotation = rotation;
-                strokePreviewSprite.Scale = new Vector2f(Config.lineWidth / 50.0f, length / 600.0f);
+                strokePreviewSprite.Scale = new Vector2f(Config.lineWidth / 50.0f, length / rect.Height);
                 strokePreviewSprite.Color = toolbarColor1;
                 DrawColoredSprite(window, strokePreviewSprite);
 
@@ -1531,6 +1569,12 @@ namespace TurtleSandbox
                     else if (buttonSandColorSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
                         App.NextBackgroundColorIndex();
+
+                        StringBuilder textBuilder = App.GetTextBuilder();
+                        textBuilder.Clear();
+                        textBuilder.AppendFormat(Texts.Get(Texts.Id.sandColor), App.GetBackgroundColorIndex() + 1);
+                        UI.AddInfoMessage(textBuilder.ToString(), UI.InfoMessagePosition.UtilsToolbar);
+
                         processed = true;
                     }
                     else if (buttonMusicSprite.GetGlobalBounds().Contains(e.X, e.Y))
@@ -1605,34 +1649,73 @@ namespace TurtleSandbox
                         if (buttonSizeSprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.NextBrushSizeIndex();
+
+                            StringBuilder textBuilder = App.GetTextBuilder();
+                            textBuilder.Clear();
+                            textBuilder.AppendFormat(Texts.Get(Texts.Id.brushSize), BrushMode.GetBrushSize() + 1);
+                            UI.AddInfoMessage(textBuilder.ToString(), UI.InfoMessagePosition.StrokeToolbar);
+
                         }
                         else if (buttonColorSprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.NextBrushColorIndex();
+
+                            StringBuilder textBuilder = App.GetTextBuilder();
+                            textBuilder.Clear();
+                            textBuilder.AppendFormat(Texts.Get(Texts.Id.brushColor), BrushMode.GetBrushColorIndex() + 1);
+                            UI.AddInfoMessage(textBuilder.ToString(), UI.InfoMessagePosition.StrokeToolbar);
+
                         }
                         else if (buttonOpacitySprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.NextBrushOpacityIndex();
+
+                            StringBuilder textBuilder = App.GetTextBuilder();
+                            textBuilder.Clear();
+                            textBuilder.AppendFormat(Texts.Get(Texts.Id.brushOpacity), (int)(BrushMode.GetBrushOpacity() / 255 * 100));
+                            UI.AddInfoMessage(textBuilder.ToString(), UI.InfoMessagePosition.StrokeToolbar);
+
+                        }
+                        else if (buttonLengthSprite.GetGlobalBounds().Contains(e.X, e.Y))
+                        {
+                            BrushMode.NextStrokeLengthIndex();
+
+                            StringBuilder textBuilder = App.GetTextBuilder();
+                            textBuilder.Clear();
+                            textBuilder.AppendFormat(Texts.Get(Texts.Id.strokeLength), BrushMode.GetStrokeLength());
+                            UI.AddInfoMessage(textBuilder.ToString(), UI.InfoMessagePosition.StrokeToolbar);
+
                         }
                         else if (buttonUndoSprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.UndoStrokeSequence();
+
+                            UI.AddInfoMessage(Texts.Get(Texts.Id.undo), UI.InfoMessagePosition.UndoToolbar);
                         }
                         else if (buttonRedoSprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.RedoStrokeSequence();
+
+                            UI.AddInfoMessage(Texts.Get(Texts.Id.redo), UI.InfoMessagePosition.UndoToolbar);
                         }
                         else if (buttonNewSprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.NewStrokeList();
+
+                            UI.AddInfoMessage(Texts.Get(Texts.Id.clear), UI.InfoMessagePosition.FileToolbar);
                         }
                         else if (buttonLoadSprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.LoadStrokeList();
+
+                            UI.AddInfoMessage(Texts.Get(Texts.Id.load), UI.InfoMessagePosition.FileToolbar);
                         }
                         else if (buttonSaveSprite.GetGlobalBounds().Contains(e.X, e.Y))
                         {
                             BrushMode.SaveStrokeList();
+
+                            UI.AddInfoMessage(Texts.Get(Texts.Id.save), UI.InfoMessagePosition.FileToolbar);
+
                         }
                         else
                         {
@@ -1691,7 +1774,7 @@ namespace TurtleSandbox
 
                 if (!File.Exists(fileName))
                 {
-                    UI.AddInfoMessage(Texts.Get(Texts.Id.screenshotSaved), UI.InfoMessagePosition.Toolbar);
+                    UI.AddInfoMessage(Texts.Get(Texts.Id.screenshotSaved), UI.InfoMessagePosition.UtilsToolbar);
                     image.SaveToFile(fileName);
                     done = true;
                 }
