@@ -14,6 +14,7 @@ namespace TurtleSandbox
         // Constants
 
         public const int traceInitialCapacity = 1000;
+        public const int savedLocationsCapacity = 10;
 
         // Properties
 
@@ -39,7 +40,7 @@ namespace TurtleSandbox
             randTurn,
             randWalk,
             teleport,
-            remember,
+            memorize,
             recall
         }
 
@@ -81,9 +82,9 @@ namespace TurtleSandbox
         bool overrideOrder;
         Order overrideOrderValue;
 
-        // Remember and recall
+        // Save and load
 
-        Location savedLocation;
+        List<Location> savedLocations;
 
         // Trace
 
@@ -102,6 +103,7 @@ namespace TurtleSandbox
         public Turtle()
         {
             trace = new List<Step>(traceInitialCapacity);
+            savedLocations = new List<Location>(savedLocationsCapacity);
 
             Reset();
         }
@@ -204,19 +206,24 @@ namespace TurtleSandbox
             Teleport(0, 0, 90);
         }
 
-        public void Remember()
+        public void Memorize(int slot = 0)
         {
-            savedLocation.x = posX;
-            savedLocation.y = posY;
-            savedLocation.angle = angle;
+            Location l = new Location();            
+            l.x = posX;
+            l.y = posY;
+            l.angle = angle;
+
+            savedLocations[slot] = l;
         }
 
-        public void Recall()
+        public void Recall(int slot = 0)
         {
+            Location l = savedLocations[slot];
+
             overrideOrder = true;
             overrideOrderValue = new Order();
             overrideOrderValue.id = OrderId.recall;
-            Teleport(savedLocation.x, savedLocation.y, savedLocation.angle);
+            Teleport(l.x, l.y, l.angle);
         }
 
         public void Teleport(float posX, float posY, float angle)
@@ -270,10 +277,8 @@ namespace TurtleSandbox
             p.angle = 90;
             trace.Add(p);
 
-            savedLocation = new Location();
-            savedLocation.x = 0;
-            savedLocation.y = 0;
-            savedLocation.angle = 90;
+            savedLocations.Clear();
+            for (int i = 0; i < 10; i++) { savedLocations.Add(new Location()); }
 
             overrideOrder = false;
         }

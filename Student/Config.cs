@@ -12,6 +12,13 @@ namespace TurtleSandbox
 
         public static string windowTitle = "Turtle Sandbox";
 
+        // Pantalla en la que quieres empezar
+        // 0 -> Inicio normal
+        // 1 -> Iniciar directamente en play mode
+        // 2 -> Iniciar directamente en brush mode
+
+        public static int startScreen = 0;
+
         // PLAY MODE: Qué "play" quieres reproducir al principio (1 al 9)
 
         public static int play = 1;
@@ -71,8 +78,5 @@ namespace TurtleSandbox
 
         public static int gridOpacity = 96;
 
-        // Si quieres saltarte la pantalla inicial o no
-
-        public static bool skipSplash = false;
     }
 }

@@ -8,7 +8,7 @@ namespace TurtleSandbox
 {
     internal class AppConfig
     {
-        public const string appVersion = "1.11";
+        public const string appVersion = "1.2";
 
         public const int windowWidth = 1280;
         public const int windowHeight = 720;
@@ -39,7 +39,7 @@ namespace TurtleSandbox
 
         public const int brushesCount = 9;
 
-        public const float strokeLengthsCount = 4;
+        public const int strokeLengthsCount = 4;
 
         public const int brushSizesCount = 5;
         public const int brushColorsCount = 16;

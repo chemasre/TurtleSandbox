@@ -21,7 +21,7 @@ namespace TurtleSandbox
     //     turtle.RandWalk(min, max)  -> Le hace avanzar una distancia al azar entre min y max, ambos incluidos
     //     turtle.RandTurn(min, max)  -> Le hace girar un ángulo al azar entre min y max, ambos incluidos. Min y max pueden ser menores que 0.
 
-    //     turtle.Remember()         -> Hace que la tortuga memorice la posición y ángulo en que está ahora
+    //     turtle.Memorize()           -> Hace que la tortuga memorice la posición y ángulo en que está ahora
     //     turgle.Recall()           -> Devuelve a la tortuga a la posición y ángulo que había memorizado
 
     // Datos disponibles en brush mode
@@ -34,8 +34,8 @@ namespace TurtleSandbox
     //     stroke.angle        -> Angulo inicial de la tortuga en el trazo
     //     stroke.nextAngle    -> Angulo final de la tortuga en el trazo
     //     stroke.turn         -> Cuánto debe girar la tortuga para ir del ángulo inicial al ángulo final
-    //     stroke.percent      -> Qué porcentaje del trazo total representa el punto inicial del trazo
-    //     stroke.nextPercent  -> Qué porcentaje del trazo total representa el punto final del trazo
+    //     stroke.progress      -> Qué fracción del trazo total representa el punto inicial del trazo (0..1)
+    //     stroke.nextProgress  -> Qué fracción del trazo total representa el punto final del trazo (0..1)
 
     //     brush.size          -> Tamaño de la brocha en unidades de la tortuga
     //     brush.colorR        -> Componente R del color de la brocha (0..255)
@@ -47,20 +47,7 @@ namespace TurtleSandbox
     {
         static void Brush1()
         {
-            turtle.Opacity(brush.opacity * (1 - stroke.percent));
-
-            for (int j = 0; j < 5; j++)
-            {
-                for(int i = 0; i < 12; i++)
-                {
-                    turtle.RandWalk(brush.size * (1 - stroke.percent), brush.size * (1 - stroke.percent) * 2);
-                    turtle.RandTurn(360.0f / 12 / 2, 360.0f / 12);
-                }
-
-                turtle.RandTurn(360 / 5.0f, 360 / 5.0f * 2);
-
-            }
-
+            turtle.Walk(stroke.distance);
         }
     }
 }

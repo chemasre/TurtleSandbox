@@ -18,47 +18,18 @@ namespace TurtleSandbox
         //     turtle.RandWalk(min, max)  -> Le hace avanzar una distancia al azar entre min y max, ambos incluidos
         //     turtle.RandTurn(min, max)  -> Le hace girar un ángulo al azar entre min y max, ambos incluidos. Min y max pueden ser menores que 0.
 
-        //      turtle.Remember()         -> Hace que la tortuga memorice la posición y ángulo en que está ahora
+        //      turtle.Memorize()           -> Hace que la tortuga memorice la posición y ángulo en que está ahora
         //      turgle.Recall()           -> Devuelve a la tortuga a la posició y ángulo que había memorizado
 
         static void Play5()
         {
-            turtle.Turn(-120);
-
-            for (int j = 0; j < 12; j++)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    turtle.Walk(10);
-                    turtle.Turn(10);
-                }
-
-                turtle.Turn(-70);
-            }
-
-            turtle.Origin();
-
-            turtle.draw = false;
-
-            turtle.Walk(200);
+            turtle.Walk(100);
             turtle.Turn(90);
-            turtle.Walk(400);
-            turtle.Turn(-90);
-
-            turtle.draw = true;
-
-            for (int j = 0; j < 9; j++)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    turtle.Walk(10);
-                    turtle.Turn(10);
-                }
-
-                turtle.Turn(-180);
-            }
-
-            turtle.Origin();
+            turtle.Walk(100);
+            turtle.Turn(90);
+            turtle.Walk(100);
+            turtle.Turn(90);
+            turtle.Walk(100);
         }
 
     }

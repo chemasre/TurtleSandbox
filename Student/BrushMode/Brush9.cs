@@ -21,7 +21,7 @@ namespace TurtleSandbox
     //     turtle.RandWalk(min, max)  -> Le hace avanzar una distancia al azar entre min y max, ambos incluidos
     //     turtle.RandTurn(min, max)  -> Le hace girar un ángulo al azar entre min y max, ambos incluidos. Min y max pueden ser menores que 0.
 
-    //     turtle.Remember()         -> Hace que la tortuga memorice la posición y ángulo en que está ahora
+    //     turtle.Memorize()           -> Hace que la tortuga memorice la posición y ángulo en que está ahora
     //     turgle.Recall()           -> Devuelve a la tortuga a la posición y ángulo que había memorizado
 
     // Datos disponibles en brush mode
@@ -34,8 +34,8 @@ namespace TurtleSandbox
     //     stroke.angle        -> Angulo inicial de la tortuga en el trazo
     //     stroke.nextAngle    -> Angulo final de la tortuga en el trazo
     //     stroke.turn         -> Cuánto debe girar la tortuga para ir del ángulo inicial al ángulo final
-    //     stroke.percent      -> Qué porcentaje del trazo total representa el punto inicial del trazo
-    //     stroke.nextPercent  -> Qué porcentaje del trazo total representa el punto final del trazo
+    //     stroke.progress      -> Qué fracción del trazo total representa el punto inicial del trazo
+    //     stroke.nextProgress  -> Qué fracción del trazo total representa el punto final del trazo
 
     //     brush.size          -> Tamaño de la brocha en unidades de la tortuga
     //     brush.colorR        -> Componente R del color de la brocha (0..255)

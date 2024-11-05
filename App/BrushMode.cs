@@ -77,8 +77,8 @@ namespace TurtleSandbox
             public float angle;
             public float nextAngle;
             public float turn;
-            public float percent;
-            public float nextPercent;
+            public float progress;
+            public float nextProgress;
         };
 
         public struct Brush
@@ -100,8 +100,8 @@ namespace TurtleSandbox
             public float angle { get; set; }
             public float nextAngle { get; set; }
             public float turn { get; set; }
-            public float percent { get; set; }
-            public float nextPercent { get; set; }
+            public float progress { get; set; }
+            public float nextProgress { get; set; }
 
             public int brushIndex { get; set; }
             public float brushSize { get; set; }
@@ -210,7 +210,7 @@ namespace TurtleSandbox
                         strokeData.nextPosY = tp2.Y;
                         strokeData.distance = distance;
                         strokeData.angle = Turtle.NormalizeAngle(MathF.Atan2(ap.Y, ap.X) * 180 / MathF.PI);
-                        strokeData.percent = progress;
+                        strokeData.progress = progress;
                         strokeData.brushIndex = brushIndex;
                         strokeData.brushColorR = brushColors[brushColorIndex].R;
                         strokeData.brushColorG = brushColors[brushColorIndex].G;
@@ -248,7 +248,7 @@ namespace TurtleSandbox
                 float aX = tp.X - strokeData.posX;
                 float aY = tp.Y - strokeData.posY;            
                 strokeData.angle = Turtle.NormalizeAngle(MathF.Atan2(aY, aX) * 180 / MathF.PI);
-                strokeData.percent = progress;
+                strokeData.progress = progress;
                 strokeData.brushIndex = brushIndex;
                 strokeData.brushColorR = brushColors[brushColorIndex].R;
                 strokeData.brushColorG = brushColors[brushColorIndex].G;
@@ -263,7 +263,7 @@ namespace TurtleSandbox
                 int i = strokeList.Count - 1;
                 int sequenceStart;
 
-                while((int)(strokeList[i].percent)!= 0) { i --; }
+                while((int)(strokeList[i].progress)!= 0) { i --; }
                 sequenceStart = i;
 
                 int sequenceTotal = strokeList.Count - sequenceStart;
@@ -271,7 +271,7 @@ namespace TurtleSandbox
                 for(i = sequenceStart; i < strokeList.Count; i++)
                 {
                     strokeData = strokeList[i];
-                    strokeData.percent = (i - sequenceStart) / (float)sequenceTotal;
+                    strokeData.progress = (i - sequenceStart) / (float)sequenceTotal;
                     strokeList[i] = strokeData;
                 }
 
@@ -284,13 +284,13 @@ namespace TurtleSandbox
                         StrokeData next = strokeList[i + 1];
                         strokeData.nextAngle = next.angle;
                         strokeData.turn = Turtle.CalculateTurn(strokeData.angle, strokeData.nextAngle);
-                        strokeData.nextPercent = next.percent;
+                        strokeData.nextProgress = next.progress;
                     }
                     else
                     {
                         strokeData.nextAngle = strokeData.angle;
                         strokeData.turn = Turtle.CalculateTurn(strokeData.angle, strokeData.nextAngle);
-                        strokeData.nextPercent = 1;
+                        strokeData.nextProgress = 1;
                     }
 
                     strokeList[i] = strokeData;
@@ -323,8 +323,8 @@ namespace TurtleSandbox
             stroke.angle = strokeData.angle;
             stroke.nextAngle = strokeData.nextAngle;
             stroke.turn = strokeData.turn;
-            stroke.percent = strokeData.percent;
-            stroke.nextPercent = strokeData.nextPercent;
+            stroke.progress = strokeData.progress;
+            stroke.nextProgress = strokeData.nextProgress;
 
             brush = new Brush();
             brush.colorR = strokeData.brushColorR;
@@ -359,7 +359,7 @@ namespace TurtleSandbox
             {
                 StrokeData s = l[i];
 
-                if(brief) { Console.WriteLine(i + ": %" + s.percent); }
+                if(brief) { Console.WriteLine(i + ": %" + s.progress); }
                 else
                 {
                     Console.WriteLine("--------[" + i + "]-----------");
@@ -369,8 +369,8 @@ namespace TurtleSandbox
                     Console.WriteLine("StartAngle....." + s.angle);
                     Console.WriteLine("EndAngle......." + s.nextAngle);
                     Console.WriteLine("Turn..........." + s.turn);
-                    Console.WriteLine("StartFraction.." + s.percent);
-                    Console.WriteLine("EndFraction...." + s.nextPercent);
+                    Console.WriteLine("StartFraction.." + s.progress);
+                    Console.WriteLine("EndFraction...." + s.nextProgress);
                 }
             }
         }
@@ -385,10 +385,16 @@ namespace TurtleSandbox
             return strokeLengths[strokeLengthIndex] * AppConfig.pixelsPerStep;
         }
 
-        public static void NextStrokeLengthIndex()
+        public static void NextStrokeLengthIndex(bool loop = true)
         {
-            if (strokeLengthIndex + 1 >= AppConfig.strokeLengthsCount) { strokeLengthIndex = 0; }
+            if (strokeLengthIndex + 1 >= AppConfig.strokeLengthsCount) { strokeLengthIndex = loop ? 0 : AppConfig.strokeLengthsCount - 1; }
             else { strokeLengthIndex++; }
+        }
+
+        public static void PreviousStrokeLengthIndex(bool loop = true)
+        {
+            if (strokeLengthIndex - 1 < 0) { strokeLengthIndex = loop ? AppConfig.strokeLengthsCount - 1 : 0; }
+            else { strokeLengthIndex--; }
         }
 
         public static int GetBrushOpacityIndex()
@@ -418,10 +424,18 @@ namespace TurtleSandbox
             return brushSizes[brushSizeIndex] * AppConfig.pixelsPerStep;
         }
 
-        public static void NextBrushSizeIndex()
+        public static void NextBrushSizeIndex(bool loop = true)
         {
-            if(brushSizeIndex + 1 >= AppConfig.brushSizesCount) { brushSizeIndex = 0; }
+            if(brushSizeIndex + 1 >= AppConfig.brushSizesCount)
+            { brushSizeIndex = loop ? 0 : AppConfig.brushSizesCount - 1; }
             else { brushSizeIndex ++; }
+        }
+
+        public static void PreviousBrushSizeIndex(bool loop = true)
+        {
+            if (brushSizeIndex - 1 <= 0 )
+            { brushSizeIndex = loop ? AppConfig.brushSizesCount - 1 : 0; }
+            else { brushSizeIndex--; }
         }
 
         public static int GetBrushColorIndex()
@@ -441,7 +455,7 @@ namespace TurtleSandbox
             if(strokeList.Count == 0) { return; }
 
             int count = 0;
-            while (strokeList[strokeList.Count - 1 - count].percent != 0) { count ++; }
+            while (strokeList[strokeList.Count - 1 - count].progress != 0) { count ++; }
             count ++;
 
             for(int i = 0; i < count; i++)
@@ -463,7 +477,7 @@ namespace TurtleSandbox
             while (!found)
             {
                 if (count >= strokeUndoList.Count) { found = true; }
-                else if (strokeUndoList[count].percent == 0) { found = true; }
+                else if (strokeUndoList[count].progress == 0) { found = true; }
                 else { count++; }
             }
 

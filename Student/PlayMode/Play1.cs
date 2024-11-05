@@ -18,18 +18,11 @@ namespace TurtleSandbox
         //     turtle.RandWalk(min, max)  -> Le hace avanzar una distancia al azar entre min y max, ambos incluidos
         //     turtle.RandTurn(min, max)  -> Le hace girar un ángulo al azar entre min y max, ambos incluidos. Min y max pueden ser menores que 0.
 
-        //      turtle.Remember()         -> Hace que la tortuga memorice la posición y ángulo en que está ahora
+        //      turtle.Memorize()           -> Hace que la tortuga memorice la posición y ángulo en que está ahora
         //      turgle.Recall()           -> Devuelve a la tortuga a la posición y ángulo que había memorizado
 
         static void Play1()
         {
-            turtle.draw = false;
-            turtle.Turn(90);
-            turtle.Walk(50);
-            turtle.Turn(-90);
-            turtle.Walk(50);
-
-            turtle.draw = true;
             turtle.Walk(100);
             turtle.Turn(90);
             turtle.Walk(100);
@@ -37,55 +30,6 @@ namespace TurtleSandbox
             turtle.Walk(100);
             turtle.Turn(90);
             turtle.Walk(100);
-
-            turtle.Origin();
-
-            turtle.draw = false;
-            turtle.Turn(-90);
-            turtle.Walk(100);
-            turtle.Turn(90);
-            turtle.Walk(50);
-            turtle.Turn(-90);
-
-            turtle.draw = true;
-            turtle.Walk(100);
-            turtle.Turn(120);
-            turtle.Walk(100);
-            turtle.Turn(120);
-            turtle.Walk(100);
-
-            turtle.Origin();
-
-            turtle.draw = false;
-            turtle.Turn(-90);
-            turtle.Walk(150);
-            turtle.Turn(-90);
-            turtle.Walk(150);
-            turtle.Turn(90);
-
-            turtle.draw = true;
-            for (int i = 0; i < 10; i++)
-            {
-                turtle.Walk(30);
-                turtle.Turn(36);
-            }
-
-            turtle.Origin();
-
-            turtle.draw = false;
-            turtle.Turn(90);
-            turtle.Walk(100);
-            turtle.Turn(90);
-            turtle.Walk(50);
-
-            turtle.draw = true;
-            for (int i = 0; i < 12; i++)
-            {
-                turtle.Walk(100);
-                turtle.Turn(210);
-            }
-
-            turtle.Origin();
         }
 
     }

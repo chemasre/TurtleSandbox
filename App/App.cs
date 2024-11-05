@@ -96,15 +96,7 @@ namespace TurtleSandbox
             InitTurtle();
             TracePlayer.Init();
 
-            if(Config.skipSplash)
-            {
-                state = State.Play;
-                nextState = State.Play;
-                UI.GotoScreen(UI.ScreenId.PlayMode, true);
-                SetMusic(AppConfig.playModeMusic);
-                if (Config.playMusic) { PlayMusic(); }
-            }
-            else
+            if(Config.startScreen == 0)
             {
                 state = State.Splash;
                 nextState = State.Splash;
@@ -113,9 +105,25 @@ namespace TurtleSandbox
                 SetMusic(AppConfig.splashMusic);
                 if (Config.playMusic) { PlayMusic(); }
             }
+            else if (Config.startScreen == 1)
+            {
+                state = State.Play;
+                nextState = State.Play;
+                PlayMode.Init();
+                UI.GotoScreen(UI.ScreenId.PlayMode, true);
+                SetMusic(AppConfig.playModeMusic);
+                if (Config.playMusic) { PlayMusic(); }
+            }
+            else // Config.startScreen == 2
+            {
+                state = State.Brush;
+                nextState = State.Brush;
+                BrushMode.Init();
+                UI.GotoScreen(UI.ScreenId.BrushMode, true);
+                SetMusic(AppConfig.brushModeMusic);
+                if (Config.playMusic) { PlayMusic(); }
+            }
 
-
-            TracePlayer.Init();
 
             while (window.IsOpen)
             {
@@ -325,11 +333,8 @@ namespace TurtleSandbox
             }
             else
             {
-                if(Config.playMusic)
-                {
-                    UI.AddInfoMessage(Texts.Get(Texts.Id.musicOn), UI.InfoMessagePosition.UtilsToolbar);
-                    musics[musicIndex].Play();
-                }
+                UI.AddInfoMessage(Texts.Get(Texts.Id.musicOn), UI.InfoMessagePosition.UtilsToolbar);
+                musics[musicIndex].Play();
             }
 
         }
