@@ -8,7 +8,7 @@ namespace TurtleSandbox
 {
     internal class AppConfig
     {
-        public const string appVersion = "1.10";
+        public const string appVersion = "1.11";
 
         public const int windowWidth = 1280;
         public const int windowHeight = 720;

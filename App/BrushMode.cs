@@ -317,6 +317,8 @@ namespace TurtleSandbox
             stroke = new Stroke();
             stroke.posX = strokeData.posX;
             stroke.posY = strokeData.posY;
+            stroke.nextPosX = strokeData.nextPosX;
+            stroke.nextPosY = strokeData.nextPosY;
             stroke.distance = strokeData.distance;
             stroke.angle = strokeData.angle;
             stroke.nextAngle = strokeData.nextAngle;
