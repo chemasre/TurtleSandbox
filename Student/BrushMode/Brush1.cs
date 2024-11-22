@@ -17,12 +17,20 @@ namespace TurtleSandbox
     //     turtle.Teleport(x,y,angulo) -> Teleporta a la tortuga a la posicion x, y con el angulo indicado (es un poco hacer trampa :) )
     //
 
-    //     turtle.RandColor()         -> Cambia el color de la tortuga por uno al azar
+    //     turtle.RandColor()            -> Cambia el color de la tortuga por uno al azar
+    //     turtle.RandAddColor(min, max) -> Añade una cantidad al azar entre min y max, ambos incluidos, a las componentes r g b del color de la tortuga. Min y max pueden ser menores que 0.
+    //     turtle.RandAddOpacity(min, max) -> Añade una cantidad al azar entre min y max, ambos incluidos, a la opacidad de la tortuga. Min y max pueden ser menores que 0.
+
     //     turtle.RandWalk(min, max)  -> Le hace avanzar una distancia al azar entre min y max, ambos incluidos
     //     turtle.RandTurn(min, max)  -> Le hace girar un ángulo al azar entre min y max, ambos incluidos. Min y max pueden ser menores que 0.
 
     //     turtle.Memorize()           -> Hace que la tortuga memorice la posición y ángulo en que está ahora
+    //     turtle.MemorizeColor()      -> Hace que la tortuga memorice el color que tiene ahora
+    //     turtle.MemorizeOpacity()    -> Hace que la tortuga memorice la opacidad que tiene ahora
+
     //     turgle.Recall()           -> Devuelve a la tortuga a la posición y ángulo que había memorizado
+    //     turgle.RecallColor()      -> Devuelve a la tortuga al color que había memorizado
+    //     turgle.RecallOpacity()      -> Devuelve a la tortuga al color que había memorizado
 
     // Datos disponibles en brush mode
     //

@@ -14,7 +14,7 @@ namespace TurtleSandbox
         // Constants
 
         public const int traceInitialCapacity = 1000;
-        public const int savedLocationsCapacity = 10;
+        public const int saveSlots = 10;
 
         // Properties
 
@@ -41,16 +41,25 @@ namespace TurtleSandbox
             randWalk,
             teleport,
             memorize,
-            recall
+            recall,
+            lookAt,
+            walkDistanceTo
         }
 
         // Structs
 
-        public struct Location
+        public struct SavedLocation
         {
             public float x;
             public float y;
             public float angle;
+        }
+
+        public struct SavedColor
+        {
+            public float r;
+            public float g;
+            public float b;
         }
 
         public struct Order
@@ -84,7 +93,9 @@ namespace TurtleSandbox
 
         // Save and load
 
-        List<Location> savedLocations;
+        List<SavedLocation> savedLocations;
+        List<SavedColor> savedColors;
+        List<float> savedOpacities;
 
         // Trace
 
@@ -103,7 +114,9 @@ namespace TurtleSandbox
         public Turtle()
         {
             trace = new List<Step>(traceInitialCapacity);
-            savedLocations = new List<Location>(savedLocationsCapacity);
+            savedLocations = new List<SavedLocation>(saveSlots);
+            savedColors = new List<SavedColor>(saveSlots);
+            savedOpacities = new List<float>(saveSlots);
 
             Reset();
         }
@@ -132,6 +145,36 @@ namespace TurtleSandbox
             overrideOrder = false;
         }
 
+        public void LookAt(float x, float y)
+        {
+            float nextAngle = MathF.Atan2(y - posY, x - posX) * 180 / MathF.PI;
+            float angle = CalculateTurn(_angle, nextAngle);
+
+            overrideOrder = true;
+            overrideOrderValue = new Order();
+            overrideOrderValue.id = OrderId.lookAt;
+            overrideOrderValue.param1 = x;
+            overrideOrderValue.param2 = y;
+
+            Turn(angle);
+        }
+
+        public void WalkDistanceTo(float x, float y)
+        {
+            float ax = x - posX;
+            float ay = y - posY;
+            float distance = MathF.Sqrt(ax * ax + ay * ay);
+
+            overrideOrder = true;
+            overrideOrderValue = new Order();
+            overrideOrderValue.id = OrderId.walkDistanceTo;
+            overrideOrderValue.param1 = x;
+            overrideOrderValue.param2 = y;
+
+            Walk(distance);
+        }
+
+
         public void Color(float r, float g, float b)
         {
             colorR = r;
@@ -139,9 +182,28 @@ namespace TurtleSandbox
             colorB = b;
         }
 
+        public void AddColor(float r, float g, float b)
+        {
+            colorR += r;
+            colorG += g;
+            colorB += b;
+
+            colorR = Clamp(colorR, 0, 255);
+            colorG = Clamp(colorR, 0, 255);
+            colorB = Clamp(colorR, 0, 255);
+        }
+
+
         public void Opacity(float o)
         {
             opacity = o;
+        }
+
+        public void AddOpacity(float o)
+        {
+            opacity += o;
+
+            opacity = Clamp(opacity, 0, 255);
         }
 
         public void RandTurn(float a1, float a2)
@@ -160,6 +222,29 @@ namespace TurtleSandbox
             colorR = random.NextSingle() * 255;
             colorG = random.NextSingle() * 255;
             colorB = random.NextSingle() * 255;
+        }
+
+        public void RandAddColor(float c1, float c2)
+        {
+            colorR += c1 + random.NextSingle() * (c2 - c1);
+            colorG += c1 + random.NextSingle() * (c2 - c1);
+            colorB += c1 + random.NextSingle() * (c2 - c1);
+
+            colorR = Clamp(colorR, 0, 255);
+            colorG = Clamp(colorG, 0, 255);
+            colorB = Clamp(colorB, 0, 255);
+        }
+
+        public void RandOpacity()
+        {
+            opacity = random.NextSingle() * 255;
+        }
+
+        public void RandAddOpacity(float o1, float o2)
+        {
+            opacity += o1 + random.NextSingle() * (o2 - o1);
+
+            opacity = Clamp(opacity, 0, 255);
         }
 
         public void Walk(float d)
@@ -208,7 +293,7 @@ namespace TurtleSandbox
 
         public void Memorize(int slot = 0)
         {
-            Location l = new Location();            
+            SavedLocation l = new SavedLocation();            
             l.x = posX;
             l.y = posY;
             l.angle = angle;
@@ -216,14 +301,41 @@ namespace TurtleSandbox
             savedLocations[slot] = l;
         }
 
+        public void MemorizeColor(int slot = 0)
+        {
+            SavedColor c = new SavedColor();
+            c.r = colorR;
+            c.g = colorG;
+            c.b = colorB;
+
+            savedColors[slot] = c;
+        }
+
+        public void MemorizeOpacity(int slot = 0)
+        {
+            savedOpacities[slot] = opacity;
+        }
+
         public void Recall(int slot = 0)
         {
-            Location l = savedLocations[slot];
+            SavedLocation l = savedLocations[slot];
 
             overrideOrder = true;
             overrideOrderValue = new Order();
             overrideOrderValue.id = OrderId.recall;
             Teleport(l.x, l.y, l.angle);
+        }
+
+        public void RecallColor(int slot = 0)
+        {
+            colorR = savedColors[slot].r;
+            colorG = savedColors[slot].g;
+            colorB = savedColors[slot].b;
+        }
+
+        public void RecallOpacity(int slot = 0)
+        {
+            opacity = savedOpacities[slot];
         }
 
         public void Teleport(float posX, float posY, float angle)
@@ -278,7 +390,14 @@ namespace TurtleSandbox
             trace.Add(p);
 
             savedLocations.Clear();
-            for (int i = 0; i < 10; i++) { savedLocations.Add(new Location()); }
+            savedColors.Clear();
+            savedOpacities.Clear();
+            for (int i = 0; i < saveSlots; i++)
+            {
+                savedLocations.Add(new SavedLocation());
+                savedColors.Add(new SavedColor());
+                savedOpacities.Add(0);
+            }
 
             overrideOrder = false;
         }
@@ -318,6 +437,11 @@ namespace TurtleSandbox
 
             return r;
 
+        }
+
+        float Clamp(float v, float min, float max)
+        {
+            return MathF.Max(MathF.Min(max, v), 0);
         }
 
     }
