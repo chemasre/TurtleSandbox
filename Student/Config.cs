@@ -64,16 +64,6 @@ namespace TurtleSandbox
 
         public static float lineWidth = 4.0f;
 
-        // Color de las herramientas de ayuda que aparecen en pantalla
-
-        public static int toolbar1R = 255;
-        public static int toolbar1G = 255;
-        public static int toolbar1B = 255;
-
-        public static int toolbar2R = 80;
-        public static int toolbar2G = 200;
-        public static int toolbar2B = 80;
-
         // Opacidad de la rejilla
 
         public static int gridOpacity = 96;
