@@ -148,6 +148,27 @@ namespace TurtleSandbox
         static Sprite cursorSprite;
         static Texture cursorTexture;
 
+        // Background colors
+
+        static Color[] sandColors = new Color[] {  new Color(26, 28, 44),
+                                                           new Color(93, 39, 93),
+                                                           new Color(177, 62, 83),
+                                                           new Color(239, 125, 87),
+                                                           new Color(255, 205, 117),
+                                                           new Color(167, 240, 112),
+                                                           new Color(56, 183, 100),
+                                                           new Color(37, 113, 121),
+                                                           new Color(41, 54, 111),
+                                                           new Color(59, 93, 201),
+                                                           new Color(65, 166, 246),
+                                                           new Color(115, 239, 247),
+                                                           new Color(244, 244, 244),
+                                                           new Color(148, 176, 194),
+                                                           new Color(86, 108, 134),
+                                                           new Color(51, 60, 87)
+                                                 };
+        static int backgroundColorIndex;
+
         // Grid
 
         static Text gridText;
@@ -389,6 +410,8 @@ namespace TurtleSandbox
             statusPosYText.Font = font;
             textBuilder.Clear();
             statusPosYText.DisplayedString = textBuilder.ToString();
+
+            backgroundColorIndex = Config.sandColor;
 
             gridText = new Text();
             gridText.Font = font;
@@ -696,7 +719,7 @@ namespace TurtleSandbox
             buttonGridSprite.Texture = buttonGridOffTexture;
             buttonGridSprite.Color = toolbarColor1;
             buttonSandColorSprite = new Sprite();
-            buttonSandColorSprite.Texture = buttonSandColorTextures[App.GetBackgroundColorIndex()];
+            buttonSandColorSprite.Texture = buttonSandColorTextures[backgroundColorIndex];
             buttonSandColorSprite.Color = new Color(255, 255, 255);
             buttonSplashSprite = new Sprite();
             buttonSplashSprite.Texture = buttonSplashOffTexture;
@@ -956,6 +979,8 @@ namespace TurtleSandbox
 
         public static void Draw(RenderWindow window, bool takeScreenshot = false)
         {
+            TracePlayer.Draw(window, opacity);
+
             if (screenId == ScreenId.Splash)
             {
                 DrawSplash(window, false);
@@ -968,8 +993,6 @@ namespace TurtleSandbox
             else if(screenId == ScreenId.PlayMode || screenId == ScreenId.BrushMode)
             {
                 if (Config.showGrid && !takeScreenshot) { DrawGrid(window); }
-
-                TracePlayer.Draw(window, opacity);
 
                 if (screenId == ScreenId.BrushMode) { DrawStrokePreview(window); }
 
@@ -1076,7 +1099,7 @@ namespace TurtleSandbox
 
                 buttonGridSprite.Texture = (Config.showGrid ? buttonGridOnTexture : buttonGridOffTexture);
                 DrawColoredSprite(window, buttonGridSprite);
-                buttonSandColorSprite.Texture = buttonSandColorTextures[App.GetBackgroundColorIndex()];
+                buttonSandColorSprite.Texture = buttonSandColorTextures[backgroundColorIndex];
                 DrawColoredSprite(window, buttonSandColorSprite);
                 DrawColoredSprite(window, buttonScreenshotSprite);
                 buttonSplashSprite.Texture = (showSplash ? buttonSplashOnTexture : buttonSplashOffTexture);
@@ -1146,6 +1169,26 @@ namespace TurtleSandbox
             return isTransitioning;
         }
 
+        public static int GetBackgroundColorIndex()
+        {
+            return backgroundColorIndex;
+        }
+
+        public static Color GetBackgroundColor()
+        {
+            return sandColors[backgroundColorIndex];
+        }
+
+        public static void NextBackgroundColorIndex()
+        {
+            if (backgroundColorIndex + 1 >= AppConfig.sandColorsCount) { backgroundColorIndex = 0; }
+            else { backgroundColorIndex++; }
+
+            TracePlayer.SetBackgroundColor(sandColors[backgroundColorIndex]);
+        }
+
+
+
         public static void SwitchGrid()
         {
             Config.showGrid = !Config.showGrid;
@@ -1154,10 +1197,10 @@ namespace TurtleSandbox
 
         }
 
-        public static void DrawGrid(RenderWindow window)
+        public static void DrawGrid(RenderTarget target)
         {
-            float width = window.Size.X;
-            float height = window.Size.Y;
+            float width = target.Size.X;
+            float height = target.Size.Y;
 
             // Draw lines
 
@@ -1169,7 +1212,7 @@ namespace TurtleSandbox
             {
                 gridLineSprite.Scale = new Vector2f((i != 0 ? 2.0f : 6.0f) / gridLineTexture.Size.X, height / gridLineTexture.Size.Y);
                 gridLineSprite.Position = new Vector2f(center.X + i * gridSeparation, height);
-                DrawColoredSprite(window, gridLineSprite);
+                DrawColoredSprite(target, gridLineSprite);
             }
 
             gridLineSprite.Rotation = 90;
@@ -1177,7 +1220,7 @@ namespace TurtleSandbox
             {
                 gridLineSprite.Scale = new Vector2f((i != 0 ? 2.0f : 6.0f) / gridLineTexture.Size.X, width / gridLineTexture.Size.Y);
                 gridLineSprite.Position = new Vector2f(0, center.Y + i * gridSeparation);
-                DrawColoredSprite(window, gridLineSprite);
+                DrawColoredSprite(target, gridLineSprite);
             }
 
             // Draw coordinates
@@ -1195,7 +1238,7 @@ namespace TurtleSandbox
                 textBuilder.AppendFormat(Texts.Get(Texts.Id.gridCoordinates), (int)(-i * gridSeparation));
                 gridText.DisplayedString = textBuilder.ToString();
                 gridText.Position = new Vector2f(width / 2 - i * gridSeparation + gridCoordinatesTextOffsetX, gridTextBaseY + gridCoordinatesTextOffsetY);
-                DrawColoredText(window, gridText);
+                DrawColoredText(target, gridText);
             }
 
             for (int i = -YLines; i <= YLines; i++)
@@ -1204,7 +1247,7 @@ namespace TurtleSandbox
                 textBuilder.AppendFormat(Texts.Get(Texts.Id.gridCoordinates), (int)(i * gridSeparation));
                 gridText.DisplayedString = textBuilder.ToString();
                 gridText.Position = new Vector2f(gridCoordinatesTextOffsetX, height / 2 - i * gridSeparation + gridCoordinatesTextOffsetY);
-                DrawColoredText(window, gridText);
+                DrawColoredText(target, gridText);
             }
 
         }
@@ -1220,11 +1263,11 @@ namespace TurtleSandbox
             UI.AddInfoMessage(Texts.Get(turtleVisible ? Texts.Id.turtleOn : Texts.Id.turtleOff), UI.InfoMessagePosition.UtilsToolbar);
         }
 
-        public static void DrawTurtle(RenderWindow window)
+        public static void DrawTurtle(RenderTarget target)
         {
-            turtleSprite.Position = UI.TurtlePositionToScreen(statusPosX, statusPosY, window);
+            turtleSprite.Position = UI.TurtlePositionToScreen(statusPosX, statusPosY, target);
             turtleSprite.Rotation = UI.TurtleAngleToScreenRotation(statusAngle);
-            DrawColoredSprite(window, turtleSprite);
+            DrawColoredSprite(target, turtleSprite);
 
         }
 
@@ -1235,7 +1278,7 @@ namespace TurtleSandbox
             return r;
         }
 
-        public static void DrawArea(Area area, RenderWindow window)
+        public static void DrawArea(Area area, RenderTarget target)
         {
             float cornerWidth = areaTopLeftBase.Texture.Size.X;
             float cornerHeight = areaTopLeftBase.Texture.Size.Y;
@@ -1306,32 +1349,32 @@ namespace TurtleSandbox
             areaBottomRightBase.Color = color;
             areaBottomRightBorder.Position = p;
 
-            DrawColoredSprite(window, areaTopLeftBase);
-            DrawColoredSprite(window, areaTopBase);
-            DrawColoredSprite(window, areaTopRightBase);
-            DrawColoredSprite(window, areaLeftBase);
-            DrawColoredSprite(window, areaCenterBase);
-            DrawColoredSprite(window, areaRightBase);
-            DrawColoredSprite(window, areaBottomLeftBase);
-            DrawColoredSprite(window, areaBottomBase);
-            DrawColoredSprite(window, areaBottomRightBase);
+            DrawColoredSprite(target, areaTopLeftBase);
+            DrawColoredSprite(target, areaTopBase);
+            DrawColoredSprite(target, areaTopRightBase);
+            DrawColoredSprite(target, areaLeftBase);
+            DrawColoredSprite(target, areaCenterBase);
+            DrawColoredSprite(target, areaRightBase);
+            DrawColoredSprite(target, areaBottomLeftBase);
+            DrawColoredSprite(target, areaBottomBase);
+            DrawColoredSprite(target, areaBottomRightBase);
 
-            DrawColoredSprite(window, areaTopLeftBorder);
-            DrawColoredSprite(window, areaTopBorder);
-            DrawColoredSprite(window, areaTopRightBorder);
-            DrawColoredSprite(window, areaLeftBorder);
-            DrawColoredSprite(window, areaRightBorder);
-            DrawColoredSprite(window, areaBottomBorder);
-            DrawColoredSprite(window, areaBottomLeftBorder);
-            DrawColoredSprite(window, areaBottomRightBorder);
+            DrawColoredSprite(target, areaTopLeftBorder);
+            DrawColoredSprite(target, areaTopBorder);
+            DrawColoredSprite(target, areaTopRightBorder);
+            DrawColoredSprite(target, areaLeftBorder);
+            DrawColoredSprite(target, areaRightBorder);
+            DrawColoredSprite(target, areaBottomBorder);
+            DrawColoredSprite(target, areaBottomLeftBorder);
+            DrawColoredSprite(target, areaBottomRightBorder);
 
-            DrawColoredSprite(window, area.content);
+            DrawColoredSprite(target, area.content);
         }
 
-        public static void DrawSplash(RenderWindow window, bool withCloseButton = true)
+        public static void DrawSplash(RenderTarget target, bool withCloseButton = true)
         {
-            DrawArea(splashArea, window);
-            if(withCloseButton) { DrawColoredSprite(window, splashCloseButtonSprite); }
+            DrawArea(splashArea, target);
+            if(withCloseButton) { DrawColoredSprite(target, splashCloseButtonSprite); }
         }
 
         public static string FormatOrderInfo(Turtle.Order order)
@@ -1362,9 +1405,9 @@ namespace TurtleSandbox
             return textBuilder.ToString();
         }
 
-        public static Vector2f TurtlePositionToScreen(float x, float y, RenderWindow window)
+        public static Vector2f TurtlePositionToScreen(float x, float y, RenderTarget target)
         {
-            return new Vector2f(window.Size.X / 2, window.Size.Y / 2) + new Vector2f(x, -y) * AppConfig.pixelsPerStep;
+            return new Vector2f(target.Size.X / 2, target.Size.Y / 2) + new Vector2f(x, -y) * AppConfig.pixelsPerStep;
         }
 
         public static float TurtleAngleToScreenRotation(float a)
@@ -1372,9 +1415,9 @@ namespace TurtleSandbox
             return -a - 90;
         }
 
-        public static Vector2f ScreenPositionToTurtle(float x, float y, RenderWindow window)
+        public static Vector2f ScreenPositionToTurtle(float x, float y, RenderTarget target)
         {
-            Vector2f p = new Vector2f(x, y) - new Vector2f(window.Size.X / 2, window.Size.Y / 2);
+            Vector2f p = new Vector2f(x, y) - new Vector2f(target.Size.X / 2, target.Size.Y / 2);
             return new Vector2f(p.X, -p.Y) / AppConfig.pixelsPerStep;
         }
 
@@ -1384,20 +1427,20 @@ namespace TurtleSandbox
         }
 
 
-        static void DrawColoredSprite(RenderWindow w, Sprite s)
+        static void DrawColoredSprite(RenderTarget target, Sprite sprite)
         {
-            Color previousColor = s.Color;
-            s.Color = new Color(previousColor.R, previousColor.G, previousColor.B, (byte)(previousColor.A * opacity));
-            w.Draw(s);
-            s.Color = previousColor;
+            Color previousColor = sprite.Color;
+            sprite.Color = new Color(previousColor.R, previousColor.G, previousColor.B, (byte)(previousColor.A * opacity));
+            target.Draw(sprite);
+            sprite.Color = previousColor;
         }
 
-        static void DrawColoredText(RenderWindow w, Text t)
+        static void DrawColoredText(RenderTarget target, Text text)
         {
-            Color previousColor = t.FillColor;
-            t.FillColor = new Color(previousColor.R, previousColor.G, previousColor.B, (byte)(previousColor.A * opacity));
-            w.Draw(t);
-            t.FillColor = previousColor;
+            Color previousColor = text.FillColor;
+            text.FillColor = new Color(previousColor.R, previousColor.G, previousColor.B, (byte)(previousColor.A * opacity));
+            target.Draw(text);
+            text.FillColor = previousColor;
         }
 
         static void OnKeyPressed(object sender, KeyEventArgs e)
@@ -1552,7 +1595,7 @@ namespace TurtleSandbox
         }
 
 
-        public static void DrawStrokePreview(RenderWindow window)
+        public static void DrawStrokePreview(RenderTarget target)
         {
             IntRect rect = strokePreviewSprite.TextureRect;
             rect.Height = (int)BrushMode.GetStrokeLength();
@@ -1570,7 +1613,7 @@ namespace TurtleSandbox
                 strokePreviewSprite.Rotation = rotation;
                 strokePreviewSprite.Scale = new Vector2f(Config.lineWidth / 50.0f, length / rect.Height);
                 strokePreviewSprite.Color = toolbarColor1;
-                DrawColoredSprite(window, strokePreviewSprite);
+                DrawColoredSprite(target, strokePreviewSprite);
 
             }
         }
@@ -1611,11 +1654,11 @@ namespace TurtleSandbox
                     }
                     else if (buttonSandColorSprite.GetGlobalBounds().Contains(e.X, e.Y))
                     {
-                        App.NextBackgroundColorIndex();
+                        NextBackgroundColorIndex();
 
                         StringBuilder textBuilder = App.GetTextBuilder();
                         textBuilder.Clear();
-                        textBuilder.AppendFormat(Texts.Get(Texts.Id.sandColor), App.GetBackgroundColorIndex() + 1);
+                        textBuilder.AppendFormat(Texts.Get(Texts.Id.sandColor), backgroundColorIndex + 1);
                         UI.AddInfoMessage(textBuilder.ToString(), UI.InfoMessagePosition.UtilsToolbar);
 
                         processed = true;

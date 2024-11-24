@@ -34,8 +34,6 @@ namespace TurtleSandbox
 
             List<Turtle.Step> trace = turtle.GetTrace();
             TracePlayer.SetTrace(trace);
-
-            TracePlayer.SetStep(0);
             TracePlayer.Play();
         }
 
@@ -69,6 +67,7 @@ namespace TurtleSandbox
                 // Generate trace
 
                 turtle.Reset();
+                TracePlayer.Reset();
 
                 if (nextPlayIndex == 0) { Play1(); }
                 else if (nextPlayIndex == 1) { Play2(); }

@@ -25,6 +25,12 @@ namespace TurtleSandbox
 
         const float stepEpsilon = 0.001f;
 
+        // Background
+
+        static Sprite backgroundSprite;
+        static Texture backgroundTexture;
+        static Color backgroundColor;
+
         // Line
 
         static Sprite lineSprite;
@@ -42,9 +48,28 @@ namespace TurtleSandbox
         static Clock stepClock;
         static bool stepChanged;
 
-        public static void Init()
+        static RenderTexture cacheTexture;
+        static Sprite cacheSprite;
+        static int cachedSteps;
+
+        public static void Init(Color _backgroundColor)
         {
             RenderWindow window = App.GetWindow();
+
+            Color c = UI.GetBackgroundColor();
+            backgroundColor = _backgroundColor;
+            backgroundSprite = new Sprite();
+            backgroundTexture = new Texture("Assets/Background.png");
+            backgroundSprite.Texture = backgroundTexture;
+            backgroundSprite.Color = c;
+
+            cacheTexture = new RenderTexture(window.Size.X, window.Size.Y);
+            cacheTexture.Clear(c);
+            cacheTexture.Draw(backgroundSprite);
+            cacheTexture.Display();
+            cacheTexture.Smooth = true;
+            cacheSprite = new Sprite(cacheTexture.Texture);
+            cachedSteps = 0;
 
             lineSprite = new Sprite();
             lineTexture = new Texture("Assets/Line.png");
@@ -77,7 +102,23 @@ namespace TurtleSandbox
 
         public static void SetTrace(List<Turtle.Step> _trace)
         {
+            stepIndex = 0;
             trace = _trace;
+
+            ClearCache();
+        }
+
+        public static void SetBackgroundColor(Color c)
+        {
+            backgroundColor = c;
+
+            ClearCache();
+        }
+
+        public static void Reset()
+        {
+            stepIndex = 0;
+            ClearCache();
         }
 
         public static void Play()
@@ -172,9 +213,58 @@ namespace TurtleSandbox
 
         }
 
-        public static void Draw(RenderWindow window, float opacity)
+        static void ClearCache()
         {
-            for (int i = 0; i < stepIndex; i++)
+            DrawBackground(cacheTexture);
+            cacheTexture.Display();
+            cachedSteps = 0;
+        }
+
+        public static void Draw(RenderTarget target, float opacity)
+        {
+            if(AppConfig.cacheEnabled)
+            {
+                int blockSize = AppConfig.cachedStepsBlockSize;
+
+                if (stepIndex < cachedSteps - 1)
+                {
+                    ClearCache();
+                }
+
+                bool cacheStepsAdded = false;
+
+                while(stepIndex - cachedSteps >= blockSize)
+                {
+                    DrawSteps(cachedSteps, cachedSteps + blockSize - 1, cacheTexture, opacity);
+
+                    cachedSteps += blockSize;
+
+                    cacheStepsAdded = true;
+
+                }
+
+                if(cacheStepsAdded) { cacheTexture.Display(); }
+
+                target.Draw(cacheSprite);
+            }
+            else
+            {
+                DrawBackground(target);
+                cachedSteps = 0;
+            }
+
+            if(cachedSteps <= stepIndex)
+            {                
+                DrawSteps(cachedSteps, stepIndex, target, opacity);
+            }
+
+        }
+
+        static void DrawSteps(int firstStep, int lastStep, RenderTarget target, float opacity)
+        {
+            if(firstStep > 0) { firstStep--; }
+
+            for (int i = firstStep; i < lastStep; i++)
             {
                 Turtle.Step p1 = trace[i];
                 Turtle.Step p2 = trace[i + 1];
@@ -187,15 +277,22 @@ namespace TurtleSandbox
                 {
                     float rotation = MathF.Atan2(aY, aX) * 180 / MathF.PI - 90;
                     float length = MathF.Sqrt(aX * aX + aY * aY) * AppConfig.pixelsPerStep;
-                    lineSprite.Position = UI.TurtlePositionToScreen(p1.x, p1.y, window);
+                    lineSprite.Position = UI.TurtlePositionToScreen(p1.x, p1.y, target);
                     lineSprite.Rotation = rotation;
                     lineSprite.Scale = new Vector2f(Config.lineWidth / 50.0f, length / 600.0f);
                     lineSprite.Color = new Color((byte)p2.colorR, (byte)p2.colorG, (byte)p2.colorB, (byte)(p2.opacity * opacity));
-                    window.Draw(lineSprite);
+                    target.Draw(lineSprite);
                 }
 
             }
 
+        }
+
+        public static void DrawBackground(RenderTarget target)
+        {
+            target.Clear(backgroundColor);
+            backgroundSprite.Color = backgroundColor;
+            target.Draw(backgroundSprite);
         }
 
     }

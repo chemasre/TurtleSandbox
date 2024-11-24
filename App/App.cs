@@ -34,29 +34,6 @@ namespace TurtleSandbox
 
         static Turtle turtle;
 
-        // Background
-
-        static Sprite backgroundSprite;
-        static Texture backgroundTexture;
-        static Color[] sandColors = new Color[] {  new Color(26, 28, 44),
-                                                           new Color(93, 39, 93),
-                                                           new Color(177, 62, 83),
-                                                           new Color(239, 125, 87),
-                                                           new Color(255, 205, 117),
-                                                           new Color(167, 240, 112),
-                                                           new Color(56, 183, 100),
-                                                           new Color(37, 113, 121),
-                                                           new Color(41, 54, 111),
-                                                           new Color(59, 93, 201),
-                                                           new Color(65, 166, 246),
-                                                           new Color(115, 239, 247),
-                                                           new Color(244, 244, 244),
-                                                           new Color(148, 176, 194),
-                                                           new Color(86, 108, 134),
-                                                           new Color(51, 60, 87)
-                                                 };
-        static int backgroundColorIndex;
-
         // Splash
 
         static float splashTimer;
@@ -84,9 +61,6 @@ namespace TurtleSandbox
 
         static void Main(string[] args)
         {
-            InitBackground();
-
-            
             InitTime();
             InitTextBuilder();
             InitWindow();
@@ -94,7 +68,9 @@ namespace TurtleSandbox
             UI.Init(window);
             InitMusic();
             InitTurtle();
-            TracePlayer.Init();
+
+            Color bgColor = UI.GetBackgroundColor();
+            TracePlayer.Init(bgColor);
 
             if(Config.startScreen == 0)
             {
@@ -212,8 +188,6 @@ namespace TurtleSandbox
 
                 // Draw
 
-                DrawBackground(window);
-
                 UI.Draw(window, takeScreenshot);
 
                 window.Display();
@@ -258,22 +232,6 @@ namespace TurtleSandbox
             elapsedTime = updateClock.ElapsedTime.AsSeconds() * timeBoost;
             updateClock.Restart();
 
-        }
-
-        static void InitBackground()
-        {
-            backgroundSprite = new Sprite();
-            backgroundTexture = new Texture("Assets/Background.png");
-            backgroundSprite.Texture = backgroundTexture;
-            backgroundSprite.Color = sandColors[Config.sandColor];
-            backgroundColorIndex = Config.sandColor;
-        }
-
-        static void DrawBackground(RenderWindow window)
-        {
-            window.Clear(sandColors[backgroundColorIndex]);
-            backgroundSprite.Color = sandColors[backgroundColorIndex];
-            window.Draw(backgroundSprite);
         }
 
         static void InitWindow()
@@ -373,15 +331,5 @@ namespace TurtleSandbox
             window.Close();
         }
 
-        public static int GetBackgroundColorIndex()
-        {
-            return backgroundColorIndex;
-        }
-
-        public static void NextBackgroundColorIndex()
-        {
-            if (backgroundColorIndex + 1 >= AppConfig.sandColorsCount) { backgroundColorIndex = 0; }
-            else { backgroundColorIndex++; }
-        }
     }
 }

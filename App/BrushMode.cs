@@ -135,7 +135,6 @@ namespace TurtleSandbox
 
             List<Turtle.Step> trace = turtle.GetTrace();
             TracePlayer.SetTrace(trace);
-            TracePlayer.SetStep(0);
             TracePlayer.Stop();
 
             strokeList = new List<StrokeData>(1000);
@@ -524,6 +523,9 @@ namespace TurtleSandbox
         static void RunStrokeList()
         {
             turtle.Reset();
+
+            TracePlayer.Reset();
+
 
             for (int i = 0; i < strokeList.Count; i++)
             {

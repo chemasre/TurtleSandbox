@@ -8,7 +8,7 @@ namespace TurtleSandbox
 {
     internal class AppConfig
     {
-        public const string appVersion = "1.22";
+        public const string appVersion = "1.23";
 
         public const int windowWidth = 1280;
         public const int windowHeight = 720;
@@ -27,6 +27,9 @@ namespace TurtleSandbox
         public static int brushModeMusic = 2;
 
         public static int sandColorsCount = 16;
+
+        public static bool cacheEnabled = true;
+        public static int cachedStepsBlockSize = 5000;
 
         // Brush mode
 
