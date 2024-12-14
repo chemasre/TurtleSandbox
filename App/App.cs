@@ -236,8 +236,10 @@ namespace TurtleSandbox
 
         static void InitWindow()
         {
-            VideoMode mode = new VideoMode((uint)AppConfig.windowWidth, (uint)AppConfig.windowHeight);
-
+            VideoMode mode;
+            uint width = Config.windowWidth >= AppConfig.referenceWindowWidth ? Config.windowWidth : AppConfig.referenceWindowWidth;
+            uint height = Config.windowHeight >= AppConfig.referenceWindowHeight ? Config.windowHeight : AppConfig.referenceWindowHeight;
+            mode = new VideoMode((uint)Config.windowWidth, (uint)Config.windowHeight);
             Styles style = Styles.Titlebar | Styles.Close;
             window = new RenderWindow(mode, Config.windowTitle + " v" + AppConfig.appVersion, style);
             Image icon = new Image("Assets/Icon.png");

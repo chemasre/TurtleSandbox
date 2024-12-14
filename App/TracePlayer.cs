@@ -65,7 +65,7 @@ namespace TurtleSandbox
 
             cacheTexture = new RenderTexture(window.Size.X, window.Size.Y);
             cacheTexture.Clear(c);
-            cacheTexture.Draw(backgroundSprite);
+            DrawBackground(cacheTexture);
             cacheTexture.Display();
             cacheTexture.Smooth = true;
             cacheSprite = new Sprite(cacheTexture.Texture);
@@ -292,7 +292,21 @@ namespace TurtleSandbox
         {
             target.Clear(backgroundColor);
             backgroundSprite.Color = backgroundColor;
-            target.Draw(backgroundSprite);
+
+            int textureWidth = (int)backgroundTexture.Size.X;
+            int textureHeight = (int)backgroundTexture.Size.Y;
+            float preciseRepeatsX = ((float)target.Size.X / textureWidth);
+            float preciseRepeatsY = ((float)target.Size.Y / textureHeight);
+            int repeatsX = (preciseRepeatsX - MathF.Floor(preciseRepeatsX) == 0 ? (int)preciseRepeatsX : (int)preciseRepeatsX + 1);
+            int repeatsY = (preciseRepeatsY - MathF.Floor(preciseRepeatsY) == 0 ? (int)preciseRepeatsY : (int)preciseRepeatsY + 1);
+            for(int x = 0; x < repeatsX; x++)
+            {
+                for (int y = 0; y < repeatsY; y++)
+                {
+                    backgroundSprite.Position = new Vector2f(x * textureWidth, y * textureHeight);
+                    target.Draw(backgroundSprite);
+                }
+            }
         }
 
     }

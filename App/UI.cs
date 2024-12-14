@@ -13,54 +13,54 @@ namespace TurtleSandbox
     {
         // Constants
 
-        const float playTextX = 80;
-        const float playTextY = 669;
+        const int selectorTextX = 80;
+        const int selectorTextY = 669;
         const float playTextScale = 1.0f;
 
-        const float splashX = 530;
-        const float splashY = 255;
-        const float splashCloseOffsetX = 264;
-        const float splashCloseOffsetY = 8;
+        const int splashX = 530;
+        const int splashY = 255;
+        const int splashCloseOffsetX = 264;
+        const int splashCloseOffsetY = 8;
 
         const int infoMessagesCount = 50;
         const float infoMessageDuration = 2.0f;
-        const float infoMessageDistance = 150;
-        const float infoMessageOffset = 35;
+        const int infoMessageDistance = 150;
+        const int infoMessageOffset = 35;
         const float infoMessageScale = 0.8f;
 
-        const float statusBarX = 280;
-        const float statusBarY = 670;
-        const float statusAngleX = 325;
-        const float statusAngleY = 669;
-        const float statusPosXX = 428;
-        const float statusPosXY = 669;
-        const float statusPosYX = 526;
-        const float statusPosYY = 669;
+        const int statusBarX = 280;
+        const int statusBarY = 670;
+        const int statusAngleX = 325;
+        const int statusAngleY = 669;
+        const int statusPosXX = 428;
+        const int statusPosXY = 669;
+        const int statusPosYX = 526;
+        const int statusPosYY = 669;
 
         const float statusTextScale = 1.0f;
 
         const float gridCoordinatesTextScale = 0.5f;
-        const float gridCoordinatesTextOffsetX = 4.0f;
-        const float gridCoordinatesTextOffsetY = 4.0f;
-        const float gridSeparation = 50.0f;
-        const float gridCoordinatesCursorOffsetX = 23;
-        const float gridCoordinatesCursorOffsetY = -10;
+        const int gridCoordinatesTextOffsetX = 4;
+        const int gridCoordinatesTextOffsetY = 4;
+        const int gridSeparation = 50;
+        const int gridCoordinatesCursorOffsetX = 23;
+        const int gridCoordinatesCursorOffsetY = -10;
 
         const float selectorBarScale = 1.0f;
-        const float selectorBarX = 25;
-        const float selectorBarY = 666;
-        const float selectorBarSeparationPlayMode = 164;
-        const float selectorBarSeparationBrushMode = 180;
+        const int selectorBarX = 25;
+        const int selectorBarY = 666;
+        const int selectorBarSeparationPlayMode = 164;
+        const int selectorBarSeparationBrushMode = 180;
 
         const float playbackBarScale = 1.0f;
-        const float playbackBarX = 650;
-        const float playbackBarY = 666;
-        const float playbackBarSeparation = 2;
+        const int playbackBarX = 650;
+        const int playbackBarY = 666;
+        const int playbackBarSeparation = 2;
 
         const float utilsBarScale = 1.0f;
-        const float utilsBarX = 962;
-        const float utilsBarY = 666;
-        const float utilsBarSeparation = 2;
+        const int utilsBarX = 962;
+        const int utilsBarY = 666;
+        const int utilsBarSeparation = 2;
 
         const int toolbarLight1R = 255;
         const int toolbarLight1G = 255;
@@ -79,19 +79,19 @@ namespace TurtleSandbox
         const int toolbarDark2B = 100;
 
         const float strokeBarScale = 1.0f;
-        const float strokeBarX = 300;
-        const float strokeBarY = 666;
-        const float strokeBarSeparation = 2;
+        const int strokeBarX = 300;
+        const int strokeBarY = 666;
+        const int strokeBarSeparation = 2;
 
         const float undoBarScale = 1.0f;
-        const float undoBarX = 548;
-        const float undoBarY = 666;
-        const float undoBarSeparation = 2;
+        const int undoBarX = 548;
+        const int undoBarY = 666;
+        const int undoBarSeparation = 2;
 
         const float fileBarScale = 1.0f;
-        const float fileBarX = 736;
-        const float fileBarY = 666;
-        const float fileBarSeparation = 2;
+        const int fileBarX = 736;
+        const int fileBarY = 666;
+        const int fileBarSeparation = 2;
 
         // Enums
 
@@ -399,7 +399,7 @@ namespace TurtleSandbox
             font = new Font("Assets/Font.ttf");
 
             selectorText = new Text();
-            selectorText.Position = new Vector2f(playTextX, playTextY);
+            selectorText.Position = ReferenceToBottomCenter(new Vector2f(selectorTextX, selectorTextY));
             selectorText.FillColor = toolbarLightColor1;
             selectorText.Scale = new Vector2f(playTextScale, playTextScale);
             selectorText.Font = font;
@@ -412,7 +412,7 @@ namespace TurtleSandbox
             StringBuilder textBuilder = App.GetTextBuilder();
 
             statusAngleText = new Text();
-            statusAngleText.Position = new Vector2f(statusAngleX, statusAngleY);
+            statusAngleText.Position = ReferenceToBottomCenter(new Vector2f(statusAngleX, statusAngleY));
             statusAngleText.FillColor = toolbarLightColor1;
             statusAngleText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusAngleText.Font = font;
@@ -420,7 +420,7 @@ namespace TurtleSandbox
             statusAngleText.DisplayedString = textBuilder.ToString();
 
             statusPosXText = new Text();
-            statusPosXText.Position = new Vector2f(statusPosXX, statusPosXY);
+            statusPosXText.Position = ReferenceToBottomCenter(new Vector2f(statusPosXX, statusPosXY));
             statusPosXText.FillColor = toolbarLightColor1;
             statusPosXText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusPosXText.Font = font;
@@ -428,7 +428,7 @@ namespace TurtleSandbox
             statusPosXText.DisplayedString = textBuilder.ToString();
 
             statusPosYText = new Text();
-            statusPosYText.Position = new Vector2f(statusPosYX, statusPosYY);
+            statusPosYText.Position = ReferenceToBottomCenter(new Vector2f(statusPosYX, statusPosYY));
             statusPosYText.FillColor = toolbarLightColor1;
             statusPosYText.Scale = new Vector2f(statusTextScale, statusTextScale);
             statusPosYText.Font = font;
@@ -527,7 +527,7 @@ namespace TurtleSandbox
             splashCloseButtonSprite.Color = toolbarLightColor1;
 
             splashArea = new Area();
-            splashArea.position = new Vector2f(splashX, splashY);
+            splashArea.position = ReferenceToCenter(new Vector2f(splashX, splashY));
             splashArea.size = new Vector2f(304, 130);
             splashArea.colorR = toolbarLightColor2.R;
             splashArea.colorG = toolbarLightColor2.G;
@@ -539,7 +539,7 @@ namespace TurtleSandbox
             // Init select mode areas
 
             selectPlayModeArea = new Area();
-            selectPlayModeArea.position = new Vector2f(300, 270);
+            selectPlayModeArea.position = ReferenceToCenter(new Vector2f(300, 270));
             selectPlayModeArea.size = new Vector2f(300, 130);
             selectPlayModeArea.colorR = toolbarLightColor2.R;
             selectPlayModeArea.colorG = toolbarLightColor2.G;
@@ -547,7 +547,7 @@ namespace TurtleSandbox
             selectPlayModeArea.content = new Sprite() { Texture = new Texture("Assets/Areas/SelectPlayModeContent.png"), Color = toolbarLightColor1 };
 
             selectBrushModeArea = new Area();
-            selectBrushModeArea.position = new Vector2f(725, 270);
+            selectBrushModeArea.position = ReferenceToCenter(new Vector2f(725, 270));
             selectBrushModeArea.size = new Vector2f(300, 130);
             selectBrushModeArea.colorR = toolbarLightColor2.R;
             selectBrushModeArea.colorG = toolbarLightColor2.G;
@@ -749,79 +749,78 @@ namespace TurtleSandbox
             buttonSplashSprite.Texture = buttonSplashOffTexture;
             buttonSplashSprite.Color = toolbarLightColor1;
 
-            ////////////////////////// Set elements position and size ////////////////////////////////
+            // Init info messages
 
+            infoMessages = new InfoMessage[infoMessagesCount];
+
+            for (int i = 0; i < infoMessagesCount; i++)
+            {
+                var text = new Text();
+                text.Font = font;
+                infoMessages[i].text = text;
+                infoMessages[i].free = true;
+                infoMessages[i].lifetime = 0;
+            }
+
+
+            LayoutElements();
+
+        }
+
+        private static void LayoutElements()
+        {
             // Splash
 
-            splashCloseButtonSprite.Position = new Vector2f(splashX + splashCloseOffsetX, splashY + splashCloseOffsetY);
-            splashCloseButtonSprite.Color = toolbarLightColor1;
+            splashCloseButtonSprite.Position = ReferenceToCenter(new Vector2f(splashX + splashCloseOffsetX, splashY + splashCloseOffsetY));
 
             float buttonWidth = buttonPlayTexture.Size.X;
 
             // Selector bar
 
             Vector2f barScale = new Vector2f(selectorBarScale, selectorBarScale);
-            
+
             selectorPreviousSprite.Scale = barScale;
             selectorNextSprite.Scale = barScale;
 
-            selectorNextSprite.Color = toolbarLightColor1;
-            selectorPreviousSprite.Color = toolbarLightColor1;
 
             // Stroke bar
 
-            buttonSizeSprite.Position     = new Vector2f(strokeBarX + 0 * buttonWidth + 0 * strokeBarSeparation, strokeBarY);
-            buttonColorSprite.Position    = new Vector2f(strokeBarX + 1 * buttonWidth + 1 * strokeBarSeparation, strokeBarY);
-            buttonOpacitySprite.Position  = new Vector2f(strokeBarX + 2 * buttonWidth + 2 * strokeBarSeparation, strokeBarY);
-            buttonLengthSprite.Position   = new Vector2f(strokeBarX + 3 * buttonWidth + 3 * strokeBarSeparation, strokeBarY);
+            buttonSizeSprite.Position = new Vector2f(ReferenceToBottomCenterX(strokeBarX) + 0 * buttonWidth + 0 * strokeBarSeparation, ReferenceToBottomCenterY(strokeBarY));
+            buttonColorSprite.Position = new Vector2f(ReferenceToBottomCenterX(strokeBarX) + 1 * buttonWidth + 1 * strokeBarSeparation, ReferenceToBottomCenterY(strokeBarY));
+            buttonOpacitySprite.Position = new Vector2f(ReferenceToBottomCenterX(strokeBarX) + 2 * buttonWidth + 2 * strokeBarSeparation, ReferenceToBottomCenterY(strokeBarY));
+            buttonLengthSprite.Position = new Vector2f(ReferenceToBottomCenterX(strokeBarX) + 3 * buttonWidth + 3 * strokeBarSeparation, ReferenceToBottomCenterY(strokeBarY));
 
-            buttonUndoSprite.Position     = new Vector2f(undoBarX + 0 * buttonWidth + 0 * undoBarSeparation, strokeBarY);
-            buttonRedoSprite.Position     = new Vector2f(undoBarX + 1 * buttonWidth + 1 * undoBarSeparation, strokeBarY);
+            buttonUndoSprite.Position = new Vector2f(ReferenceToBottomCenterX(undoBarX) + 0 * buttonWidth + 0 * undoBarSeparation, ReferenceToBottomCenterY(strokeBarY));
+            buttonRedoSprite.Position = new Vector2f(ReferenceToBottomCenterX(undoBarX) + 1 * buttonWidth + 1 * undoBarSeparation, ReferenceToBottomCenterY(strokeBarY));
 
             // File bar
 
-            buttonNewSprite.Position = new Vector2f(fileBarX + 0 * buttonWidth + 0 * fileBarSeparation, fileBarY);
-            buttonSaveSprite.Position = new Vector2f(fileBarX + 1 * buttonWidth + 1 * fileBarSeparation, fileBarY);
-            buttonLoadSprite.Position = new Vector2f(fileBarX + 2 * buttonWidth + 2 * fileBarSeparation, fileBarY);
+            buttonNewSprite.Position = new Vector2f(ReferenceToBottomCenterX(fileBarX) + 0 * buttonWidth + 0 * fileBarSeparation, ReferenceToBottomCenterY(fileBarY));
+            buttonSaveSprite.Position = new Vector2f(ReferenceToBottomCenterX(fileBarX) + 1 * buttonWidth + 1 * fileBarSeparation, ReferenceToBottomCenterY(fileBarY));
+            buttonLoadSprite.Position = new Vector2f(ReferenceToBottomCenterX(fileBarX) + 2 * buttonWidth + 2 * fileBarSeparation, ReferenceToBottomCenterY(fileBarY));
 
             // Status bar
 
-            statusBarSprite.Position = new Vector2f(statusBarX, statusBarY);
-            statusBarSprite.Color = toolbarLightColor1;
+            statusBarSprite.Position = ReferenceToBottomCenter(new Vector2f(statusBarX, statusBarY));
 
             // Playback toolbar
 
-            buttonRestartSprite.Position        = new Vector2f(playbackBarX + 0 * buttonWidth + 0 * playbackBarSeparation, playbackBarY);
-            buttonFastBackwardsSprite.Position  = new Vector2f(playbackBarX + 1 * buttonWidth + 1 * playbackBarSeparation, playbackBarY);
-            buttonBackwardsSprite.Position      = new Vector2f(playbackBarX + 2 * buttonWidth + 2 * playbackBarSeparation, playbackBarY);
-            buttonPlaySprite.Position           = new Vector2f(playbackBarX + 3 * buttonWidth + 3 * playbackBarSeparation, playbackBarY);
-            buttonPauseSprite.Position          = new Vector2f(playbackBarX + 3 * buttonWidth + 3 * playbackBarSeparation, playbackBarY);
-            buttonForwardSprite.Position        = new Vector2f(playbackBarX + 4 * buttonWidth + 4 * playbackBarSeparation, playbackBarY);
-            buttonFastForwardSprite.Position    = new Vector2f(playbackBarX + 5 * buttonWidth + 5 * playbackBarSeparation, playbackBarY);
-
-            buttonRestartSprite.Color           = toolbarLightColor1;
-            buttonFastBackwardsSprite.Color     = toolbarLightColor1;
-            buttonBackwardsSprite.Color         = toolbarLightColor1;
-            buttonPlaySprite.Color              = toolbarLightColor1;
-            buttonPauseSprite.Color             = toolbarLightColor1;
-            buttonForwardSprite.Color           = toolbarLightColor1;
-            buttonFastForwardSprite.Color       = toolbarLightColor1;
+            buttonRestartSprite.Position = new Vector2f(ReferenceToBottomCenterX(playbackBarX) + 0 * buttonWidth + 0 * playbackBarSeparation, ReferenceToBottomCenterY(playbackBarY));
+            buttonFastBackwardsSprite.Position = new Vector2f(ReferenceToBottomCenterX(playbackBarX) + 1 * buttonWidth + 1 * playbackBarSeparation, ReferenceToBottomCenterY(playbackBarY));
+            buttonBackwardsSprite.Position = new Vector2f(ReferenceToBottomCenterX(playbackBarX) + 2 * buttonWidth + 2 * playbackBarSeparation, ReferenceToBottomCenterY(playbackBarY));
+            buttonPlaySprite.Position = new Vector2f(ReferenceToBottomCenterX(playbackBarX) + 3 * buttonWidth + 3 * playbackBarSeparation, ReferenceToBottomCenterY(playbackBarY));
+            buttonPauseSprite.Position = new Vector2f(ReferenceToBottomCenterX(playbackBarX) + 3 * buttonWidth + 3 * playbackBarSeparation, ReferenceToBottomCenterY(playbackBarY));
+            buttonForwardSprite.Position = new Vector2f(ReferenceToBottomCenterX(playbackBarX) + 4 * buttonWidth + 4 * playbackBarSeparation, ReferenceToBottomCenterY(playbackBarY));
+            buttonFastForwardSprite.Position = new Vector2f(ReferenceToBottomCenterX(playbackBarX) + 5 * buttonWidth + 5 * playbackBarSeparation, ReferenceToBottomCenterY(playbackBarY));
 
             // Init utils toolbar
 
-            buttonTurtleSprite.Position         = new Vector2f(utilsBarX + 0 * buttonWidth + 0 * utilsBarSeparation, utilsBarY);
-            buttonGridSprite.Position           = new Vector2f(utilsBarX + 1 * buttonWidth + 1 * utilsBarSeparation, utilsBarY);
-            buttonSandColorSprite.Position      = new Vector2f(utilsBarX + 2 * buttonWidth + 2 * utilsBarSeparation, utilsBarY);
-            buttonMusicSprite.Position          = new Vector2f(utilsBarX + 3 * buttonWidth + 3 * utilsBarSeparation, utilsBarY);
-            buttonScreenshotSprite.Position     = new Vector2f(utilsBarX + 4 * buttonWidth + 4 * utilsBarSeparation, utilsBarY);
-            buttonSplashSprite.Position         = new Vector2f(utilsBarX + 5 * buttonWidth + 5 * utilsBarSeparation, utilsBarY);
-
-            buttonTurtleSprite.Color = toolbarLightColor1;
-            buttonGridSprite.Color = toolbarLightColor1;
-            buttonSandColorSprite.Color = new Color(255, 255, 255);
-            buttonMusicSprite.Color = toolbarLightColor1;
-            buttonScreenshotSprite.Color = toolbarLightColor1;
-            buttonSplashSprite.Color = toolbarLightColor1;
+            buttonTurtleSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 0 * buttonWidth + 0 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
+            buttonGridSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 1 * buttonWidth + 1 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
+            buttonSandColorSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 2 * buttonWidth + 2 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
+            buttonMusicSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 3 * buttonWidth + 3 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
+            buttonScreenshotSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 4 * buttonWidth + 4 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
+            buttonSplashSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 5 * buttonWidth + 5 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
 
             barScale = new Vector2f(playbackBarScale, playbackBarScale);
             buttonRestartSprite.Scale = barScale;
@@ -839,19 +838,11 @@ namespace TurtleSandbox
 
             // Init info messages
 
-            infoMessages = new InfoMessage[infoMessagesCount];
-
             for (int i = 0; i < infoMessagesCount; i++)
             {
-                var text = new Text();
-                text.Font = font;
-                text.Scale = new Vector2f(infoMessageScale, infoMessageScale);
-                infoMessages[i].text = text;
-                infoMessages[i].free = true;
+                infoMessages[i].text.Scale = new Vector2f(infoMessageScale, infoMessageScale);
                 infoMessages[i].position = new Vector2f(0, 0);
-                infoMessages[i].lifetime = 0;
             }
-
         }
 
         public static void SetStatus(int posX, int posY, int angle)
@@ -867,19 +858,19 @@ namespace TurtleSandbox
 
             if (position == InfoMessagePosition.UtilsToolbar)
             {
-                p = new Vector2f(utilsBarX, utilsBarY);
+                p = ReferenceToBottomCenter(new Vector2f(utilsBarX, utilsBarY));
             }
             else if (position == InfoMessagePosition.StrokeToolbar)
             {
-                p = new Vector2f(strokeBarX, strokeBarY);
+                p = ReferenceToBottomCenter(new Vector2f(strokeBarX, strokeBarY));
             }
             else if (position == InfoMessagePosition.UndoToolbar)
             {
-                p = new Vector2f(undoBarX, undoBarY);
+                p = ReferenceToBottomCenter(new Vector2f(undoBarX, undoBarY));
             }
             else if (position == InfoMessagePosition.FileToolbar)
             {
-                p = new Vector2f(buttonNewSprite.Position.X, playbackBarY);
+                p = ReferenceToBottomCenter(new Vector2f(buttonNewSprite.Position.X, playbackBarY));
             }
             else // position = InfoMessagePosition.Turtle
             {
@@ -1035,9 +1026,9 @@ namespace TurtleSandbox
 
                 // Selector bar
 
-                float selectorSeparation = (screenId == ScreenId.PlayMode ? selectorBarSeparationPlayMode : selectorBarSeparationBrushMode);
-                selectorPreviousSprite.Position = new Vector2f(selectorBarX, selectorBarY);
-                selectorNextSprite.Position = new Vector2f(selectorBarX + selectorSeparation, selectorBarY);
+                int selectorSeparation = (screenId == ScreenId.PlayMode ? selectorBarSeparationPlayMode : selectorBarSeparationBrushMode);
+                selectorPreviousSprite.Position = ReferenceToBottomCenter(new Vector2f(selectorBarX, selectorBarY));
+                selectorNextSprite.Position = new Vector2f(ReferenceToBottomCenterX(selectorBarX + selectorSeparation), ReferenceToBottomCenterY(selectorBarY));
 
                 DrawColoredSprite(window, selectorPreviousSprite);
                 DrawColoredSprite(window, selectorNextSprite);
@@ -1541,6 +1532,43 @@ namespace TurtleSandbox
         {
             return -(a + 90);
         }
+
+        public static int ReferenceToBottomCenterX(int x)
+        {
+            RenderWindow window = App.GetWindow();
+
+            float offset = (float)(window.Size.X - AppConfig.referenceWindowWidth) / 2;
+            return (int)(offset + x);
+        }
+
+        public static int ReferenceToBottomCenterY(int y)
+        {
+            RenderWindow window = App.GetWindow();
+            return (int)(window.Size.Y - (AppConfig.referenceWindowHeight - y));
+        }
+
+        public static Vector2f ReferenceToBottomCenter(Vector2f p)
+        {
+            return new Vector2f(ReferenceToBottomCenterX((int)p.X), ReferenceToBottomCenterY((int)p.Y));
+        }
+
+        public static int ReferenceToCenterX(int x)
+        {
+            RenderWindow window = App.GetWindow();
+            return (int)(window.Size.X / 2.0f + (x - AppConfig.referenceWindowWidth / 2.0f)); 
+        }
+
+        public static int ReferenceToCenterY(int y)
+        {
+            RenderWindow window = App.GetWindow();
+            return (int)(window.Size.Y / 2.0f + (y - AppConfig.referenceWindowHeight / 2.0f));
+        }
+
+        public static Vector2f ReferenceToCenter(Vector2f p)
+        {
+            return new Vector2f(ReferenceToCenterX((int)p.X), ReferenceToCenterY((int)p.Y));
+        }
+
 
 
         static void DrawColoredSprite(RenderTarget target, Sprite sprite)

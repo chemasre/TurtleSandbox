@@ -8,10 +8,11 @@ namespace TurtleSandbox
 {
     internal class AppConfig
     {
-        public const string appVersion = "1.24";
+        public const string appVersion = "1.25";
 
-        public const int windowWidth = 1280;
-        public const int windowHeight = 720;
+        public const int referenceWindowWidth = 1280;
+        public const int referenceWindowHeight = 720;
+        
         public const float splashDuration = 3.0f;
         public const float splashFadeDuration = 0.5f;
 
