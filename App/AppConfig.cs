@@ -8,7 +8,7 @@ namespace TurtleSandbox
 {
     internal class AppConfig
     {
-        public const string appVersion = "1.26";
+        public const string appVersion = "1.261";
 
         public const int referenceWindowWidth = 1280;
         public const int referenceWindowHeight = 720;
@@ -31,6 +31,8 @@ namespace TurtleSandbox
 
         public static bool cacheEnabled = true;
         public static int cachedStepsBlockSize = 5000;
+
+        public static bool shadowsEnabled = true;
 
         // Brush mode
 
