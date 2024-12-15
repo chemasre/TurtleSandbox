@@ -12,6 +12,11 @@ namespace TurtleSandbox
 
         public static string windowTitle = "Turtle Sandbox";
 
+        // Dimensiones de la ventana. Como mínimo 1280x720
+
+        public const int windowWidth = 1280;
+        public const int windowHeight = 720;
+
         // Pantalla en la que quieres empezar
         // 0 -> Inicio normal
         // 1 -> Iniciar directamente en play mode
