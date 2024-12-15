@@ -112,6 +112,14 @@ namespace TurtleSandbox
             FileToolbar
         };
 
+        public enum Anchor
+        {
+            bottomCenter,
+            center,
+            bottomLeft,
+            bottomRight
+        };
+
         // Structs
 
         public struct Area
@@ -399,7 +407,7 @@ namespace TurtleSandbox
             font = new Font("Assets/Font.ttf");
 
             selectorText = new Text();
-            selectorText.Position = ReferenceToBottomCenter(new Vector2f(selectorTextX, selectorTextY));
+            selectorText.Position = ReferenceToBottomLeft(new Vector2f(selectorTextX, selectorTextY));
             selectorText.FillColor = toolbarLightColor1;
             selectorText.Scale = new Vector2f(playTextScale, playTextScale);
             selectorText.Font = font;
@@ -815,12 +823,12 @@ namespace TurtleSandbox
 
             // Init utils toolbar
 
-            buttonTurtleSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 0 * buttonWidth + 0 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
-            buttonGridSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 1 * buttonWidth + 1 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
-            buttonSandColorSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 2 * buttonWidth + 2 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
-            buttonMusicSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 3 * buttonWidth + 3 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
-            buttonScreenshotSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 4 * buttonWidth + 4 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
-            buttonSplashSprite.Position = new Vector2f(ReferenceToBottomCenterX(utilsBarX) + 5 * buttonWidth + 5 * utilsBarSeparation, ReferenceToBottomCenterY(utilsBarY));
+            buttonTurtleSprite.Position = new Vector2f(ReferenceToBottomRightX(utilsBarX) + 0 * buttonWidth + 0 * utilsBarSeparation, ReferenceToBottomRightY(utilsBarY));
+            buttonGridSprite.Position = new Vector2f(ReferenceToBottomRightX(utilsBarX) + 1 * buttonWidth + 1 * utilsBarSeparation, ReferenceToBottomRightY(utilsBarY));
+            buttonSandColorSprite.Position = new Vector2f(ReferenceToBottomRightX(utilsBarX) + 2 * buttonWidth + 2 * utilsBarSeparation, ReferenceToBottomRightY(utilsBarY));
+            buttonMusicSprite.Position = new Vector2f(ReferenceToBottomRightX(utilsBarX) + 3 * buttonWidth + 3 * utilsBarSeparation, ReferenceToBottomRightY(utilsBarY));
+            buttonScreenshotSprite.Position = new Vector2f(ReferenceToBottomRightX(utilsBarX) + 4 * buttonWidth + 4 * utilsBarSeparation, ReferenceToBottomRightY(utilsBarY));
+            buttonSplashSprite.Position = new Vector2f(ReferenceToBottomRightX(utilsBarX) + 5 * buttonWidth + 5 * utilsBarSeparation, ReferenceToBottomRightY(utilsBarY));
 
             barScale = new Vector2f(playbackBarScale, playbackBarScale);
             buttonRestartSprite.Scale = barScale;
@@ -858,7 +866,7 @@ namespace TurtleSandbox
 
             if (position == InfoMessagePosition.UtilsToolbar)
             {
-                p = ReferenceToBottomCenter(new Vector2f(utilsBarX, utilsBarY));
+                p = ReferenceToBottomRight(new Vector2f(utilsBarX, utilsBarY));
             }
             else if (position == InfoMessagePosition.StrokeToolbar)
             {
@@ -1027,8 +1035,8 @@ namespace TurtleSandbox
                 // Selector bar
 
                 int selectorSeparation = (screenId == ScreenId.PlayMode ? selectorBarSeparationPlayMode : selectorBarSeparationBrushMode);
-                selectorPreviousSprite.Position = ReferenceToBottomCenter(new Vector2f(selectorBarX, selectorBarY));
-                selectorNextSprite.Position = new Vector2f(ReferenceToBottomCenterX(selectorBarX + selectorSeparation), ReferenceToBottomCenterY(selectorBarY));
+                selectorPreviousSprite.Position = ReferenceToBottomLeft(new Vector2f(selectorBarX, selectorBarY));
+                selectorNextSprite.Position = new Vector2f(ReferenceToBottomLeftX(selectorBarX + selectorSeparation), ReferenceToBottomLeftY(selectorBarY));
 
                 DrawColoredSprite(window, selectorPreviousSprite);
                 DrawColoredSprite(window, selectorNextSprite);
@@ -1528,47 +1536,75 @@ namespace TurtleSandbox
             return new Vector2f(p.X, -p.Y) / AppConfig.pixelsPerStep;
         }
 
-        public static float ScreenRotationToTurtleAngle(float a)
+        static float ScreenRotationToTurtleAngle(float a)
         {
             return -(a + 90);
         }
 
-        public static int ReferenceToBottomCenterX(int x)
+        static int ReferenceToBottomCenterX(int x) { return ReferenceToAnchorX(x, Anchor.bottomCenter); }
+        static int ReferenceToBottomCenterY(int y) { return ReferenceToAnchorY(y, Anchor.bottomCenter); }
+        static int ReferenceToCenterX(int x) { return ReferenceToAnchorX(x, Anchor.center); }
+        static int ReferenceToCenterY(int y) { return ReferenceToAnchorY(y, Anchor.center); }
+        static int ReferenceToBottomLeftX(int x) { return ReferenceToAnchorX(x, Anchor.bottomLeft); }
+        static int ReferenceToBottomLeftY(int y) { return ReferenceToAnchorY(y, Anchor.bottomLeft); }
+        static int ReferenceToBottomRightX(int x) { return ReferenceToAnchorX(x, Anchor.bottomRight); }
+        static int ReferenceToBottomRightY(int y) { return ReferenceToAnchorY(y, Anchor.bottomRight); }
+
+        static Vector2f ReferenceToBottomCenter(Vector2f p) { return ReferenceToAnchor(p, Anchor.bottomCenter); }
+        static Vector2f ReferenceToCenter(Vector2f p) { return ReferenceToAnchor(p, Anchor.center); }
+        static Vector2f ReferenceToBottomLeft(Vector2f p) { return ReferenceToAnchor(p, Anchor.bottomLeft); }
+        static Vector2f ReferenceToBottomRight(Vector2f p) { return ReferenceToAnchor(p, Anchor.bottomRight); }
+
+        static int ReferenceToAnchorX(int x, Anchor anchor)
         {
             RenderWindow window = App.GetWindow();
 
-            float offset = (float)(window.Size.X - AppConfig.referenceWindowWidth) / 2;
-            return (int)(offset + x);
+            int transformed;
+
+            if(anchor == Anchor.bottomCenter)
+            {
+                float offset = (float)(window.Size.X - AppConfig.referenceWindowWidth) / 2;
+                transformed = (int)(offset + x);
+
+            }
+            else if(anchor == Anchor.center)
+            {
+                transformed = (int)(window.Size.X / 2.0f + (x - AppConfig.referenceWindowWidth / 2.0f));
+            }
+            else if (anchor == Anchor.bottomLeft)
+            {
+                transformed = x;
+            }
+            else // if(anchor == Anchor.bottomRight)
+            {
+                transformed = (int)(window.Size.X - (AppConfig.referenceWindowWidth - x));
+            }
+
+            return transformed;
         }
 
-        public static int ReferenceToBottomCenterY(int y)
+        static int ReferenceToAnchorY(int y, Anchor anchor)
         {
             RenderWindow window = App.GetWindow();
-            return (int)(window.Size.Y - (AppConfig.referenceWindowHeight - y));
+
+            int transformed;
+
+            if(anchor == Anchor.bottomCenter || anchor == Anchor.bottomLeft || anchor == Anchor.bottomRight)
+            {
+                transformed = (int)(window.Size.Y - (AppConfig.referenceWindowHeight - y));
+            }
+            else // if(anchor == Anchor.center)
+            {
+                transformed = (int)(window.Size.Y / 2.0f + (y - AppConfig.referenceWindowHeight / 2.0f));
+            }
+
+            return transformed;
         }
 
-        public static Vector2f ReferenceToBottomCenter(Vector2f p)
+        static Vector2f ReferenceToAnchor(Vector2f p, Anchor anchor)
         {
-            return new Vector2f(ReferenceToBottomCenterX((int)p.X), ReferenceToBottomCenterY((int)p.Y));
+            return new Vector2f(ReferenceToAnchorX((int)p.X, anchor), ReferenceToAnchorY((int)p.Y, anchor));
         }
-
-        public static int ReferenceToCenterX(int x)
-        {
-            RenderWindow window = App.GetWindow();
-            return (int)(window.Size.X / 2.0f + (x - AppConfig.referenceWindowWidth / 2.0f)); 
-        }
-
-        public static int ReferenceToCenterY(int y)
-        {
-            RenderWindow window = App.GetWindow();
-            return (int)(window.Size.Y / 2.0f + (y - AppConfig.referenceWindowHeight / 2.0f));
-        }
-
-        public static Vector2f ReferenceToCenter(Vector2f p)
-        {
-            return new Vector2f(ReferenceToCenterX((int)p.X), ReferenceToCenterY((int)p.Y));
-        }
-
 
 
         static void DrawColoredSprite(RenderTarget target, Sprite sprite)
@@ -2109,6 +2145,7 @@ namespace TurtleSandbox
 
         static void OnWindowClosed(object sender, EventArgs e)
         {
+            if(screenId == ScreenId.BrushMode) { BrushMode.SaveStrokeList(true); }
             App.Quit();
         }
 

@@ -512,12 +512,14 @@ namespace TurtleSandbox
             }
         }
 
-        public static void SaveStrokeList()
+        public static void SaveStrokeList(bool isBackup = false)
         {
+            string fileName = isBackup ? "unsavedStrokes.json" : "strokes.json";
+
             var jsonOptions = new JsonSerializerOptions();
             jsonOptions.WriteIndented = true;
             string json = JsonSerializer.Serialize(strokeList, jsonOptions);
-            File.WriteAllText("strokes.json", json, Encoding.UTF8);
+            File.WriteAllText(fileName, json, Encoding.UTF8);
         }
 
         static void RunStrokeList()
