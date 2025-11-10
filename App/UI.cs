@@ -486,7 +486,7 @@ namespace TurtleSandbox
             orderIdToString[Turtle.OrderId.memorize] = "memorize";
             orderIdToString[Turtle.OrderId.recall] = "recall";
             orderIdToString[Turtle.OrderId.lookAt] = "lookAt";
-            orderIdToString[Turtle.OrderId.walkDistanceTo] = "walkDistanceTo";
+            orderIdToString[Turtle.OrderId.goTo] = "goTo";
 
             // Init cursor
 

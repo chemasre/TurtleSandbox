@@ -43,7 +43,7 @@ namespace TurtleSandbox
             memorize,
             recall,
             lookAt,
-            walkDistanceTo
+            goTo
         }
 
         // Structs
@@ -159,15 +159,17 @@ namespace TurtleSandbox
             Turn(angle);
         }
 
-        public void WalkDistanceTo(float x, float y)
+        public void GoTo(float x, float y)
         {
+            LookAt(x, y);
+
             float ax = x - posX;
             float ay = y - posY;
             float distance = MathF.Sqrt(ax * ax + ay * ay);
 
             overrideOrder = true;
             overrideOrderValue = new Order();
-            overrideOrderValue.id = OrderId.walkDistanceTo;
+            overrideOrderValue.id = OrderId.goTo;
             overrideOrderValue.param1 = x;
             overrideOrderValue.param2 = y;
 
