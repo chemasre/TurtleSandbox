@@ -191,8 +191,8 @@ namespace TurtleSandbox
             colorB += b;
 
             colorR = Clamp(colorR, 0, 255);
-            colorG = Clamp(colorR, 0, 255);
-            colorB = Clamp(colorR, 0, 255);
+            colorG = Clamp(colorG, 0, 255);
+            colorB = Clamp(colorB, 0, 255);
         }
 
 
